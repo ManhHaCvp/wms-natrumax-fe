@@ -22,10 +22,14 @@ const LoginPage = () => {
       return;
     }
     try {
-      await axios.post("http://localhost:8080/api/v1/auth/request-otp", { phonenumber: phone , password : password }, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true, // 👈 Kiểm tra xem backend có hỗ trợ không
-    });
+      await axios.post(
+        "http://localhost:8080/api/v1/auth/request-otp",
+        { phonenumber: phone, password: password },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // 👈 Kiểm tra xem backend có hỗ trợ không
+        },
+      );
       toast.success("OTP đã được gửi!");
       setShowOtpForm(true);
     } catch (error) {
@@ -37,10 +41,14 @@ const LoginPage = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8080/api/v1/auth/verify-otp", { phoneNumber: phone , otp : otp }, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true, // 👈 Kiểm tra xem backend có hỗ trợ không
-    });
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/auth/verify-otp",
+        { phoneNumber: phone, otp: otp },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // 👈 Kiểm tra xem backend có hỗ trợ không
+        },
+      );
       const { token, fullName } = response.data;
       toast.success("Xác thực thành công!");
       // sessionStorage.setItem("user", JSON.stringify(response.data));
@@ -60,9 +68,10 @@ const LoginPage = () => {
     <div className="flex h-screen w-screen overflow-hidden p-2">
       <div className="flex flex-col justify-center items-center w-1/2 h-full bg-[#182F73] rounded-3xl">
         <div className="absolute top-4 left-4 flex items-center px-4 py-2 rounded-md">
-          <img src="/test.svg" alt="Logo" className="w-25 h-25 mr-2 mt-4 ml-4" />
+          <img src="/icon-bgwhite.svg" alt="Logo" className="w-10 h-10 mr-2" />
+          <span className="text-lg font-bold text-white">NATRUMAX</span>
         </div>
-        <img src="/icon.svg" alt="Logo" className="w-80 h-80" />
+        <img src="/icon-bgwhite.svg" alt="Logo" className="w-80 h-80" />
 
         <div className="absolute bottom-4 left-4 text-white text-sm leading-tight ml-5 mb-8">
           <p className="text-xl"> “NATRUMAX - VÌ MỘT VIỆT NAM KHỎE MẠNH”</p>

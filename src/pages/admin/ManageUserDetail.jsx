@@ -5,6 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Pencil } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import PaymentHistory from "@/components/admin/PaymentHistory";
 export default function ManageUserDetail() {
   const [user, setUser] = useState({
     name: "",
@@ -49,33 +51,24 @@ export default function ManageUserDetail() {
   return (
     <form className="flex">
       <Card className="w-4/12 h-full m-4 bg-[#F5F6FA]">
-        <CardHeader>
-          <CardTitle className="flex">
-            <button type="button" onClick={goBack} className="ml-auto text-sm font-semibold leading-6 text-gray-400 bg-white hover:bg-gray-50 py-1 px-2 border border-gray-200 rounded-full shadow">
-              <Pencil className="w-5 h-5" />
-            </button>
-          </CardTitle>
-
-          <CardTitle className="text-center">Tên tài khoản</CardTitle>
-        </CardHeader>
+        <CardHeader className="text-xl font-bold text-center">Hoàng Xuân Bách</CardHeader>
         <CardContent>
-          <p className="font-semibold text-gray-600">Số điện thoại</p>
-          <input className="font-semibold" value={"12346"} />
-        </CardContent>
-
-        <CardContent>
-          <p className="font-semibold text-gray-600">Địa chỉ</p>
-          <input className="font-semibold" value={"Hải Dương"} />
-        </CardContent>
-        <CardContent>
-          <p className="font-semibold text-gray-600">Trạng thái</p>
-          <div className="px-2 py-1 padd bg-red-500 text-white  inline-block rounded text-sm">
-            <p>Hoạt động</p>
+          <div className="space-y-2 ">
+            <p className="text-gray-700 mb-3">
+              📞 <strong>Số điện thoại:</strong> 0962178164
+            </p>
+            <p className="text-gray-700 mb-3">
+              🏠 <strong>Địa chỉ:</strong> Hà Nội
+            </p>
+            <div>
+              <strong>Trạng thái: </strong>
+              <Badge variant="outline bg-green">Hoạt động</Badge>
+            </div>
           </div>
         </CardContent>
       </Card>
       <Card className="w-8/12 m-4">
-        <Tabs defaultValue="account" className="w-[400px]">
+        <Tabs defaultValue="account" className="w-[800px]">
           <TabsList className="border-b">
             <TabsTrigger
               value="history-payment"
@@ -97,30 +90,32 @@ export default function ManageUserDetail() {
             </TabsTrigger>
             <TabsTrigger
               value="api"
-              className="relative data-[state=active]:after:absolute data-[state=active]:after:content-[''] data-[state=active]:after:w-full data-[state=active]:after:h-[2px] data-[state=active]:after:bg-blue-500 data-[state=active]:after:bottom-0"
+              className="relative data-[state=active]:after:absolute data-[state=active]:after:content-[''] data-[state=active]:after:w-full data-[state=active]:after:h-[2px] data-[state=active]:after:bg-blue-5500 data-[state=active]:after:bottom-0"
             >
               Kết nối API
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="history-payment">Lịch sử thanh toán</TabsContent>
+          <TabsContent value="history-payment">
+            <PaymentHistory />
+          </TabsContent>
           <TabsContent value="wallet">Ví</TabsContent>
           <TabsContent value="commission">Hoa hồng</TabsContent>
           <TabsContent value="api">
-            <div className="p-4 bg-gray-100 rounded-lg max-w-md">
-              <div className="mb-2 grid grid-cols-2 gap-4">
-                <p className="text-gray-500">Retailer</p>
-                <p className="font-mono text-gray-800 text-left">haiyenhd</p>
+            <div className="p-4 bg-gray-100 rounded-lg max-w-lg mt-1">
+              <div className="mb-1 flex justify-start">
+                <p className="text-gray-500 w-24">Retailer</p>
+                <p className="font-mono text-gray-800 ml-4">haiyenhd</p>
               </div>
 
-              <div className="mb-2 grid grid-cols-2 gap-4">
-                <p className="text-gray-500 whitespace-nowrap">Client ID</p>
-                <p className="font-mono text-gray-800 text-left">7FFDE6E9FD05CAEB74660BC170B26C69F0808119</p>
+              <div className="mb-1 flex justify-start">
+                <p className="text-gray-500 w-24">Client ID</p>
+                <p className="font-mono text-gray-800 break-all ml-4">7FFDE6E9FD05CAEB74660BC170B26C69F0808119</p>
               </div>
 
-              <div className="mb-2 grid grid-cols-2 gap-4">
-                <p className="text-gray-500 whitespace-nowrap">Client Secret</p>
-                <p className="font-mono text-gray-800 text-left">7FFDE6E9FD05CAEB74660BC170B26C69F0808119</p>
+              <div className="mb-1 flex justify-start">
+                <p className="text-gray-500 w-24">Client Secret</p>
+                <p className="font-mono text-gray-800 break-all ml-4">7FFDE6E9FD05CAEB74660BC170B26C69F0808119</p>
               </div>
             </div>
           </TabsContent>

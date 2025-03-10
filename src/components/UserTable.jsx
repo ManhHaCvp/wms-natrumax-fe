@@ -5,7 +5,35 @@ import { Eye, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const UserTable = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([
+    {
+      id: 1,
+      name: "Nguyễn Văn A",
+      address: "Hà Nội",
+      phone: "0987654321",
+      createdAt: "2024-03-10",
+      role: "Admin",
+      status: "Hoạt động",
+    },
+    {
+      id: 2,
+      name: "Trần Thị B",
+      address: "TP. Hồ Chí Minh",
+      phone: "0912345678",
+      createdAt: "2024-02-15",
+      role: "User",
+      status: "Bị khóa",
+    },
+    {
+      id: 3,
+      name: "Lê Văn C",
+      address: "Đà Nẵng",
+      phone: "0909123456",
+      createdAt: "2024-01-20",
+      role: "Moderator",
+      status: "Hoạt động",
+    },
+  ]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
@@ -39,11 +67,7 @@ const UserTable = () => {
     setCurrentPage(1); // Reset về trang đầu khi tìm kiếm
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phone.includes(searchTerm)
-  );
+  const filteredUsers = users.filter((user) => user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user.phone.includes(searchTerm));
 
   // Pagination
   const indexOfLastUser = currentPage * usersPerPage;
@@ -53,13 +77,7 @@ const UserTable = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Danh sách người dùng</h1>
-      <input
-        type="text"
-        placeholder="Tìm kiếm theo tên hoặc số điện thoại"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="px-4 py-2 border rounded-lg w-full sm:w-1/2 lg:w-1/3 mb-4"
-      />
+      <input type="text" placeholder="Tìm kiếm theo tên hoặc số điện thoại" value={searchTerm} onChange={handleSearchChange} className="px-4 py-2 border rounded-lg w-full sm:w-1/2 lg:w-1/3 mb-4" />
 
       <div className="overflow-x-auto border rounded-lg">
         <table className="min-w-full divide-y divide-gray-200 table-auto">
@@ -98,11 +116,7 @@ const UserTable = () => {
 
       {/* Pagination */}
       <div className="flex justify-center mt-4">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-4 py-2 mx-1 bg-gray-200 rounded disabled:opacity-50"
-        >
+        <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1} className="px-4 py-2 mx-1 bg-gray-200 rounded disabled:opacity-50">
           Trước
         </button>
         <span className="px-4 py-2">Trang {currentPage}</span>
