@@ -2,7 +2,6 @@ import { createContext, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.scss";
-import { Toaster } from "./components/ui/sonner";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import HomePage from "./pages/main/HomePage";
 import Header from "./components/layout/Header";
@@ -13,6 +12,7 @@ import NotFoundPage from "./pages/error/NotFoundPage";
 import Footer from "./components/layout/Footer";
 import ManageUser from "./pages/admin/ManageUser";
 import ManageUserDetail from "./pages/admin/ManageUserDetail";
+import { Toaster } from "react-hot-toast";
 export const UserContext = createContext({});
 function App() {
   const location = useLocation();
