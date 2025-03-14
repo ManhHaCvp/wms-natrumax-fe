@@ -5,7 +5,7 @@ import "./App.scss";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import HomePage from "./pages/main/HomePage";
 import Header from "./components/layout/Header";
-import LoginPage from "./pages/auth/LoginPage";
+import AuthPage from "./pages/auth/AuthPage.jsx";
 import AdminLayout from "./components/admin/Layout";
 import Dashboard from "./components/admin/Dashboard";
 import NotFoundPage from "./pages/error/NotFoundPage";
@@ -30,9 +30,9 @@ function App() {
         {/* {!isAdminRoute && !isLoginPage && <Header />} */}
         <main>
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/" element={<AuthPage />} />
             <Route path="/home" element={<Navigate to="/" />} />
-            <Route path="/login" element={!isAuthenticated() ? <LoginPage /> : <Navigate to="/admin/dashboard" />} />
+            <Route path="/login" element={!isAuthenticated() ? <AuthPage /> : <Navigate to="/admin/dashboard" />} />
             <Route element={<AdminLayout />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/user/:id" element={<ManageUserDetail />} />
