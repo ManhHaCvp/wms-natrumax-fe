@@ -1,10 +1,11 @@
-import React, {useState, useContext} from "react";
+import React, {useState, useContext, useEffect} from "react";
 import axios from "axios";
-import {toast} from "react-hot-toast";
+import toast, { Toaster } from 'react-hot-toast';
 import {useNavigate} from "react-router-dom";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
 import {REGEXP_ONLY_DIGITS_AND_CHARS} from "input-otp";
 import {BASE_URL} from "@/utils/constants.jsx";
+import {useAuth} from "@/provider/authProvider.jsx";
 
 const AuthPage = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -17,6 +18,8 @@ const AuthPage = () => {
     const [showOtpForm, setShowOtpForm] = useState(false);
     const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
     const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
+
+    const { setToken } = useAuth();
     const navigate = useNavigate();
 
     const handleShowLoginForm = (e) => {
@@ -51,9 +54,9 @@ const AuthPage = () => {
     }
 
     const handleLoginRequestOtp = async (e) => {
+        e.preventDefault();
         setIsResetPassword(false);
         handleShowOtpForm();
-        e.preventDefault();
         try {
             await axios.post(BASE_URL + "/api/v1/auth/login/request-otp", {
                 phoneNumber: phoneNumber,
@@ -73,6 +76,7 @@ const AuthPage = () => {
 
     const handleLoginVerifyOtp = async (e) => {
         e.preventDefault();
+        setIsResetPassword(false);
         try {
             const response = await axios.post(BASE_URL + "/api/v1/auth/login/verify-otp", {
                 phoneNumber: phoneNumber,
@@ -81,8 +85,8 @@ const AuthPage = () => {
             console.log("Response:", response);
             toast.success("OTP hợp lệ!");
             // lưu thông tin đăng nhập
-            localStorage.setItem("token", response.data.token);
-            navigate("admin/dashboard");
+            setToken(response.data.token);
+            navigate("/home");
         } catch (error) {
             console.error("Lỗi API:", error.response?.data || error.message);
 

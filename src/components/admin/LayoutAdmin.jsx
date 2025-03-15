@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import SideBarAdmin from "./SideBarAdmin";
-import Navbar from "./NavBar";
+import Navbar from "../common/NavBar.jsx";
 
-const AdminLayout = () => {
+const LayoutAdmin = () => {
   return (
     <div className="flex h-screen">
       <div className="bg-[#F5F6FA] w-64 border-r border-gray-200">
@@ -20,4 +20,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default LayoutAdmin;
