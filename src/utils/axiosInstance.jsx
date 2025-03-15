@@ -14,7 +14,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = sessionStorage.getItem("accessToken");
+    const accessToken = sessionStorage.getItem("token");
     if (accessToken) {
       const decodedToken = jwtDecode(accessToken);
       let date = new Date();

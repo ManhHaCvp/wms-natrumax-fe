@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge.jsx";
 import { Eye, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,8 +18,7 @@ const UserTable = () => {
   }, [currentPage]); // Chạy lại khi trang thay đổi
 
   const fetchUsers = (page) => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = user?.token;
+    const token = JSON.parse(localStorage.getItem("token"));
     if (!token) {
       console.error("Không tìm thấy token, vui lòng đăng nhập lại!");
       return;
