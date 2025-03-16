@@ -1,20 +1,23 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import SideBar from "./SideBar";
 import Navbar from "./NavBar";
+import Footer from "./Footer";
 
 const Layout = () => {
-    return (
-        <div className="flex h-screen">
-            <div className="bg-[#F5F6FA] w-64 border-r border-gray-200">
-                <SideBar />
-            </div>
 
-            <div className="flex flex-col flex-grow">
+    return (
+        <div className="flex h-screen w-screen">
+            <SideBar/>
+
+            <div className="flex flex-col flex-1">
                 <Navbar />
-                <div className="flex-grow p-2 bg-white overflow-auto">
-                    <Outlet />
-                </div>
+                <main className="flex-1 overflow-auto">
+                    <div className="flex flex-col flex-1 justify-between h-full">
+                        <Outlet />
+                        <Footer />
+                    </div>
+                </main>
             </div>
         </div>
     );

@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { UserContext } from "@/App"; // Adjust this import according to your project structure
 
-const SideBarAdmin = () => {
+const AdminSideBar = () => {
   const { userAuth } = useContext(UserContext);
   const userRole = userAuth?.user?.role;
 
@@ -167,4 +167,4 @@ const SideBarAdmin = () => {
   );
 };
 
-export default SideBarAdmin;
+export default AdminSideBar;

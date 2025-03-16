@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import UserTable from "../../components/admin/UserTable.jsx";
 
-const ManageUser = () => {
+const ViewUserList = () => {
   const [loginTypes, setLoginTypes] = useState([]); // Giả sử bạn có một API để lấy loại đăng nhập nếu cần thiết
 
   return (
@@ -12,4 +12,4 @@ const ManageUser = () => {
   );
 };
 
-export default ManageUser;
+export default ViewUserList;

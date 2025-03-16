@@ -1,11 +1,11 @@
 import React, {useState, useContext, useEffect} from "react";
 import axios from "axios";
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import {useNavigate} from "react-router-dom";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
 import {REGEXP_ONLY_DIGITS_AND_CHARS} from "input-otp";
 import {BASE_URL} from "@/utils/constants.jsx";
-import {useAuth} from "@/provider/authProvider.jsx";
+import {useAuth} from "@/providers/authProvider.jsx";
 
 const AuthPage = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -19,7 +19,7 @@ const AuthPage = () => {
     const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
     const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
 
-    const { setToken } = useAuth();
+    const {setAuthData} = useAuth();
     const navigate = useNavigate();
 
     const handleShowLoginForm = (e) => {
@@ -55,7 +55,6 @@ const AuthPage = () => {
 
     const handleLoginRequestOtp = async (e) => {
         e.preventDefault();
-        setIsResetPassword(false);
         handleShowOtpForm();
         try {
             await axios.post(BASE_URL + "/api/v1/auth/login/request-otp", {
@@ -76,7 +75,6 @@ const AuthPage = () => {
 
     const handleLoginVerifyOtp = async (e) => {
         e.preventDefault();
-        setIsResetPassword(false);
         try {
             const response = await axios.post(BASE_URL + "/api/v1/auth/login/verify-otp", {
                 phoneNumber: phoneNumber,
@@ -84,9 +82,14 @@ const AuthPage = () => {
             });
             console.log("Response:", response);
             toast.success("OTP hợp lệ!");
+
             // lưu thông tin đăng nhập
-            setToken(response.data.token);
-            navigate("/home");
+            const newToken = response.data.token;
+            const userData = response.data;
+
+            setAuthData(newToken, userData);
+
+            navigate("/dashboard");
         } catch (error) {
             console.error("Lỗi API:", error.response?.data || error.message);
 
@@ -118,10 +121,10 @@ const AuthPage = () => {
 
     const handleForgotPasswordRequestOtp = async (e) => {
         e.preventDefault();
+        handleShowOtpForm();
         try {
             await axios.post(BASE_URL + "/api/v1/auth/forgot-password/request-otp", {phoneNumber: phoneNumber});
             toast.success("OTP đặt lại mật khẩu đã được gửi!");
-            handleShowOtpForm();
         } catch (error) {
             toast.error("Lỗi khi gửi yêu cầu đặt lại mật khẩu!");
         }

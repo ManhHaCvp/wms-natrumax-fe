@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import PaymentHistory from "@/components/admin/PaymentHistory";
 
-export default function ManageUserDetail() {
+export default function ViewUserDetail() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();

@@ -1,38 +1,38 @@
-import {Menu, Bell, Settings} from "lucide-react";
+import {User, Bell, Settings, AlignLeft, CreditCard} from "lucide-react";
 import {Button} from "@/components/ui/button.jsx";
 import React from "react";
-import {useAuth} from "@/provider/authProvider.jsx";
+import {useAuth} from "@/providers/authProvider.jsx";
 import {useNavigate} from "react-router-dom";
 import toast from "react-hot-toast";
-import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar.jsx";
+import {Avatar} from "@/components/ui/avatar.jsx";
+import {AvatarFallback, AvatarImage} from "@radix-ui/react-avatar";
 
 const Navbar = () => {
-    const {setToken} = useAuth();
-    const navigate = useNavigate();
+    const {setAuthData} = useAuth();
 
     // Logout function
     const handleLogout = () => {
-        setToken();
+        setAuthData();
         toast.success("Đăng xuất thành công!");
         window.location.href = "/login";
     };
 
     return (
-        <nav className="flex items-center justify-between px-4 py-2 bg-gray-100 shadow-sm border-b h-16">
+        <nav className="flex items-center justify-between h-[60px] px-[20px] bg-[#f8fafc] shadow-sm border-b">
             {/* Left Section */}
             <div>
-                <SidebarProvider>
-                    <SidebarTrigger />
-                </SidebarProvider>
-                <Menu className="w-5 h-5 cursor-pointer text-gray-600"/>
+                <AlignLeft size={24} className="text-sidebar-foreground cursor-pointer"/>
             </div>
 
             {/* Right Section */}
-            <div className="flex items-center space-x-4">
-                <Bell className="w-5 h-5 text-gray-600 cursor-pointer"/>
-                <Settings className="w-5 h-5 text-gray-600 cursor-pointer"/>
-                <span className="text-gray-500 text-sm font-medium">VN</span>
-                <Button onClick={handleLogout}>Logout</Button>
+            <div className="flex items-center space-x-[20px]">
+                <Bell size={24} className="text-sidebar-foreground cursor-pointer"/>
+                <Settings size={24} className="text-sidebar-foreground cursor-pointer"/>
+                <Avatar className="h-[32px] w-[32px] cursor-pointer">
+                    <AvatarImage src="https://github.com/shadcn.png"/>
+                    <AvatarFallback>VN</AvatarFallback>
+                </Avatar>
+                <Button onClick={handleLogout} className="w-full text-primary-foreground bg-[#182F73] hover:bg-[#12245C] rounded-md px-3 py-2">Logout</Button>
             </div>
         </nav>
     );

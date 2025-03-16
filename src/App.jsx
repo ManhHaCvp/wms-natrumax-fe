@@ -1,4 +1,4 @@
-import AuthProvider from "./provider/authProvider";
+import AuthProvider from "./providers/authProvider";
 import Routes from "./routes";
 import {Toaster} from "react-hot-toast";
 
