@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../providers/authProvider";
-import Layout from "@/components/common/Layout.jsx";
+import Layout from "@/components/layout/Layout.jsx";
 
 export const RoleProtectedRoute = ({ allowedRoles }) => {
     const { token, roles } = useAuth();

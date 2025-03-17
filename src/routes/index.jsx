@@ -1,8 +1,8 @@
-import {RouterProvider, createBrowserRouter} from "react-router-dom";
+import {RouterProvider, createBrowserRouter, Navigate} from "react-router-dom";
 import {useAuth} from "../providers/authProvider";
 import {ProtectedRoute} from "./ProtectedRoute";
 import {RoleProtectedRoute} from "./RoleProtectedRoute";
-import Layout from "@/components/common/Layout.jsx";
+import Layout from "@/components/layout/Layout.jsx";
 import AuthPage from "../pages/auth/AuthPage.jsx";
 import Dashboard from "../pages/main/Dashboard.jsx";
 import HomePage from "../pages/main/HomePage.jsx";
@@ -10,20 +10,26 @@ import {NotFoundPage, InternalServerErrorPage, UnauthorizedPage} from "../pages/
 import ComingSoonPage from "../pages/error/ComingSoonPage.jsx";
 
 const Routes = () => {
-    const {token} = useAuth();
+    const {token, user} = useAuth();
+
+    const startupRoute = () => {
+        if (!token) return <Navigate to="/login" />;
+        if (user.roles.includes("ROLE_ADMIN")) return <Navigate to="/admin" />;
+        return <Navigate to="/dashboard" />;
+    };
 
     // Public routes wrapped inside Layout
     const routesForPublic = {
         path: "/",
         element: <Layout/>,
         children: [
+            {path: "/", element: startupRoute()},
             {path: "/service", element: <div>Service Page</div>},
             {path: "/about-us", element: <div>About Us</div>},
             {path: "/coming-soon", element: <ComingSoonPage/>},
-            {path: "/401", element: <UnauthorizedPage/>},
+            {path: "*", element: <NotFoundPage/>},
             {path: "/404", element: <NotFoundPage/>},
             {path: "/500", element: <InternalServerErrorPage/>},
-            {path: "*", element: <NotFoundPage/>},
         ],
     };
 
@@ -32,10 +38,10 @@ const Routes = () => {
         path: "/",
         element: <ProtectedRoute/>,
         children: [
-            {path: "/", element: <Dashboard/>},
             {path: "/dashboard", element: <Dashboard/>},
             {path: "/home", element: <HomePage/>},
             {path: "/profile", element: <div>User Profile</div>},
+            {path: "/401", element: <UnauthorizedPage/>},
         ],
     };
 

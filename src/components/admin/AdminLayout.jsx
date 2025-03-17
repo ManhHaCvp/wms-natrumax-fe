@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import AdminSideBar from "./AdminSideBar.jsx";
-import Navbar from "../common/NavBar.jsx";
+import Navbar from "../layout/NavBar.jsx";
 
 const AdminLayout = () => {
   return (

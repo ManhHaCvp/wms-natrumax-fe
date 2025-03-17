@@ -29,10 +29,10 @@ const Navbar = () => {
                 <Bell size={24} className="text-sidebar-foreground cursor-pointer"/>
                 <Settings size={24} className="text-sidebar-foreground cursor-pointer"/>
                 <Avatar className="h-[32px] w-[32px] cursor-pointer">
-                    <AvatarImage src="https://github.com/shadcn.png"/>
+                    <AvatarImage src="https://avatars.githubusercontent.com/u/144993791?v=4"/>
                     <AvatarFallback>VN</AvatarFallback>
                 </Avatar>
-                <Button onClick={handleLogout} className="w-full text-primary-foreground bg-[#182F73] hover:bg-[#12245C] rounded-md px-3 py-2">Logout</Button>
+                <Button onClick={handleLogout} className="text-primary-foreground bg-[#182F73] hover:bg-[#12245C] rounded-md px-3 py-2">Logout</Button>
             </div>
         </nav>
     );

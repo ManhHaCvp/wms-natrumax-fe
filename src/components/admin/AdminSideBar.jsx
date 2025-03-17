@@ -35,7 +35,7 @@ const AdminSideBar = () => {
     <div className=" w-64 p-4 transition-all duration-300">
       <div className="sidebar-container sticky top-0">
         <div className="text-center mb-4 flex flex-row">
-          <img src="/header-admin.svg" alt="Profile" className=" h-15 mx-auto mb-2" />
+          <img src="/logos/light/sm-name.svg" alt="Profile" className=" h-15 mx-auto mb-2" />
         </div>
 
         <Accordion type="single" collapsible className="w-full">

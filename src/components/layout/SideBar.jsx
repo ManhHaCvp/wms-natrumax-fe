@@ -8,10 +8,10 @@ const SideBar = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="bg-[#f8fafc] w-[240px] border-r border-sidebar-border">
+        <div className="bg-[#f8fafc] border-r border-sidebar-border w-[15vw]">
             <div className="sidebar-container sticky top-0">
                 <div className="text-center p-2 flex flex-row cursor-pointer" onClick={() => navigate("/home")}>
-                    <img src="src/assets/logos/light/sm-name.svg" alt="Profile" className="h-[2rem]"/>
+                    <img src="/logos/light/sm-name.svg" alt="Logo" className="h-[2rem]"/>
                 </div>
 
                 <Accordion type="single" collapsible className="w-full p-2">

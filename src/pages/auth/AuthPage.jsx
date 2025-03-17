@@ -31,6 +31,7 @@ const AuthPage = () => {
     }
 
     const handleShowOtpForm = (e) => {
+        setOtp(null)
         setShowLoginForm(false);
         setShowOtpForm(true);
         setShowForgotPasswordForm(false);
@@ -55,20 +56,20 @@ const AuthPage = () => {
 
     const handleLoginRequestOtp = async (e) => {
         e.preventDefault();
-        handleShowOtpForm();
         try {
-            await axios.post(BASE_URL + "/api/v1/auth/login/request-otp", {
+            await axios.post(`${BASE_URL}/api/v1/auth/login/request-otp`, {
                 phoneNumber: phoneNumber,
                 password: password
             });
-            toast.success("OTP đã được gửi!");
+            handleShowOtpForm();
+            toast.success(`Mã OTP đã được gửi đến ${phoneNumber}.`);
         } catch (error) {
-            console.error("Lỗi API:", error.response?.data || error.message);
+            console.error("API error :", error.response?.data || error.message);
             // Kiểm tra nếu lỗi trả về có thông điệp từ API
             if (error.response?.data || error.message) {
                 toast.error(error.response?.data || error.message);
             } else {
-                toast.error("Sai tài khoản hoặc mật khẩu");
+                toast.error("Số điện thoại hoặc mật khẩu không hợp lệ.");
             }
         }
     };
@@ -76,12 +77,11 @@ const AuthPage = () => {
     const handleLoginVerifyOtp = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(BASE_URL + "/api/v1/auth/login/verify-otp", {
+            const response = await axios.post(`${BASE_URL}/api/v1/auth/login/verify-otp`, {
                 phoneNumber: phoneNumber,
                 otp: otp
             });
-            console.log("Response:", response);
-            toast.success("OTP hợp lệ!");
+            toast.success("Đăng nhập thành công.");
 
             // lưu thông tin đăng nhập
             const newToken = response.data.token;
@@ -91,13 +91,12 @@ const AuthPage = () => {
 
             navigate("/dashboard");
         } catch (error) {
-            console.error("Lỗi API:", error.response?.data || error.message);
-
+            console.error("API error :", error.response?.data || error.message);
             // Kiểm tra nếu lỗi trả về có thông điệp từ API
             if (error.response?.data?.message) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error("OTP không hợp lệ hoặc đã hết hạn!");
+                toast.error("OTP không hợp lệ hoặc đã hết hạn.");
             }
         }
     };
@@ -105,49 +104,52 @@ const AuthPage = () => {
     const handleResendOtp = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(BASE_URL + "/api/v1/auth/resend-otp", {phoneNumber: phoneNumber});
-            toast.success("OTP đã được gửi!");
-            handleShowOtpForm();
+            await axios.post(`${BASE_URL}/api/v1/auth/resend-otp`, {phoneNumber: phoneNumber});
+            toast.success(`Mã OTP đã được gửi đến ${phoneNumber}.`);
         } catch (error) {
-            console.error("Lỗi API:", error.response?.data || error.message);
+            console.error("API error :", error.response?.data || error.message);
             // Kiểm tra nếu lỗi trả về có thông điệp từ API
             if (error.response?.data || error.message) {
                 toast.error(error.response?.data || error.message);
             } else {
-                toast.error("Sai tài khoản hoặc mật khẩu");
+                toast.error("Số điện thoại hoặc mật khẩu không hợp lệ.");
             }
         }
     };
 
     const handleForgotPasswordRequestOtp = async (e) => {
         e.preventDefault();
-        handleShowOtpForm();
         try {
-            await axios.post(BASE_URL + "/api/v1/auth/forgot-password/request-otp", {phoneNumber: phoneNumber});
-            toast.success("OTP đặt lại mật khẩu đã được gửi!");
+            await axios.post(`${BASE_URL}/api/v1/auth/forgot-password/request-otp`, {phoneNumber: phoneNumber});
+            handleShowOtpForm();
+            toast.success(`Mã OTP đã được gửi đến ${phoneNumber}.`);
         } catch (error) {
-            toast.error("Lỗi khi gửi yêu cầu đặt lại mật khẩu!");
+            console.error("API error :", error.response?.data || error.message);
+            // Kiểm tra nếu lỗi trả về có thông điệp từ API
+            if (error.response?.data || error.message) {
+                toast.error(error.response?.data || error.message);
+            } else {
+                toast.error("Số điện thoại không hợp lệ.");
+            }
         }
     };
 
     const handleForgotPasswordVerifyOtp = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(BASE_URL + "/api/v1/auth/forgot-password/verify-otp", {
+            const response = await axios.post(`${BASE_URL}/api/v1/auth/forgot-password/verify-otp`, {
                 phoneNumber: phoneNumber,
                 otp: otp
             });
-            console.log("Response:", response);
-            toast.success("OTP hợp lệ!");
+            toast.success("OTP hợp lệ.");
             handleShowResetPasswordForm();
         } catch (error) {
-            console.error("Lỗi API:", error.response?.data || error.message);
-
+            console.error("API error :", error.response?.data || error.message);
             // Kiểm tra nếu lỗi trả về có thông điệp từ API
             if (error.response?.data?.message) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error("OTP không hợp lệ hoặc đã hết hạn!");
+                toast.error("OTP không hợp lệ hoặc đã hết hạn.");
             }
         }
     };
@@ -155,18 +157,25 @@ const AuthPage = () => {
     const handleResetPassword = async (e) => {
         e.preventDefault();
         if (newPassword !== confirmPassword) {
-            toast.error("Mật khẩu không khớp!");
+            toast.error("Mật khẩu mới và xác nhận mật khẩu không trùng nhau.");
             return;
         }
         try {
-            await axios.post(BASE_URL + "/api/v1/auth/reset-password", {
+            await axios.post(`${BASE_URL}/api/v1/auth/reset-password`, {
+                phoneNumber: phoneNumber,
                 newPassword: newPassword,
                 confirmPassword: confirmPassword
             });
-            toast.success("Mật khẩu đã được đặt lại thành công!");
+            toast.success("Cài lại mật khẩu thành công.");
             handleShowLoginForm();
         } catch (error) {
-            toast.error("Không thể đặt lại mật khẩu!");
+            console.error("API error :", error.response?.data || error.message);
+            // Kiểm tra nếu lỗi trả về có thông điệp từ API
+            if (error.response?.data || error.message) {
+                toast.error(error.response?.data || error.message);
+            } else {
+                toast.error("Không thể cài lại mật khẩu.");
+            }
         }
     };
 
@@ -174,7 +183,8 @@ const AuthPage = () => {
         // layout chính chứa các form layout
         <div className="flex overflow-hidden w-screen h-screen p-[1.25rem]">
             {/*layout trái chứa backgound, logo, quote*/}
-            <div className="flex flex-col justify-center items-center w-1/2 h-full bg-[#182F73] rounded-lg relative">
+            <div
+                className="flex flex-col justify-center items-center w-1/2 h-full bg-[#182F73] rounded-lg relative">
                 <div className="flex items-center absolute top-4 left-4 px-4 py-4 rounded-md">
                     <img src="src/assets/logos/dark/sm-name.svg" alt="Logo" className="w-[10.1rem] h-[2rem]"/>
                 </div>
@@ -190,8 +200,10 @@ const AuthPage = () => {
                         // layout phải: login form
                         <form onSubmit={handleLoginRequestOtp} className="flex flex-col justify-center w-full">
                             <div className="py-4">
-                                <h2 className="text-card-foreground text-2xl leading-none font-semibold">Đăng nhập</h2>
-                                <p className="text-muted-foreground mt-3">Nhập số điện thoại và mật khẩu<br/> để nhận
+                                <h2 className="text-card-foreground text-2xl leading-none font-semibold">Đăng
+                                    nhập</h2>
+                                <p className="text-muted-foreground mt-3">Nhập số điện thoại và mật khẩu<br/> để
+                                    nhận
                                     OTP</p>
                             </div>
                             <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}
@@ -215,7 +227,8 @@ const AuthPage = () => {
                                     OTP</h2>
                                 <p className="text-muted-foreground mt-3">Nhập OTP để<br/> truy cập vào hệ thống</p>
                             </div>
-                            <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS_AND_CHARS} value={otp} onChange={setOtp}
+                            <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS_AND_CHARS} value={otp}
+                                      onChange={setOtp}
                                       className="flex justify-center">
                                 <InputOTPGroup>
                                     <InputOTPSlot index={0}/><InputOTPSlot index={1}/><InputOTPSlot index={2}/>
@@ -226,16 +239,19 @@ const AuthPage = () => {
                                     className="w-full text-primary-foreground bg-[#182F73] hover:bg-[#12245C] rounded-md px-3 py-2 mt-2">
                                 Xác nhận
                             </button>
-                            <p className="text-[#4A63B5] cursor-pointer mt-3" onClick={handleResendOtp}>Gửi lại OTP</p>
+                            <p className="text-[#4A63B5] cursor-pointer mt-3" onClick={handleResendOtp}>Gửi lại
+                                OTP</p>
                         </form>
                     }
                     {showForgotPasswordForm && (
                         // layout phải: forgot password form
-                        <form onSubmit={handleForgotPasswordRequestOtp} className="flex flex-col justify-center w-full">
+                        <form onSubmit={handleForgotPasswordRequestOtp}
+                              className="flex flex-col justify-center w-full">
                             <div className="py-4">
                                 <h2 className="text-card-foreground text-2xl leading-none font-semibold">Quên mật
                                     khẩu</h2>
-                                <p className="text-muted-foreground mt-3">Nhập số điện thoại của bạn<br/> để nhận mã xác
+                                <p className="text-muted-foreground mt-3">Nhập số điện thoại của bạn<br/> để nhận mã
+                                    xác
                                     thực</p>
                             </div>
                             <input type="text" id="phone" value={phoneNumber}
@@ -257,11 +273,13 @@ const AuthPage = () => {
                                     khẩu</h2>
                                 <p className="text-muted-foreground mt-3">Nhập mật khẩu mới</p>
                             </div>
-                            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+                            <input type="password" value={newPassword}
+                                   onChange={(e) => setNewPassword(e.target.value)}
                                    placeholder="Mật khẩu" className="w-full px-3 py-2 border rounded-md"/>
                             <input type="password" value={confirmPassword}
                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                   placeholder="Xác nhận mật khẩu" className="w-full px-3 py-2 border rounded-md mt-2"/>
+                                   placeholder="Xác nhận mật khẩu"
+                                   className="w-full px-3 py-2 border rounded-md mt-2"/>
                             <button type="submit"
                                     className="w-full text-primary-foreground bg-[#182F73] hover:bg-[#12245C] rounded-md px-3 py-2 mt-2">
                                 Xác nhận
