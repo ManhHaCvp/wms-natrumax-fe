@@ -11,20 +11,22 @@ const SideBar = () => {
         <div className="bg-[#f8fafc] border-r border-sidebar-border w-[15vw]">
             <div className="sidebar-container sticky top-0">
                 <div className="text-center p-2 flex flex-row cursor-pointer" onClick={() => navigate("/home")}>
-                    <img src="/logos/light/sm-name.svg" alt="Logo" className="h-[2rem]"/>
+                    <img src="/logos/light/sm-name.svg" alt="Logo" className="h-[32px]"/>
                 </div>
 
                 <Accordion type="single" collapsible className="w-full p-2">
                     <div className="flex items-center px-2 py-1.5">
                         <p className="text-sidebar-foreground text-xs leading-5 font-medium">Phân hệ</p>
                     </div>
-                    {checkUserRole("ROLE_ADMIN", "ROLE_ACCOUNTANT") && (
-                        <AccordionItem value="overview">
-                            <Link to="/dashboard"
-                                  className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
-                                <Clock3 size={16} className="mr-2"/> Tổng quan
-                            </Link>
-                        </AccordionItem>)
+                    {
+                        checkUserRole("ROLE_ADMIN", "ROLE_ACCOUNTANT") && (
+                            <AccordionItem value="overview">
+                                <Link to="/dashboard"
+                                      className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                                    <Clock3 size={16} className="mr-2"/> Tổng quan
+                                </Link>
+                            </AccordionItem>
+                        )
                     }
                     <>
 

@@ -6,6 +6,9 @@ import Layout from "@/components/layout/Layout.jsx";
 import AuthPage from "../pages/auth/AuthPage.jsx";
 import Dashboard from "../pages/main/Dashboard.jsx";
 import HomePage from "../pages/main/HomePage.jsx";
+import ViewUserList from "../pages/admin/ViewUserList";
+import ViewUserDetail from "../pages/admin/ViewUserDetail";
+import EditUser from "../pages/admin/EditUserProfile";
 import {NotFoundPage, InternalServerErrorPage, UnauthorizedPage} from "../pages/error/ErrorPage.jsx";
 import ComingSoonPage from "../pages/error/ComingSoonPage.jsx";
 
@@ -30,6 +33,11 @@ const Routes = () => {
             {path: "*", element: <NotFoundPage/>},
             {path: "/404", element: <NotFoundPage/>},
             {path: "/500", element: <InternalServerErrorPage/>},
+            // for develop ui
+            {path: "/develop-ui/test", element: <div>Develop UI</div>},
+            {path: "/admin/users", element: <ViewUserList />},
+            {path: "/admin/user/:id", element: <ViewUserDetail />},
+            {path: "/admin/user/edit/:id", element: <EditUser />},
         ],
     };
 

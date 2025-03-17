@@ -6,6 +6,14 @@ import {useNavigate} from "react-router-dom";
 import toast from "react-hot-toast";
 import {Avatar} from "@/components/ui/avatar.jsx";
 import {AvatarFallback, AvatarImage} from "@radix-ui/react-avatar";
+import {
+    DropdownMenu,
+    DropdownMenuContent, DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel, DropdownMenuPortal,
+    DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
     const {setAuthData} = useAuth();
@@ -28,11 +36,39 @@ const Navbar = () => {
             <div className="flex items-center space-x-[20px]">
                 <Bell size={24} className="text-sidebar-foreground cursor-pointer"/>
                 <Settings size={24} className="text-sidebar-foreground cursor-pointer"/>
-                <Avatar className="h-[32px] w-[32px] cursor-pointer">
-                    <AvatarImage src="https://avatars.githubusercontent.com/u/144993791?v=4"/>
-                    <AvatarFallback>VN</AvatarFallback>
-                </Avatar>
-                <Button onClick={handleLogout} className="text-primary-foreground bg-[#182F73] hover:bg-[#12245C] rounded-md px-3 py-2">Logout</Button>
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Avatar className="h-[32px] w-[32px] cursor-pointer">
+                            <AvatarImage src="https://avatars.githubusercontent.com/u/144993791?v=4"/>
+                            <AvatarFallback>VN</AvatarFallback>
+                        </Avatar>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-52">
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem>
+                                Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                Billing
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                Settings
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>GitHub</DropdownMenuItem>
+                        <DropdownMenuItem>Support</DropdownMenuItem>
+                        <DropdownMenuItem disabled>API</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleLogout}>
+                            Log out
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
             </div>
         </nav>
     );
