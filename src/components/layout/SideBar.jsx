@@ -91,7 +91,7 @@ const SideBar = () => {
               <AccordionContent>
                 <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
                   <li>
-                    <Link to="/admin/users" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/admin/orders" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Danh sách
                     </Link>
                   </li>

@@ -3,7 +3,7 @@ import axios from "axios";
 import { Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ManageRole = () => {
+const ViewRoleList = () => {
   const sampleRoles = [
     { id: 1, name: "Admin", description: "Quản trị hệ thống" },
     { id: 2, name: "Distributor", description: "Nhà phân phối" },
@@ -105,4 +105,4 @@ const ManageRole = () => {
   );
 };
 
-export default ManageRole;
+export default ViewRoleList;

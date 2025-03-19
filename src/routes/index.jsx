@@ -16,24 +16,26 @@ import ViewCategoryList from "../pages/admin/ViewCategoryList";
 import AddCategory from "@/components/admin/AddCategory";
 import UpdateCategoryDetail from "@/components/admin/UpdateCategoryDetail";
 import ViewRoleList from "../pages/admin/ViewRoleList";
+import ViewOrderList from "@/pages/admin/ViewOrderList";
+import OrderDetail from "@/components/admin/OrderDetail";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "../pages/error/ErrorPage.jsx";
 import ComingSoonPage from "../pages/error/ComingSoonPage.jsx";
 
 const Routes = () => {
   const { token, user } = useAuth();
 
-  //   const startupRoute = () => {
-  //     if (!token) return <Navigate to="/login" />;
-  //     if (user.roles.includes("ROLE_ADMIN")) return <Navigate to="/admin" />;
-  //     return <Navigate to="/dashboard" />;
-  //   };
+  const startupRoute = () => {
+    if (!token) return <Navigate to="/login" />;
+    if (user.roles.includes("ROLE_ADMIN")) return <Navigate to="/admin" />;
+    return <Navigate to="/dashboard" />;
+  };
 
   // Public routes wrapped inside Layout
   const routesForPublic = {
     path: "/",
     element: <Layout />,
     children: [
-      //   { path: "/", element: startupRoute() },
+      { path: "/", element: startupRoute() },
       { path: "/service", element: <div>Service Page</div> },
       { path: "/about-us", element: <div>About Us</div> },
       { path: "/coming-soon", element: <ComingSoonPage /> },
@@ -60,6 +62,10 @@ const Routes = () => {
 
       //Role
       { path: "/admin/role", element: <ViewRoleList /> },
+
+      //Orders
+      { path: "/admin/orders", element: <ViewOrderList /> },
+      { path: "/admin/orders/:id", element: <OrderDetail /> },
     ],
   };
 
