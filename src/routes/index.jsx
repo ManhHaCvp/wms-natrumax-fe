@@ -18,6 +18,7 @@ import UpdateCategoryDetail from "@/components/admin/UpdateCategoryDetail";
 import ViewRoleList from "../pages/admin/ViewRoleList";
 import ViewOrderList from "@/pages/admin/ViewOrderList";
 import OrderDetail from "@/components/admin/OrderDetail";
+import AddOrder from "@/components/admin/AddOrder";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "../pages/error/ErrorPage.jsx";
 import ComingSoonPage from "../pages/error/ComingSoonPage.jsx";
 
@@ -66,6 +67,7 @@ const Routes = () => {
       //Orders
       { path: "/admin/orders", element: <ViewOrderList /> },
       { path: "/admin/orders/:id", element: <OrderDetail /> },
+      { path: "/admin/orders/add", element: <AddOrder /> },
     ],
   };
 

@@ -50,7 +50,7 @@ const ViewOrderList = () => {
           <button onClick={exportToExcel} className="px-4 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-400 flex items-center gap-2">
             Xuất File
           </button>
-          <button onClick={() => navigate("/admin/order/add")} className="px-4 py-2 bg-[#182F73] text-white rounded-lg hover:bg-[#0F1F50] flex items-center gap-2">
+          <button onClick={() => navigate("/admin/orders/add")} className="px-4 py-2 bg-[#182F73] text-white rounded-lg hover:bg-[#0F1F50] flex items-center gap-2">
             <span className="text-white text-lg">+</span> Thêm mới
           </button>
         </div>
