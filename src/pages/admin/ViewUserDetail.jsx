@@ -8,13 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PaymentHistory from "@/components/admin/PaymentHistory";
 import UserDiscount from "@/components/admin/UserDiscount";
+import userService from "@/services/userService.jsx";
 export default function ViewUserDetail() {
   const [user, setUser] = useState({
     name: "",
     role: "",
-    refreshToken: "",
+    phoneNumber: "",
     email: "",
-    shippingAddress: [],
+    address: "",
+    status: "",
   });
   const navigate = useNavigate();
   const goBack = () => {
@@ -24,21 +26,13 @@ export default function ViewUserDetail() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://localhost:9999/api/user/detail/${id}`);
-        const data = response.data;
-        setUser({
-          name: data.name,
-          role: data.role.name,
-          refreshToken: data.refreshToken == null ? "X" : data.refreshToken,
-          email: data.email,
-          shippingAddress: data.shippingAddress,
-        });
+        await userService.getUserById(id, setUser);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Failed to fetch users:", error);
       }
     };
 
-    fetchUserData();
+    fetchUserData().catch(console.error);
   }, []);
 
   const handleChange = (e) => {
@@ -51,19 +45,19 @@ export default function ViewUserDetail() {
 
   return (
     <form className="flex">
-      <Card className="w-4/12 h-full m-4 bg-[#F5F6FA]">
-        <CardHeader className="text-xl font-bold text-center">Hoàng Xuân Bách</CardHeader>
+      <Card className="w-4/12 h-fit m-4 bg-[#F5F6FA]">
+        <CardHeader className="text-xl font-bold text-center">{user.name}</CardHeader>
         <CardContent>
           <div className="space-y-2 ">
             <p className="text-gray-700 mb-3">
-              📞 <strong>Số điện thoại:</strong> 0962178164
+              📞 <strong>Số điện thoại:</strong> {user.phoneNumber}
             </p>
             <p className="text-gray-700 mb-3">
-              🏠 <strong>Địa chỉ:</strong> Hà Nội
+              🏠 <strong>Địa chỉ:</strong> {user.address}
             </p>
             <div>
               <strong>Trạng thái: </strong>
-              <Badge variant="outline bg-green">Hoạt động</Badge>
+              <Badge variant="outline">{user.status}</Badge>
             </div>
           </div>
         </CardContent>
