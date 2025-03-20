@@ -1,5 +1,5 @@
 import React from "react";
-import { Clock3, UserRoundCog, Package, ShoppingCart, Book, BookText, Banknote, Tags, Users } from "lucide-react";
+import { Clock3, UserRoundCog, Package, ShoppingCart, Book, BookText, Banknote, Tags, Users, Warehouse } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { checkUserRole } from "@/utils/checkUserRole.jsx";
@@ -171,6 +171,25 @@ const SideBar = () => {
                 <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
                   <li>
                     <Link to="/admin/role" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                      Danh sách
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/admin/role/add" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                      Thêm mới
+                    </Link>
+                  </li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="crud-warehouse">
+              <AccordionTrigger className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                <Warehouse size={16} className="mr-2" /> Kho hàng hóa
+              </AccordionTrigger>
+              <AccordionContent>
+                <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
+                  <li>
+                    <Link to="/admin/warehouses" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Danh sách
                     </Link>
                   </li>
