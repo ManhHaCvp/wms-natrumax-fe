@@ -17,6 +17,7 @@ import AddCategory from "@/components/admin/AddCategory";
 import UpdateCategoryDetail from "@/components/admin/UpdateCategoryDetail";
 import ViewRoleList from "../pages/admin/ViewRoleList";
 import ViewOrderList from "@/pages/admin/ViewOrderList";
+import ViewWarehouseList from "@/pages/admin/ViewWarehouseList";
 import OrderDetail from "@/components/admin/OrderDetail";
 import AddOrder from "@/components/admin/AddOrder";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "../pages/error/ErrorPage.jsx";
@@ -68,6 +69,9 @@ const Routes = () => {
       { path: "/admin/orders", element: <ViewOrderList /> },
       { path: "/admin/orders/:id", element: <OrderDetail /> },
       { path: "/admin/orders/add", element: <AddOrder /> },
+
+      //Warehouse
+      { path: "/admin/warehouses", element: <ViewWarehouseList /> },
     ],
   };
 
