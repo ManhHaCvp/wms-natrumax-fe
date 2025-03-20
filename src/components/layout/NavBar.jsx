@@ -14,6 +14,7 @@ import {
     DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { SidebarTrigger } from "@/components/ui/sidebar.jsx";
 
 const Navbar = () => {
     const {setAuthData} = useAuth();
@@ -29,7 +30,8 @@ const Navbar = () => {
         <nav className="flex items-center justify-between h-[60px] px-[20px] bg-[#f8fafc] shadow-sm border-b">
             {/* Left Section */}
             <div>
-                <AlignLeft size={24} className="text-sidebar-foreground cursor-pointer"/>
+                <SidebarTrigger />
+                {/*<AlignLeft size={24} className="text-sidebar-foreground cursor-pointer"/>*/}
             </div>
 
             {/* Right Section */}

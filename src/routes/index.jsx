@@ -44,6 +44,7 @@ const Routes = () => {
       { path: "*", element: <NotFoundPage /> },
       { path: "/404", element: <NotFoundPage /> },
       { path: "/500", element: <InternalServerErrorPage /> },
+      { path: "/dashboard", element: <Dashboard /> },
       // for develop ui
       { path: "/develop-ui/test", element: <div>Develop UI</div> },
 
@@ -80,7 +81,6 @@ const Routes = () => {
     path: "/",
     element: <ProtectedRoute />,
     children: [
-      { path: "/dashboard", element: <Dashboard /> },
       { path: "/home", element: <HomePage /> },
       { path: "/profile", element: <div>User Profile</div> },
       { path: "/401", element: <UnauthorizedPage /> },
