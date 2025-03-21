@@ -6,7 +6,7 @@ const handleEditProduct = (productId) => {
   navigate(`/admin/products/edit/${productId}`);
 };
 
-export default function ProductDetail() {
+export default function ViewProductDetail() {
   return (
     <div className="p-8">
       {/* Form Action */}

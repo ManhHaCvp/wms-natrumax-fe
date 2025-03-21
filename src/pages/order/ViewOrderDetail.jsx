@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Pencil } from "lucide-react";
 
-const OrderDetail = () => {
+const ViewOrderDetail = () => {
   const order = {
     items: [
       { id: 1, code: "112", name: "Tên hàng hóa", price: 800000, quantity: 20 },
@@ -131,4 +131,4 @@ const OrderDetail = () => {
   );
 };
 
-export default OrderDetail;
+export default ViewOrderDetail;

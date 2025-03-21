@@ -8,7 +8,7 @@ const HomePage = () => {
     const [user, setUser] = useState(localStorage.getItem("user"));
 
     return (
-        <div className="flex justify-between w-[85vw] overflow-clip p-5">
+        <div className="flex justify-between w-full overflow-clip p-5">
             <p>This is a home page.</p>
             <p className="w-3/4 overflow-auto">{user}</p>
             <Button onClick={() => toast.success('Here is your toast.')}
