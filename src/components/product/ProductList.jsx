@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import React, { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge.jsx";
 import { Eye, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import userService from "@/services/userService.jsx";
+import productService from "@/services/productService.jsx";
 
-const ProductTable = () => {
+const ProductList = () => {
   const [products, setProducts] = useState([
     { id: 1, code: "#187654", name: "Sữa tươi Vinamilk", price: 25000, stock: 100, status: "Còn hàng" },
     { id: 2, code: "#187654", name: "Sữa chua TH true Milk", price: 15000, stock: 50, status: "Còn hàng" },
@@ -18,6 +20,18 @@ const ProductTable = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        await productService.getProductListPaging(setProducts, 0, 10);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+
+    fetchUsers().catch(console.error); // Handles the promise properly
+  }, []);
 
   // Handle Checkbox
   const handleCheckboxChange = (productId) => {
@@ -94,4 +108,4 @@ const ProductTable = () => {
   );
 };
 
-export default ProductTable;
+export default ProductList;

@@ -7,7 +7,7 @@ import { DollarSign, Users, Receipt, Calendar as CalendarIcon, ArrowUp, ArrowDow
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Calendar } from "@/components/ui/calendar.jsx";
-import TopProductsSold from "../../components/admin/TopProductsSold.jsx";
+import TopProductsSold from "../../components/product/TopProductsSold.jsx";
 
 // Date Picker Component
 function DatePickerDemo({ date, setDate }) {

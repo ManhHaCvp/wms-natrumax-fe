@@ -1,5 +1,5 @@
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table.jsx";
+import { Badge } from "@/components/ui/badge.jsx";
 
 const paymentHistoryData = [
   { id: 1, name: "Nguyen Van A", phone: "0123456789", status: "Đã thanh toán", amount: "500,000 VND", color: "green" },

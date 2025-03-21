@@ -1,10 +1,10 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { Input } from "@/components/ui/input.jsx";
 import { Pencil, Ban, Upload, Save } from "lucide-react";
 import { useState } from "react";
 
-export default function UpdateProductDetail() {
+export default function UpdateProduct() {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleImageChange = (event) => {

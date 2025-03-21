@@ -11,7 +11,8 @@ import {
   Users,
   Warehouse,
   ChevronRight,
-  ChevronDown, Gift,
+  ChevronDown,
+  Gift
 } from "lucide-react";
 import {
   SidebarContent,
@@ -29,7 +30,6 @@ import {
 } from "@/components/ui/sidebar.jsx";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { Link, useNavigate } from "react-router-dom";
-import { checkUserRole } from "@/utils/checkUserRole.jsx";
 
 const AppSidebar = () => {
   const navigate = useNavigate();

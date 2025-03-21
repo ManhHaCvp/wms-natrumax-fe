@@ -1,9 +1,9 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { Card, CardContent } from "@/components/ui/card.jsx";
 import { Save } from "lucide-react";
 
-const UpdateCategoryDetail = () => {
+const UpdateCategory = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
@@ -31,4 +31,4 @@ const UpdateCategoryDetail = () => {
   );
 };
 
-export default UpdateCategoryDetail;
+export default UpdateCategory;

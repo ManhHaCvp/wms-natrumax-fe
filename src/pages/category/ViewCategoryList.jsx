@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge.jsx";
 import { Eye, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ManageCategory = () => {
+const ViewCategoryList = () => {
   const sampleCategories = [
     { id: 1, name: "Nhóm hàng A", description: "Mô tả nhóm hàng A" },
     { id: 2, name: "Nhóm hàng B", description: "Mô tả nhóm hàng B" },
@@ -116,4 +116,4 @@ const ManageCategory = () => {
   );
 };
 
-export default ManageCategory;
+export default ViewCategoryList;
