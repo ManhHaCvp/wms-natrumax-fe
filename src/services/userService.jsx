@@ -1,6 +1,3 @@
-import axios from "axios";
-import authApi from "@/api/authApi.jsx";
-import toast from "react-hot-toast";
 import userApi from "@/api/userApi.jsx";
 import api from "@/api/userApi.jsx";
 

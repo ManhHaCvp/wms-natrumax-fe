@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import userService from "@/services/userService.jsx";
+import productService from "@/services/productService.jsx";
 
 const ProductTable = () => {
   const [products, setProducts] = useState([
@@ -18,6 +20,18 @@ const ProductTable = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        await productService.getProductListPaging(setProducts, 1, 10);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+
+    fetchUsers().catch(console.error); // Handles the promise properly
+  }, []);
 
   // Handle Checkbox
   const handleCheckboxChange = (productId) => {

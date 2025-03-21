@@ -1,10 +1,20 @@
-import axios from "axios";
+import apiClient from "@/utils/apiClient";
 import { BASE_URL } from "@/utils/constants.jsx";
 
 const userApi = {
-  getUserList: () => axios.get(`${BASE_URL}/api/v1/users/all-user`, {headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}}),
+  getUserList: () => apiClient.get(`${BASE_URL}/api/v1/users/all-user`),
 
-  getUserById: (id) => axios.get(`${BASE_URL}/api/v1/users/${id}`, {headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}}),
+  getUserListPaging: (page, size) => apiClient.get(`${BASE_URL}/api/v1/users/list-users-paging?page=${page}&size=${size}`),
+
+  getUserById: (id) => apiClient.get(`${BASE_URL}/api/v1/users/${id}`),
+
+  createUser: (userRequest) => apiClient.post(`${BASE_URL}/api/v1/users/create`, userRequest),
+
+  updateUser: (userRequest) => apiClient.put(`${BASE_URL}/api/v1/users/update/${userRequest.id}`, userRequest),
+
+  changePassword: (changePasswordRequest) => apiClient.put(`${BASE_URL}/api/v1/users/${changePasswordRequest.id}/change-password`, changePasswordRequest),
+
+  changeStatus: (id) => apiClient.put(`${BASE_URL}/api/v1/users/${id}/toggle-status`),
 };
 
 export default userApi;
