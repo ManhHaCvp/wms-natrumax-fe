@@ -1,175 +1,290 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Badge } from "@/components/ui/badge.jsx";
-import { Button } from "@/components/ui/button.jsx";
-import { Eye, Pencil, CloudDownload, Plus, Filter } from "lucide-react";
-import userService from "@/services/userService.jsx";
-import {
-  Pagination,
-  PaginationContent, PaginationEllipsis,
-  PaginationItem,
-  PaginationLink, PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination.jsx";
+import React, { useState } from "react";
+import { CAvatar, CBadge, CButton, CCollapse, CSmartTable } from "@coreui/react-pro";
+import '@coreui/coreui-pro/dist/css/coreui.min.css'
 
-const UserList = () => {
-  const sampleUsers = [
+const getBadge = (status) => {
+  switch (status) {
+    case "Active": {
+      return "success";
+    }
+    case "Inactive": {
+      return "secondary";
+    }
+    case "Pending": {
+      return "warning";
+    }
+    case "Banned": {
+      return "danger";
+    }
+    default: {
+      return "primary";
+    }
+  }
+};
+
+export const UserList = () => {
+  const [details, setDetails] = useState([]);
+  const columns = [
+    {
+      key: "avatar",
+      label: "",
+      filter: false,
+      sorter: false,
+    },
+    {
+      key: "name",
+      _style: { width: "20%" },
+    },
+    {
+      key: "registered",
+      sorter: (item1, item2) => {
+        const a = new Date(item1.registered);
+        const b = new Date(item2.registered);
+        return a > b ? 1 : b > a ? -1 : 0;
+      },
+    },
+    {
+      key: "role",
+      _style: { width: "20%" },
+    },
+    "status",
+    {
+      key: "show_details",
+      label: "",
+      _style: { width: "1%" },
+      filter: false,
+      sorter: false,
+    },
+  ];
+  const items = [
     {
       id: 1,
-      name: "Nguyễn Văn A",
-      address: "Hà Nội",
-      phone: "0987654321",
-      createdAt: "2024-03-10",
-      role: "Admin",
-      status: "Hoạt động",
+      name: "Samppa Nori",
+      avatar: "1.jpg",
+      registered: "2021/03/01",
+      role: "Member",
+      status: "Active",
     },
     {
       id: 2,
-      name: "Trần Thị B",
-      address: "TP. Hồ Chí Minh",
-      phone: "0912345678",
-      createdAt: "2024-02-15",
-      role: "User",
-      status: "Bị khóa",
+      name: "Estavan Lykos",
+      avatar: "2.jpg",
+      registered: "2018/02/07",
+      role: "Staff",
+      status: "Banned",
+    },
+    {
+      id: 3,
+      name: "Chetan Mohamed",
+      avatar: "3.jpg",
+      registered: "2020/01/15",
+      role: "Admin",
+      status: "Inactive",
+      _selected: true,
+    },
+    {
+      id: 4,
+      name: "Derick Maximinus",
+      avatar: "4.jpg",
+      registered: "2019/04/05",
+      role: "Member",
+      status: "Pending",
+    },
+    {
+      id: 5,
+      name: "Friderik Dávid",
+      avatar: "5.jpg",
+      registered: "2022/03/25",
+      role: "Staff",
+      status: "Active",
+    },
+    {
+      id: 6,
+      name: "Yiorgos Avraamu",
+      avatar: "6.jpg",
+      registered: "2017/01/01",
+      role: "Member",
+      status: "Active",
+    },
+    {
+      id: 7,
+      name: "Avram Tarasios",
+      avatar: "7.jpg",
+      registered: "2016/02/12",
+      role: "Staff",
+      status: "Banned",
+      _selected: true,
+    },
+    {
+      id: 8,
+      name: "Quintin Ed",
+      avatar: "8.jpg",
+      registered: "2023/01/21",
+      role: "Admin",
+      status: "Inactive",
+    },
+    {
+      id: 9,
+      name: "Enéas Kwadwo",
+      avatar: "9.jpg",
+      registered: "2024/03/10",
+      role: "Member",
+      status: "Pending",
+    },
+    {
+      id: 10,
+      name: "Agapetus Tadeáš",
+      avatar: "10.jpg",
+      registered: "2015/01/10",
+      role: "Staff",
+      status: "Active",
+    },
+    {
+      id: 11,
+      name: "Carwyn Fachtna",
+      avatar: "11.jpg",
+      registered: "2014/04/01",
+      role: "Member",
+      status: "Active",
+    },
+    {
+      id: 12,
+      name: "Nehemiah Tatius",
+      avatar: "12.jpg",
+      registered: "2013/01/05",
+      role: "Staff",
+      status: "Banned",
+      _selected: true,
+    },
+    {
+      id: 13,
+      name: "Ebbe Gemariah",
+      avatar: "13.jpg",
+      registered: "2012/02/25",
+      role: "Admin",
+      status: "Inactive",
+    },
+    {
+      id: 14,
+      name: "Eustorgios Amulius",
+      avatar: "14.jpg",
+      registered: "2011/03/19",
+      role: "Member",
+      status: "Pending",
+    },
+    {
+      id: 15,
+      name: "Leopold Gáspár",
+      avatar: "15.jpg",
+      registered: "2010/02/01",
+      role: "Staff",
+      status: "Active",
     },
   ];
 
-  const [users, setUsers] = useState(sampleUsers);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const usersPerPage = 10;
-  const navigate = useNavigate();
-
-  // Get user list
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        await userService.getUserList(setUsers, sampleUsers);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-
-    fetchUsers().catch(console.error); // Handles the promise properly
-  }, []);
-
-  const handleEditUser = (userId) => {
-    navigate(`/admin/user/edit/${userId}`);
-  };
-
-  const onDetail = (userId) => {
-    navigate(`/admin/user/${userId}`);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleCheckboxChange = (userId) => {
-    setSelectedUsers((prev) => (prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]));
-  };
-
-  const handleSelectAll = () => {
-    if (selectedUsers.length === users.length) {
-      setSelectedUsers([]);
+  const toggleDetails = (id) => {
+    const position = details.indexOf(id);
+    let newDetails = [...details];
+    if (position === -1) {
+      newDetails = [...details, id];
     } else {
-      setSelectedUsers(users.map((user) => user.id));
+      newDetails.splice(position, 1);
     }
+    setDetails(newDetails);
   };
-
-  const filteredUsers = users.filter((user) => user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user.phone.includes(searchTerm));
-
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
   return (
-    <div className="bg-[#f8fafc] m-5 p-5 border rounded-2xl">
-      <div className="flex justify-between items-center mb-[10px]">
-        <h1 className="text-[#182F73] text-3xl font-bold mb-4">Danh sách người dùng</h1>
-        <div>
-          <Button variant="outline"><CloudDownload/>Xuất file</Button>
-          <Button className="bg-[#182F73] ms-[10px]"><Plus/>Thêm mới</Button>
-        </div>
-      </div>
-      <div className="flex justify-between mb-4">
-        <input type="text" placeholder="Tìm kiếm nhanh..." value={searchTerm} onChange={handleSearchChange}
-               className="px-3 border rounded-md w-full" />
-        <Button variant="outline" className="ms-[10px]"><Filter/>Bộ lọc</Button>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full divide-y table-auto">
-          <thead className="">
-          <tr>
-            <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase">
-              <input type="checkbox" onChange={handleSelectAll} checked={selectedUsers.length === users.length} />
-            </th>
-            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Tên tài khoản</th>
-            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Số điện thoại</th>
-            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Tỉnh thành</th>
-            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
-            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">Thao tác</th>
-          </tr>
-          </thead>
-
-          {/* Table Data */}
-          <tbody className="divide-y">
-          {currentUsers.map((user) => (
-            <tr key={user.id}>
-              <td className="p-4">
-                <input type="checkbox" checked={selectedUsers.includes(user.id)}
-                       onChange={() => handleCheckboxChange(user.id)} />
+    <div className="bg-[#f8fafc] border rounded-2xl m-4 p-4">
+      <h1 className="text-2xl font-bold mb-4 text-[#182F73]">Danh sách người dùng</h1>
+      <div className="w-[100%] overflow-clip">
+        <CSmartTable
+          activePage={1}
+          cleaner
+          clickableRows
+          columns={columns}
+          columnFilter
+          columnSorter
+          footer
+          items={items}
+          itemsPerPageSelect
+          itemsPerPage={10}
+          pagination
+          onFilteredItemsChange={(items) => {
+            console.log("onFilteredItemsChange");
+            console.table(items);
+          }}
+          onSelectedItemsChange={(items) => {
+            console.log("onSelectedItemsChange");
+            console.table(items);
+          }}
+          scopedColumns={{
+            avatar: (item) => (
+              <td>
+                <CAvatar src={`../../images/avatars/${item.avatar}`} />
               </td>
-              <td className="p-3">{user.name}</td>
-              <td className="p-3">{user.phone}</td>
-              <td className="p-3">{user.address}</td>
-              <td className="p-3">
-                <Badge variant="outline">{user.status}</Badge>
+            ),
+            registered: (item) => {
+              const date = new Date(item.registered);
+              const options = {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              };
+              return <td>{date.toLocaleDateString("en-US", options)}</td>;
+            },
+            status: (item) => (
+              <td>
+                <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
               </td>
-
-              {/* Action */}
-              <td className="p-3">
-                <button onClick={() => handleEditUser(user.id)} className="bg-white hover:bg-gray-50 py-1 px-2 mr-2">
-                  <Pencil className="h-5 w-5" />
-                </button>
-                <button onClick={() => onDetail(user.id)} className="bg-white hover:bg-gray-50 py-1 px-2">
-                  <Eye className="h-5 w-5" />
-                </button>
-              </td>
-            </tr>
-          ))}
-          </tbody>
-        </table>
-        <Pagination className="mt-[10px]">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+            ),
+            show_details: (item) => {
+              return (
+                <td className="py-2">
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    shape="square"
+                    size="sm"
+                    onClick={() => {
+                      toggleDetails(item.id);
+                    }}
+                  >
+                    {details.includes(item.id) ? "Hide" : "Show"}
+                  </CButton>
+                </td>
+              );
+            },
+            details: (item) => {
+              return (
+                <CCollapse visible={details.includes(item.id)}>
+                  <div className="p-3">
+                    <h4>{item.name}</h4>
+                    <p className="text-body-secondary">User since: {item.registered}</p>
+                    <CButton size="sm" color="info">
+                      User Settings
+                    </CButton>
+                    <CButton size="sm" color="danger" className="ms-1">
+                      Delete
+                    </CButton>
+                  </div>
+                </CCollapse>
+              );
+            },
+          }}
+          selectable
+          sorterValue={{ column: "status", state: "asc" }}
+          tableFilter
+          tableProps={{
+            className: "add-this-custom-class",
+            responsive: true,
+            striped: true,
+            hover: true,
+          }}
+          tableBodyProps={{
+            className: "align-middle",
+          }}
+        />
       </div>
     </div>
   );
 };
-
-export default UserList;
