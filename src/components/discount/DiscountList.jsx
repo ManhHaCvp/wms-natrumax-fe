@@ -1,5 +1,5 @@
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table.jsx";
+import { Badge } from "@/components/ui/badge.jsx";
 
 const userDiscountData = [
   { id: 1, paidAmount: "1,500,000 VND", discount: "10%", description: "Giảm giá cho khách hàng VIP", startDate: "01/03/2025", endDate: "31/03/2025" },
@@ -12,7 +12,7 @@ const userDiscountData = [
   { id: 8, paidAmount: "2,500,000 VND", discount: "18%", description: "Đại hội giảm giá", startDate: "10/04/2025", endDate: "20/04/2025" },
 ];
 
-export default function UserDiscount() {
+export default function DiscountList() {
   return (
     <Table>
       <TableHeader>

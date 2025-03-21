@@ -6,8 +6,8 @@ import { Pencil } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import PaymentHistory from "@/components/admin/PaymentHistory";
-import UserDiscount from "@/components/admin/UserDiscount";
+import PaymentHistory from "@/components/user/PaymentHistory.jsx";
+import DiscountList from "@/components/discount/DiscountList.jsx";
 import userService from "@/services/userService.jsx";
 export default function ViewUserDetail() {
   const [user, setUser] = useState({
@@ -63,7 +63,7 @@ export default function ViewUserDetail() {
         </CardContent>
       </Card>
       <Card className="w-8/12 m-4">
-        <Tabs defaultValue="account" className="w-[800px]">
+        <Tabs defaultValue="history-payment" className="w-[800px]">
           <TabsList className="border-b">
             <TabsTrigger
               value="history-payment"
@@ -121,7 +121,7 @@ export default function ViewUserDetail() {
             </div>
           </TabsContent>
           <TabsContent value="discount">
-            <UserDiscount />
+            <DiscountList />
           </TabsContent>
         </Tabs>
       </Card>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge.jsx";
 import { Eye, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import userService from "@/services/userService.jsx";
 
-const UserTable = () => {
+const UserList = () => {
   const sampleUsers = [
     {
       id: 1,
@@ -131,4 +131,4 @@ const UserTable = () => {
   );
 };
 
-export default UserTable;
+export default UserList;

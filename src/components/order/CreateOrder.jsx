@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card.jsx";
+import { Badge } from "@/components/ui/badge.jsx";
+import { Button } from "@/components/ui/button.jsx";
 import { Check } from "lucide-react";
 
-const AddOrder = () => {
+const CreateOrder = () => {
   const [order, setOrder] = useState({
     items: [
       { id: 1, code: "112", name: "Tên hàng hóa", price: 800000, quantity: 20 },
@@ -116,4 +116,4 @@ const AddOrder = () => {
   );
 };
 
-export default AddOrder;
+export default CreateOrder;

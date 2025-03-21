@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function EditUserProfile() {
+export default function UpdateUser() {
     return (
         <div className="w-[85vw] m-5 p-5 bg-gray-100 rounded-lg">
             <h1 className="text-2xl font-bold mb-6 ml-4 text-[#182F73]">Sửa thông tin người dùng</h1>

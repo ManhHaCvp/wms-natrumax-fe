@@ -10,16 +10,16 @@ import ViewUserList from "../pages/admin/ViewUserList";
 import ViewUserDetail from "../pages/admin/ViewUserDetail";
 import EditUser from "../pages/admin/EditUserProfile";
 import ViewProductList from "../pages/admin/ViewProductList";
-import ProductDetail from "@/components/admin/ProductDetail";
-import UpdateProductDetail from "@/components/admin/UpdateProductDetail";
+import ProductDetail from "@/components/product/ProductDetail.jsx";
+import UpdateProduct from "@/components/product/UpdateProduct.jsx";
 import ViewCategoryList from "../pages/admin/ViewCategoryList";
-import AddCategory from "@/components/admin/AddCategory";
-import UpdateCategoryDetail from "@/components/admin/UpdateCategoryDetail";
+import CreateCategory from "@/components/category/CreateCategory.jsx";
+import UpdateCategory from "@/components/category/UpdateCategory.jsx";
 import ViewRoleList from "../pages/admin/ViewRoleList";
 import ViewOrderList from "@/pages/admin/ViewOrderList";
 import ViewWarehouseList from "@/pages/admin/ViewWarehouseList";
-import OrderDetail from "@/components/admin/OrderDetail";
-import AddOrder from "@/components/admin/AddOrder";
+import OrderDetail from "@/components/order/OrderDetail.jsx";
+import CreateOrder from "@/components/order/CreateOrder.jsx";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "../pages/error/ErrorPage.jsx";
 import ComingSoonPage from "../pages/error/ComingSoonPage.jsx";
 
@@ -56,12 +56,12 @@ const Routes = () => {
       //Product
       { path: "/admin/products", element: <ViewProductList /> },
       { path: "/admin/products/:id", element: <ProductDetail /> },
-      { path: "/admin/products/edit/:id", element: <UpdateProductDetail /> },
+      { path: "/admin/products/edit/:id", element: <UpdateProduct /> },
 
       //Category
       { path: "/admin/category", element: <ViewCategoryList /> },
-      { path: "/admin/category/add", element: <AddCategory /> },
-      { path: "/admin/category/edit/:id", element: <UpdateCategoryDetail /> },
+      { path: "/admin/category/add", element: <CreateCategory /> },
+      { path: "/admin/category/edit/:id", element: <UpdateCategory /> },
 
       //Role
       { path: "/admin/role", element: <ViewRoleList /> },
@@ -69,7 +69,7 @@ const Routes = () => {
       //Orders
       { path: "/admin/orders", element: <ViewOrderList /> },
       { path: "/admin/orders/:id", element: <OrderDetail /> },
-      { path: "/admin/orders/add", element: <AddOrder /> },
+      { path: "/admin/orders/add", element: <CreateOrder /> },
 
       //Warehouse
       { path: "/admin/warehouses", element: <ViewWarehouseList /> },

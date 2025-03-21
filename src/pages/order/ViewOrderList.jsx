@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge.jsx";
 import { Eye, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
