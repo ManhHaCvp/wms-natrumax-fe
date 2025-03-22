@@ -8,21 +8,19 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, CloudDownload, Plus} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button.jsx";
+import { Badge } from "@/components/ui/badge.jsx";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/dropdown-menu.jsx";
+import { Input } from "@/components/ui/input.jsx";
 import {
   Table,
   TableBody,
@@ -30,42 +28,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table.jsx";
 import userService from "@/services/userService.jsx";
 
 const columnHelper = createColumnHelper();
 
 const columns = [
-  columnHelper.display({
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  }),
-  columnHelper.accessor("accountName", {
-    name: "Tên tài khoản",
+  columnHelper.accessor("name", {
+    name: "Tên",
     header: ({ column }) => (
       <div
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         className="flex items-center"
       >
-        Tên tài khoản
+        Tên
         <ArrowUpDown size={16} className="ml-2" />
       </div>
     ),
@@ -84,40 +60,34 @@ const columns = [
     ),
     cell: (info) => <div>{info.getValue()}</div>,
   }),
-  columnHelper.accessor("address", {
-    name: "Tỉnh thành",
+  columnHelper.accessor("amount", {
+    name: "Số tiền",
     header: ({ column }) => (
       <div
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         className="flex items-center"
       >
-        Tỉnh thành
+        Số tiền
         <ArrowUpDown size={16} className="ml-2" />
       </div>
     ),
-    cell: (info) => <div>{info.getValue()}</div>,
-  }),
-  columnHelper.accessor("role", {
-    name: "Vai trò",
-    header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
-        Vai trò
-        <ArrowUpDown size={16} className="ml-2" />
-      </div>
-    ),
-    cell: (info) => <div>{info.getValue()}</div>,
+    cell: (info) => {
+      const amount = parseFloat(info.getValue());
+      const formatted = new Intl.NumberFormat("vn-VN", {
+        style: "currency",
+        currency: "VND",
+      }).format(amount);
+      return <div className="font-medium">{formatted}</div>;
+    },
   }),
   columnHelper.accessor("status", {
     name: "Trạng thái",
     header: "Trạng thái",
-    cell: (info) =>  (
+    cell: (info) => (
       info.getValue() ? (
-        <Badge className="bg-green-600">Hoạt động</Badge>
+        <Badge className="bg-green-600 rounded">Hoạt động</Badge>
       ) : (
-        <Badge variant="destructive">Bị khóa</Badge>
+        <Badge variant="destructive" className="rounded">Bị khóa</Badge>
       )
     ),
   }),
@@ -126,7 +96,7 @@ const columns = [
     header: "Thao tác",
     enableHiding: false,
     cell: ({ row }) => {
-      const user = row.original;
+      const paymentHistory = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -137,16 +107,16 @@ const columns = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(JSON.stringify(user))}
+              onClick={() => navigator.clipboard.writeText(JSON.stringify(paymentHistory))}
             >
               Sao chép
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to={`/admin/user/${user.id}`}>Xem</Link>
+              <Link to={`/admin/payment-history/${paymentHistory.id}`}>Xem</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to={`/admin/user/update/${user.id}`}>Sửa</Link>
+              <Link to={`/admin/payment-history/update/${paymentHistory.id}`}>Sửa</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -155,30 +125,18 @@ const columns = [
   }),
 ];
 
-export function UserList() {
+export default function ViewUserList() {
   const [data, setData] = useState([
-    {
-      id: 1,
-      accountName: "admin",
-      phoneNumber: "0812497838",
-      address: "Admin Street, City",
-      status: true,
-      role: "ROLE_ADMIN",
-    },
-    {
-      id: 2,
-      accountName: "accountant",
-      phoneNumber: "0812497838",
-      address: "User Street, City",
-      status: true,
-      role: "ROLE_ACCOUNTANT",
-    },
+    { id: 1, name: "Nguyen Van A", phoneNumber: "0123456789", status: "Đã thanh toán", amount: "500000", color: "green", },
+    { id: 2, name: "Nguyen Van B", phoneNumber: "0123456789", status: "Chờ xác nhận", amount: "100000", color: "orange", },
+    { id: 3, name: "Nguyen Van C", phoneNumber: "0123456789", status: "Đã hủy", amount: "200000", color: "red" },
+    { id: 4, name: "Nguyen Van D", phoneNumber: "0123456789", status: "Đã hủy", amount: "750000", color: "red" },
   ]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        await userService.getUserList(setData);
+        //await orderService.getOrderListByUserId(user.id, setData);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }
@@ -213,14 +171,7 @@ export function UserList() {
   });
 
   return (
-    <div className="bg-[#f8fafc] m-5 p-5 border rounded-2xl">
-      <div className="flex justify-between items-center mb-3">
-        <h1 className="text-[#182F73] text-3xl font-bold">Danh sách người dùng</h1>
-        <div>
-          <Button variant="outline"><CloudDownload/>Xuất file</Button>
-          <Button className="bg-[#182F73] hover:bg-[#12245C] ms-3"><Plus/>Thêm mới</Button>
-        </div>
-      </div>
+    <div className="m-5">
       <div className="flex items-center pb-3">
         <Input
           placeholder="Tìm kiếm nhanh..."
@@ -265,7 +216,7 @@ export function UserList() {
                       ? null
                       : flexRender(
                         header.column.columnDef.header,
-                        header.getContext()
+                        header.getContext(),
                       )}
                   </TableHead>
                 ))}
@@ -283,7 +234,7 @@ export function UserList() {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
