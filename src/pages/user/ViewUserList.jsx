@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import UserList from "../../components/user/UserList.jsx";
+import React from "react";
+import { UserList } from "../../components/user/UserList.jsx";
 
 const ViewUserList = () => {
     return (
