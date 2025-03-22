@@ -1,6 +1,6 @@
 import {User, Bell, Settings, AlignLeft, CreditCard} from "lucide-react";
 import {Button} from "@/components/ui/button.jsx";
-import React from "react";
+import React, { useState } from "react";
 import {useAuth} from "@/providers/authProvider.jsx";
 import {useNavigate} from "react-router-dom";
 import toast from "react-hot-toast";
@@ -18,6 +18,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar.jsx";
 
 const Navbar = () => {
     const {setAuthData} = useAuth();
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
     // Logout function
     const handleLogout = () => {
@@ -47,26 +48,23 @@ const Navbar = () => {
                         </Avatar>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-52">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuLabel>{user.accountName}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
-                                Profile
+                                Tài khoản
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                Billing
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                Settings
+                                Cài đặt
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
+                        <DropdownMenuItem>Hỗ trợ</DropdownMenuItem>
                         <DropdownMenuItem>GitHub</DropdownMenuItem>
-                        <DropdownMenuItem>Support</DropdownMenuItem>
                         <DropdownMenuItem disabled>API</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleLogout}>
-                            Log out
+                            Đăng xuất
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

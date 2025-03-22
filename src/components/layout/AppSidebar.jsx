@@ -170,11 +170,7 @@ const AppSidebar = () => {
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton>
                         <item.icon />
-                        {item.url !== "#" ? (
-                          <Link to={item.url}>{item.title}</Link>
-                        ) : (
-                          <span>{item.title}</span>
-                        )}
+                        <span>{item.title}</span>
                         <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
                         <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
                       </SidebarMenuButton>
@@ -207,26 +203,26 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="">
+                  <Link to="#">
                     <Book />
                     <span>Tài liệu hướng dẫn</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="">
+                  <Link to="">
                     <BookText />
                     <span>Điều khoản dịch vụ</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="">
+                  <Link to="">
                     <BookText />
                     <span>Chính sách bải mật</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

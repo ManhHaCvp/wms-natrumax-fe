@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   createColumnHelper,
   flexRender,
@@ -10,10 +8,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-
+import { ArrowUpDown, ChevronDown, MoreHorizontal, CloudDownload, Plus} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -32,129 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const data = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-];
+import userService from "@/services/userService.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -181,38 +58,75 @@ const columns = [
     enableSorting: false,
     enableHiding: false,
   }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    cell: (info) => <div className="capitalize">{info.getValue()}</div>,
-  }),
-  columnHelper.accessor("email", {
+  columnHelper.accessor("accountName", {
+    name: "Tên tài khoản",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
+      <div
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
       >
-        Email
-        <ArrowUpDown />
-      </Button>
+        Tên tài khoản
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
     ),
-    cell: (info) => <div className="lowercase">{info.getValue()}</div>,
+    cell: (info) => <div>{info.getValue()}</div>,
   }),
-  columnHelper.accessor("amount", {
-    header: () => <div className="text-right">Amount</div>,
-    cell: (info) => {
-      const amount = parseFloat(info.getValue());
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
+  columnHelper.accessor("phoneNumber", {
+    name: "Số điện thoại",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
+      >
+        Số điện thoại
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
+    ),
+    cell: (info) => <div>{info.getValue()}</div>,
+  }),
+  columnHelper.accessor("address", {
+    name: "Tỉnh thành",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
+      >
+        Tỉnh thành
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
+    ),
+    cell: (info) => <div>{info.getValue()}</div>,
+  }),
+  columnHelper.accessor("role", {
+    name: "Vai trò",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
+      >
+        Vai trò
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
+    ),
+    cell: (info) => <div>{info.getValue()}</div>,
+  }),
+  columnHelper.accessor("status", {
+    name: "Trạng thái",
+    header: "Trạng thái",
+    cell: (info) =>  (
+      info.getValue() ? (
+        <Badge className="bg-green-600">Hoạt động</Badge>
+      ) : (
+        <Badge variant="destructive">Bị khóa</Badge>
+      )
+    ),
   }),
   columnHelper.display({
     id: "actions",
+    header: "Thao tác",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
+      const user = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -222,15 +136,18 @@ const columns = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(JSON.stringify(user))}
             >
-              Copy payment ID
+              Sao chép
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/admin/user/${user.id}`}>Xem</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/admin/user/update/${user.id}`}>Sửa</Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -239,8 +156,40 @@ const columns = [
 ];
 
 export function UserList() {
+  const [data, setData] = useState([
+    {
+      id: 1,
+      accountName: "admin",
+      phoneNumber: "0812497838",
+      address: "Admin Street, City",
+      status: true,
+      role: "ROLE_ADMIN",
+    },
+    {
+      id: 2,
+      accountName: "accountant",
+      phoneNumber: "0812497838",
+      address: "User Street, City",
+      status: true,
+      role: "ROLE_ACCOUNTANT",
+    },
+  ]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        await userService.getUserList(setData);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+
+    fetchUsers().catch(console.error); // Handles the promise properly
+  }, []);
+
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
@@ -264,21 +213,28 @@ export function UserList() {
   });
 
   return (
-    <div className="bg-[#f8fafc] border rounded-2xl m-4 p-4">
-      <h1 className="text-2xl font-bold mb-4 text-[#182F73]">Danh sách người dùng</h1>
-      <div className="flex items-center py-4">
+    <div className="bg-[#f8fafc] m-5 p-5 border rounded-2xl">
+      <div className="flex justify-between items-center mb-3">
+        <h1 className="text-[#182F73] text-3xl font-bold">Danh sách người dùng</h1>
+        <div>
+          <Button variant="outline"><CloudDownload/>Xuất file</Button>
+          <Button className="bg-[#182F73] hover:bg-[#12245C] ms-3"><Plus/>Thêm mới</Button>
+        </div>
+      </div>
+      <div className="flex items-center pb-3">
         <Input
-          placeholder="Filter emails..."
-          value={table.getColumn("email")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
+          placeholder="Tìm kiếm nhanh..."
+          value={globalFilter}
+          onChange={(e) => {
+            setGlobalFilter(e.target.value);
+            table.setGlobalFilter(e.target.value);
+          }}
+          className="w-full me-3"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
+              Cột <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -292,7 +248,7 @@ export function UserList() {
                   checked={column.getIsVisible()}
                   onCheckedChange={(value) => column.toggleVisibility(!!value)}
                 >
-                  {column.id}
+                  {column.columnDef.name}
                 </DropdownMenuCheckboxItem>
               ))}
           </DropdownMenuContent>
@@ -343,10 +299,10 @@ export function UserList() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+      <div className="flex items-center justify-end space-x-2 pt-3">
+        <div className="flex-1 text-sm text-muted-foreground"> Đã chọn&nbsp;
+          {table.getFilteredSelectedRowModel().rows.length} trên{" "}
+          {table.getFilteredRowModel().rows.length} hàng.
         </div>
         <div className="space-x-2">
           <Button
@@ -355,7 +311,7 @@ export function UserList() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            Trước
           </Button>
           <Button
             variant="outline"
@@ -363,7 +319,7 @@ export function UserList() {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            Sau
           </Button>
         </div>
       </div>
