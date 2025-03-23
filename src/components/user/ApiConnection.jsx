@@ -12,8 +12,7 @@ const ApiConnection = ({retailer, clientId, clientSecret}) => {
   };
 
   return (
-    <div className="m-5 p-5 border rounded-lg shadow-md bg-white">
-      <div className="text-base font-semibold mb-5">
+      <div className="text-base font-semibold m-5">
         <div className="flex items-center text-muted-foreground mb-3">
           <p className="w-32">Retailer</p>
           <p className="font-medium">{retailer}</p>
@@ -67,7 +66,6 @@ const ApiConnection = ({retailer, clientId, clientSecret}) => {
           </Button>
         </div>
       </div>
-    </div>
   );
 };
 

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import InputField from "@/components/common/InputField.jsx";
 import userService from "@/services/userService.jsx";
 
-export default function UpdateUser() {
+const UpdateUser = () => {
   const [user, setUser] = useState({
     id: 1,
     accountName: "admin",
@@ -45,7 +45,7 @@ export default function UpdateUser() {
         </div>
       </div>
 
-      <Card className="bg-[#f8fafc] mb-5">
+      <Card className="mb-5">
         <CardHeader>
           <CardTitle>Thông tin cơ bản</CardTitle>
         </CardHeader>
@@ -59,7 +59,7 @@ export default function UpdateUser() {
         </CardContent>
       </Card>
 
-      <Card className="bg-[#f8fafc]">
+      <Card>
         <CardHeader>
           <CardTitle>Kết nối API</CardTitle>
         </CardHeader>
@@ -72,3 +72,5 @@ export default function UpdateUser() {
     </div>
   );
 }
+
+export default UpdateUser;

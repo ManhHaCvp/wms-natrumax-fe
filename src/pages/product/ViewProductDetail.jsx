@@ -6,7 +6,7 @@ const handleEditProduct = (productId) => {
   navigate(`/admin/products/edit/${productId}`);
 };
 
-export default function ViewProductDetail() {
+const ViewProductDetail = () => {
   return (
     <div className="p-8">
       {/* Form Action */}
@@ -83,3 +83,5 @@ export default function ViewProductDetail() {
     </div>
   );
 }
+
+export default ViewProductDetail;

@@ -12,7 +12,7 @@ import Promotion from "@/components/user/Promotion";
 import ApiConnection from "@/components/user/ApiConnection";
 import userService from "@/services/userService";
 
-export default function ViewUserDetail() {
+const ViewUserDetail = () => {
   const [user, setUser] = useState({
     id: 1,
     accountName: "admin",
@@ -64,7 +64,7 @@ export default function ViewUserDetail() {
         </div>
       </div>
       <div className="flex">
-        <Card className="bg-[#f8fafc] w-2/6 h-fit p-5">
+        <Card className="w-2/6 h-fit p-5">
           <div className="flex justify-between items-center">
             <div>
               <div className="text-3xl font-semibold">{user.accountName}</div>
@@ -90,7 +90,7 @@ export default function ViewUserDetail() {
             </div>
             <div className="font-semibold">
               <p className="text-muted-foreground">Trạng thái</p>
-              <Badge className="bg-green-600 rounded">Hoạt động</Badge>
+              <Badge>Hoạt động</Badge>
             </div>
           </div>
         </Card>
@@ -103,27 +103,27 @@ export default function ViewUserDetail() {
             <TabsTrigger value="api-connection">Kết nối API</TabsTrigger>
           </TabsList>
           <TabsContent value="order-history">
-            <Card className="bg-[#f8fafc]">
+            <Card>
               <PaymentHistory />
             </Card>
           </TabsContent>
           <TabsContent value="wallet">
-            <Card className="bg-[#f8fafc]">
+            <Card>
               <Wallet />
             </Card>
           </TabsContent>
           <TabsContent value="commission">
-            <Card className="bg-[#f8fafc]">
+            <Card>
               <Commission />
             </Card>
           </TabsContent>
           <TabsContent value="promotion">
-            <Card className="bg-[#f8fafc]">
+            <Card>
               <Promotion />
             </Card>
           </TabsContent>
           <TabsContent value="api-connection">
-            <Card className="bg-[#f8fafc]">
+            <Card>
               <ApiConnection retailer={user.retailer} clientId={user.clientId} clientSecret={user.clientSecret} />
             </Card>
           </TabsContent>
@@ -132,3 +132,5 @@ export default function ViewUserDetail() {
     </div>
   );
 }
+
+export default ViewUserDetail;

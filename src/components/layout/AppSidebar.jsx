@@ -50,7 +50,7 @@ const AppSidebar = () => {
           },
           {
             title: "Vai trò",
-            url: "/admin/role",
+            url: "/admin/roles",
           },
         ],
       },
@@ -64,8 +64,8 @@ const AppSidebar = () => {
             url: "/admin/products",
           },
           {
-            title: "Loại hàng hóa",
-            url: "/admin/category",
+            title: "Nhóm hàng",
+            url: "/admin/categories",
           },
           {
             title: "Kho",
@@ -84,7 +84,7 @@ const AppSidebar = () => {
           },
           {
             title: "Giảm giá",
-            url: "/admin/discount",
+            url: "/admin/discounts",
           },
         ],
       },

@@ -85,9 +85,9 @@ const columns = [
     header: "Trạng thái",
     cell: (info) => (
       info.getValue() ? (
-        <Badge className="bg-green-600 rounded">Hoạt động</Badge>
+        <Badge>Hoạt động</Badge>
       ) : (
-        <Badge variant="destructive" className="rounded">Bị khóa</Badge>
+        <Badge variant="destructive">Bị khóa</Badge>
       )
     ),
   }),

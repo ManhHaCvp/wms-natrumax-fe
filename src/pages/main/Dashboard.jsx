@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import TopProductsSold from "../../components/product/TopProductsSold.jsx";
 
 // Date Picker Component
-function DatePickerDemo({ date, setDate }) {
+const DatePickerDemo = ({ date, setDate }) => {
   return (
     <Popover>
       <PopoverTrigger asChild>

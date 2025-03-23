@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button.jsx";
 import { Input } from "@/components/ui/input.jsx";
 import { Card, CardContent } from "@/components/ui/card.jsx";
 
-export default function UpdateProduct() {
+const UpdateProduct = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleImageChange = (event) => {
@@ -80,3 +80,5 @@ export default function UpdateProduct() {
     </div>
   );
 }
+
+export default UpdateProduct;

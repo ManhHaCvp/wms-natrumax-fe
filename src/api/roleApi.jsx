@@ -11,4 +11,4 @@ const roleApi = {
   updateRole: (roleRequest) => apiClient.put(`${BASE_URL}/v1/roles/${roleRequest.id}`, roleRequest),
 }
 
-export default role
+export default roleApi;

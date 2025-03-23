@@ -9,6 +9,7 @@ import HomePage from "@/pages/main/HomePage";
 import ViewUserList from "@/pages/user/ViewUserList";
 import ViewUserDetail from "@/pages/user/ViewUserDetail";
 import UpdateUser from "@/pages/user/UpdateUser";
+import ChangePassword from "@/pages/user/ChangePassword.jsx";
 import ViewRoleList from "@/pages/role/ViewRoleList";
 import ViewProductList from "@/pages/product/ViewProductList";
 import ViewProductDetail from "@/pages/product/ViewProductDetail";
@@ -19,10 +20,10 @@ import UpdateCategory from "@/pages/category/UpdateCategory.jsx";
 import ViewOrderList from "@/pages/order/ViewOrderList";
 import ViewOrderDetail from "@/pages/order/ViewOrderDetail";
 import CreateOrder from "@/pages/order/CreateOrder.jsx";
+import ViewDiscountList from "@/pages/discount/ViewDiscountList.jsx";
 import ViewWarehouseList from "@/pages/warehouse/ViewWarehouseList";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "@/pages/error/ErrorPage";
 import ComingSoonPage from "@/pages/error/ComingSoonPage";
-import ChangePassword from "@/pages/user/ChangePassword.jsx";
 
 const Routes = () => {
   const { token, user } = useAuth();
@@ -54,7 +55,7 @@ const Routes = () => {
       { path: "/admin/user/change-password", element: <ChangePassword /> },
 
       //Role
-      { path: "/admin/role", element: <ViewRoleList /> },
+      { path: "/admin/roles", element: <ViewRoleList /> },
 
       //Product
       { path: "/admin/products", element: <ViewProductList /> },
@@ -62,7 +63,7 @@ const Routes = () => {
       { path: "/admin/products/update/:id", element: <UpdateProduct /> },
 
       //Category
-      { path: "/admin/category", element: <ViewCategoryList /> },
+      { path: "/admin/categories", element: <ViewCategoryList /> },
       { path: "/admin/category/create", element: <CreateCategory /> },
       { path: "/admin/category/update/:id", element: <UpdateCategory /> },
 
@@ -70,6 +71,9 @@ const Routes = () => {
       { path: "/admin/orders", element: <ViewOrderList /> },
       { path: "/admin/orders/:id", element: <ViewOrderDetail /> },
       { path: "/admin/orders/create", element: <CreateOrder /> },
+
+      //Discounts
+      { path: "/admin/discounts", element: <ViewDiscountList /> },
 
       //Warehouse
       { path: "/admin/warehouses", element: <ViewWarehouseList /> },

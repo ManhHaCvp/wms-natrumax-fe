@@ -18,7 +18,7 @@ const ChangePassword = () => {
         <Button variant="default" content=""><Check />Lưu</Button>
       </div>
 
-      <Card className="bg-[#f8fafc]">
+      <Card>
         <CardHeader>
           <p className="text-foreground text-lg font-semibold">Nhập mật khẩu có tối thiểu 8 ký tự bao gồm số, chữ hoa,
             chữ thường.</p>

@@ -30,7 +30,7 @@ const userService = {
       const response = await userApi.getUserById(id);
       const data = response.data;
       setUser({
-        name: data.accountName,
+        accountName: data.accountName,
         role: data.role,
         phoneNumber: data.phoneNumber,
         email: data.email,
