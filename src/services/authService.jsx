@@ -1,5 +1,5 @@
-import authApi from "@/api/authApi";
 import toast from "react-hot-toast";
+import authApi from "@/api/authApi";
 
 const authService = {
   async loginRequestOtp(phoneNumber, password, handleShowOtpForm) {

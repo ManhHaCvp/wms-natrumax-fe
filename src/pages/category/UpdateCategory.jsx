@@ -1,7 +1,7 @@
+import { Save } from "lucide-react";
 import { Input } from "@/components/ui/input.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Card, CardContent } from "@/components/ui/card.jsx";
-import { Save } from "lucide-react";
 
 const UpdateCategory = () => {
   return (

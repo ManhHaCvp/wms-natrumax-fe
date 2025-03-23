@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import ProductList from "@/components/product/ProductList.jsx";
 
 const ViewProductList = () => {

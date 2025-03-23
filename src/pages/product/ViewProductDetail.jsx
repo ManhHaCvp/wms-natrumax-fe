@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card.jsx";
-import { Button } from "@/components/ui/button.jsx";
 import { Pencil, Ban } from "lucide-react";
+import { Button } from "@/components/ui/button.jsx";
+import { Card, CardContent } from "@/components/ui/card.jsx";
 
 const handleEditProduct = (productId) => {
   navigate(`/admin/products/edit/${productId}`);

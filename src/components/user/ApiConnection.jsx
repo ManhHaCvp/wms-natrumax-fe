@@ -1,18 +1,70 @@
-import React from "react";
+import React, { useState } from "react";
+import { Eye, EyeOff, Copy } from "lucide-react";
+import toast from 'react-hot-toast';
+import { Button } from "@/components/ui/button";
 
-const ApiConnection = () => {
+const ApiConnection = ({retailer, clientId, clientSecret}) => {
+  const [isSecretVisible, setIsSecretVisible] = useState(false);
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard!");
+  };
+
   return (
-    <div className="m-5">
-      <div className="flex text-base font-semibold mb-5">
-        <div className="text-muted-foreground me-7">
-          <p className="mb-3">Retailer</p>
-          <p className="mb-3">Client ID</p>
-          <p>Client Secret</p>
+    <div className="m-5 p-5 border rounded-lg shadow-md bg-white">
+      <div className="text-base font-semibold mb-5">
+        <div className="flex items-center text-muted-foreground mb-3">
+          <p className="w-32">Retailer</p>
+          <p className="font-medium">{retailer}</p>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-2"
+            onClick={() => copyToClipboard(retailer)}
+          >
+            <Copy size={16} />
+          </Button>
         </div>
-        <div>
-          <p className="mb-3">haiyenhd</p>
-          <p className="mb-3">ba477a2c4a9f-4be8-9996-f7cdf2b46119</p>
-          <p>7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119</p>
+        <div className="flex items-center mb-3">
+          <p className="w-32 text-muted-foreground">Client ID</p>
+          <p className="font-medium">{clientId}</p>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-2"
+            onClick={() =>
+              copyToClipboard(clientSecret)
+            }
+          >
+            <Copy size={16} />
+          </Button>
+        </div>
+        <div className="flex items-center">
+          <p className="w-32 text-muted-foreground">Client Secret</p>
+          <p className="font-medium">
+            {isSecretVisible
+              ? clientSecret
+              : "••••••••••••••••••••••••••••••••••••••••••••••••••••••"}
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-2"
+            onClick={() => setIsSecretVisible(!isSecretVisible)}
+          >
+            {isSecretVisible ? <EyeOff size={16} /> : <Eye size={16} />}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-2"
+            onClick={() =>
+              copyToClipboard(clientSecret)
+            }
+          >
+            <Copy size={16} />
+          </Button>
         </div>
       </div>
     </div>

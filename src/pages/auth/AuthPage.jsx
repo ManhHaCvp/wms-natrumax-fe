@@ -1,10 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { BASE_URL } from "@/utils/constants.jsx";
 import { useAuth } from "@/providers/authProvider.jsx";
 import authService from "@/services/authService";
 

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-import {Button} from "@/components/ui/button"
 import {Copy} from "lucide-react"
 import toast from 'react-hot-toast';
+import {Button} from "@/components/ui/button"
 
 const HomePage = () => {
 

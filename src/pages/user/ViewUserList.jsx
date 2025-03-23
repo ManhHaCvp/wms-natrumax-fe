@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, CloudDownload, Plus} from "lucide-react";
+import { Input } from "@/components/ui/input.jsx";
+import { Checkbox } from "@/components/ui/checkbox.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { Badge } from "@/components/ui/badge.jsx";
+import { Card } from "@/components/ui/card.jsx";
 import {
   createColumnHelper,
   flexRender,
@@ -8,11 +15,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, CloudDownload, Plus} from "lucide-react";
-import { Button } from "@/components/ui/button.jsx";
-import { Checkbox } from "@/components/ui/checkbox.jsx";
-import { Badge } from "@/components/ui/badge.jsx";
-import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -21,7 +23,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.jsx";
-import { Input } from "@/components/ui/input.jsx";
 import {
   Table,
   TableBody,
@@ -31,7 +32,6 @@ import {
   TableRow,
 } from "@/components/ui/table.jsx";
 import userService from "@/services/userService.jsx";
-import { Card } from "@/components/ui/card.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -218,7 +218,7 @@ export default function ViewUserList() {
         <h1 className="text-[#182F73] text-3xl font-bold">Danh sách người dùng</h1>
         <div>
           <Button variant="outline"><CloudDownload/>Xuất file</Button>
-          <Button className="bg-[#182F73] hover:bg-[#12245C] ms-3"><Plus/>Thêm mới</Button>
+          <Button variant="default" className="ms-3"><Plus/>Thêm mới</Button>
         </div>
       </div>
       <div className="flex items-center pb-3">

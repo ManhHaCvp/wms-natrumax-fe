@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { DollarSign, Users, Receipt, Calendar as CalendarIcon, ArrowUp, ArrowDown } from "lucide-react";
 import { Line, Pie } from "react-chartjs-2";
 import "chart.js/auto";
 import { parseISO, getMonth, getYear, format } from "date-fns";
-import { DollarSign, Users, Receipt, Calendar as CalendarIcon, ArrowUp, ArrowDown } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Calendar } from "@/components/ui/calendar.jsx";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover.jsx";
 import TopProductsSold from "../../components/product/TopProductsSold.jsx";
 
 // Date Picker Component

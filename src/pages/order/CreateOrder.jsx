@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card.jsx";
-import { Badge } from "@/components/ui/badge.jsx";
-import { Button } from "@/components/ui/button.jsx";
 import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button.jsx";
+import { Card, CardContent } from "@/components/ui/card.jsx";
 
 const CreateOrder = () => {
   const [order, setOrder] = useState({

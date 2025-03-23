@@ -1,47 +1,74 @@
-import { Input } from "@/components/ui/input";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Check, Ban } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import InputField from "@/components/common/InputField.jsx";
+import userService from "@/services/userService.jsx";
 
 export default function UpdateUser() {
-    return (
-        <div className="w-[85vw] m-5 p-5 bg-gray-100 rounded-lg">
-            <h1 className="text-2xl font-bold mb-6 ml-4 text-[#182F73]">Sửa thông tin người dùng</h1>
+  const [user, setUser] = useState({
+    id: 1,
+    accountName: "admin",
+    phoneNumber: "0812497838",
+    email: "admin@example.com",
+    address: "Admin Street, City",
+    province: "Hai Duong",
+    status: true,
+    role: "ROLE_ADMIN",
+    retailer: "haiyenhd",
+    clientId: "ba477a2c4a9f-4be8-9996-f7cdf2b46119",
+    clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
+  });
 
-            <Card className="mb-6 bg-gray-50 m-4">
-                <CardContent className="grid grid-cols-2 gap-6 p-6">
-                    <InputField label="Tên tài khoản" placeholder="Tên tài khoản" />
-                    <InputField label="Role" value="Admin" disabled />
-                    <InputField label="Số điện thoại" placeholder="0123456789" />
-                    <InputField label="Email" placeholder="example@gmail.com" />
-                    <InputField label="Địa chỉ" placeholder="Địa chỉ..." className="col-span-2" />
-                    <InputField label="Thành phố/Huyện" placeholder="Tp. Hải Dương" />
-                    <InputField label="Tỉnh" placeholder="Hải Dương" />
-                </CardContent>
-            </Card>
+  const { id } = useParams("id");
 
-            <Card className="mb-6 bg-gray-50 m-4">
-                <CardContent className="grid grid-cols-2 gap-6 p-6">
-                    <InputField label="Retailer" placeholder="haiyenhd" />
-                    <InputField label="Client ID" placeholder="ba477a2c..." />
-                    <InputField label="Client Secret" placeholder="7FFDE6E9..." className="col-span-2" />
-                </CardContent>
-            </Card>
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        await userService.getUserById(id, setUser);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
 
-            <div className="flex justify-end gap-4">
-                <Button variant="outline" className="text-red-600 border-red-600">
-                    Vô hiệu hóa
-                </Button>
-                <Button>Lưu</Button>
-            </div>
+    fetchUserData().catch(console.error);
+  }, []);
+
+  return (
+    <div className="flex flex-col m-5">
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="text-[#182F73] text-3xl font-bold">Sửa thông tin người dùng</h1>
+        <div>
+          <Button variant="default" content=""><Check />Lưu</Button>
+          <Button variant="destructive" className="ms-3"><Ban />Vô hiệu hóa</Button>
         </div>
-    );
-}
+      </div>
 
-function InputField({ label, placeholder, value, disabled, className }) {
-    return (
-        <div className={className}>
-            <label className="block text-sm font-medium mb-2">{label}</label>
-            <Input placeholder={placeholder} value={value} disabled={disabled} className="w-full" />
-        </div>
-    );
+      <Card className="bg-[#f8fafc] mb-5">
+        <CardHeader>
+          <CardTitle>Thông tin cơ bản</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-3">
+          <InputField label="Tên tài khoản" value={user.accountName} onChange={(e) => setUser({ ...user, accountName: e.target.value })} />
+          <InputField label="Role" value={user.role} onChange={(e) => setUser({ ...user, role: e.target.value })} />
+          <InputField label="Số điện thoại" value={user.phoneNumber} onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })} />
+          <InputField label="Email" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
+          <InputField label="Địa chỉ" value={user.address} onChange={(e) => setUser({ ...user, address: e.target.value })} />
+          <InputField label="Tỉnh" value={user.province} onChange={(e) => setUser({ ...user, province: e.target.value })} />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-[#f8fafc]">
+        <CardHeader>
+          <CardTitle>Kết nối API</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-3">
+          <InputField label="Retailer" value={user.retailer} onChange={(e) => setUser({ ...user, retailer: e.target.value })} />
+          <InputField label="Client ID" value={user.clientId} onChange={(e) => setUser({ ...user, clientId: e.target.value })} />
+          <InputField label="Client Secret" value={user.clientSecret} onChange={(e) => setUser({ ...user, clientSecret: e.target.value })} className="col-span-2" />
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

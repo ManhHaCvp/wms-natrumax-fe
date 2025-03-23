@@ -1,7 +1,7 @@
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Clock3, UserRoundCog, Package, ShoppingCart, Book, BookText, Banknote, Tags, Users, Warehouse } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion.jsx";
-import { Link, useNavigate } from "react-router-dom";
 import { checkUserRole } from "@/utils/checkUserRole.jsx";
 
 const SideBar = () => {

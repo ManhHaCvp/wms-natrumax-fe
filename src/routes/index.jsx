@@ -22,6 +22,7 @@ import CreateOrder from "@/pages/order/CreateOrder.jsx";
 import ViewWarehouseList from "@/pages/warehouse/ViewWarehouseList";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "@/pages/error/ErrorPage";
 import ComingSoonPage from "@/pages/error/ComingSoonPage";
+import ChangePassword from "@/pages/user/ChangePassword.jsx";
 
 const Routes = () => {
   const { token, user } = useAuth();
@@ -50,6 +51,7 @@ const Routes = () => {
       { path: "/admin/users", element: <ViewUserList /> },
       { path: "/admin/user/:id", element: <ViewUserDetail /> },
       { path: "/admin/user/update/:id", element: <UpdateUser /> },
+      { path: "/admin/user/change-password", element: <ChangePassword /> },
 
       //Role
       { path: "/admin/role", element: <ViewRoleList /> },

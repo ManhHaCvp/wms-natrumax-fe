@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Ban, Pencil } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PaymentHistory from "@/components/user/OrderHistory";
 import Wallet from "@/components/user/Wallet";
 import Commission from "@/components/user/Commission";
 import Promotion from "@/components/user/Promotion";
 import ApiConnection from "@/components/user/ApiConnection";
 import userService from "@/services/userService";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 export default function ViewUserDetail() {
   const [user, setUser] = useState({
@@ -20,8 +19,12 @@ export default function ViewUserDetail() {
     phoneNumber: "0812497838",
     email: "admin@example.com",
     address: "Admin Street, City",
+    province: "Hai Duong",
     status: true,
     role: "ROLE_ADMIN",
+    retailer: "haiyenhd",
+    clientId: "ba477a2c4a9f-4be8-9996-f7cdf2b46119",
+    clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
   });
 
   const { id } = useParams("id");
@@ -40,8 +43,8 @@ export default function ViewUserDetail() {
 
   const navigate = useNavigate();
 
-  const goBack = () => {
-    navigate(`/admin/users`);
+  const handleNavigate = (url) => {
+    navigate(url);
   };
 
   const handleChange = (e) => {
@@ -67,7 +70,7 @@ export default function ViewUserDetail() {
               <div className="text-3xl font-semibold">{user.accountName}</div>
               <CardDescription>{user.role}</CardDescription>
             </div>
-            <Button variant="outline"><Pencil /></Button>
+            <Button variant="outline"><Link to={`/admin/user/update/${user.id}`}><Pencil /></Link></Button>
           </div>
           <div className="space-y-2 pt-7">
             <p className="font-semibold pb-3">
@@ -83,7 +86,7 @@ export default function ViewUserDetail() {
               <p className="font-semibold pb-3">
                 <span className="text-muted-foreground">Mật khẩu</span><br/>*******
               </p>
-              <Link to="/admin" className="text-[#182F73] hover:text-[#12245C]">Thay đổi</Link>
+              <Link to="/admin/user/change-password" className="text-[#182F73] hover:text-[#12245C]">Thay đổi</Link>
             </div>
             <div className="font-semibold">
               <p className="text-muted-foreground">Trạng thái</p>
@@ -121,7 +124,7 @@ export default function ViewUserDetail() {
           </TabsContent>
           <TabsContent value="api-connection">
             <Card className="bg-[#f8fafc]">
-              <ApiConnection />
+              <ApiConnection retailer={user.retailer} clientId={user.clientId} clientSecret={user.clientSecret} />
             </Card>
           </TabsContent>
         </Tabs>

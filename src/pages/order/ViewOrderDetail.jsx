@@ -1,8 +1,8 @@
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card.jsx";
+import { Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
-import { Pencil } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card.jsx";
 
 const ViewOrderDetail = () => {
   const order = {
