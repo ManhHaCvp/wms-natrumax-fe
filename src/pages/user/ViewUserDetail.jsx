@@ -58,9 +58,10 @@ const ViewUserDetail = () => {
   return (
     <div className="flex flex-col m-5">
       <div className="flex justify-between items-center mb-5">
-        <h1 className="text-[#182F73] text-3xl font-bold">Danh sách người dùng</h1>
+        <h1 className="text-[#182F73] text-3xl font-bold">Thông tin người dùng</h1>
         <div>
-          <Button variant="destructive"><Ban />Vô hiệu hóa</Button>
+          <Button asChild><Link to={`/admin/user/update/${user.id}`}><Pencil />Sửa</Link></Button>
+          <Button variant="destructive" className="ms-3"><Ban />Vô hiệu hóa</Button>
         </div>
       </div>
       <div className="flex">
@@ -70,27 +71,31 @@ const ViewUserDetail = () => {
               <div className="text-3xl font-semibold">{user.accountName}</div>
               <CardDescription>{user.role}</CardDescription>
             </div>
-            <Button variant="outline"><Link to={`/admin/user/update/${user.id}`}><Pencil /></Link></Button>
+            <Button variant="outline" asChild><Link to={`/admin/user/update/${user.id}`}><Pencil /></Link></Button>
           </div>
-          <div className="space-y-2 pt-7">
-            <p className="font-semibold pb-3">
-              <span className="text-muted-foreground">Số điện thoại</span><br/>{user.phoneNumber}
-            </p>
-            <p className="font-semibold pb-3">
-              <span className="text-muted-foreground">Email</span><br/>{user.email}
-            </p>
-            <p className="font-semibold pb-3">
-              <span className="text-muted-foreground">Địa chỉ</span><br/>{user.address}
-            </p>
+          <div className="font-semibold grid grid-cols-1 gap-5 mt-7">
+            <div>
+              <p className="text-muted-foreground">Số điện thoại</p>{user.phoneNumber}
+            </div>
+            <div>
+              <p className="text-muted-foreground">Email</p>{user.email}
+            </div>
+            <div>
+              <p className="text-muted-foreground">Địa chỉ</p>{user.address}
+            </div>
             <div className="flex justify-between items-center">
-              <p className="font-semibold pb-3">
-                <span className="text-muted-foreground">Mật khẩu</span><br/>*******
-              </p>
+              <div>
+                <p className="text-muted-foreground">Mật khẩu</p>*******
+              </div>
               <Link to="/admin/user/change-password" className="text-[#182F73] hover:text-[#12245C]">Thay đổi</Link>
             </div>
-            <div className="font-semibold">
+            <div>
               <p className="text-muted-foreground">Trạng thái</p>
-              <Badge>Hoạt động</Badge>
+              {user.status ? (
+                <Badge>Hoạt động</Badge>
+              ) : (
+                <Badge variant="destructive">Bị khóa</Badge>
+              )}
             </div>
           </div>
         </Card>

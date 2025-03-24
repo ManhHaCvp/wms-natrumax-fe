@@ -59,8 +59,8 @@ const Routes = () => {
 
       //Product
       { path: "/admin/products", element: <ViewProductList /> },
-      { path: "/admin/products/:id", element: <ViewProductDetail /> },
-      { path: "/admin/products/update/:id", element: <UpdateProduct /> },
+      { path: "/admin/product/:id", element: <ViewProductDetail /> },
+      { path: "/admin/product/update/:id", element: <UpdateProduct /> },
 
       //Category
       { path: "/admin/categories", element: <ViewCategoryList /> },
@@ -69,8 +69,8 @@ const Routes = () => {
 
       //Orders
       { path: "/admin/orders", element: <ViewOrderList /> },
-      { path: "/admin/orders/:id", element: <ViewOrderDetail /> },
-      { path: "/admin/orders/create", element: <CreateOrder /> },
+      { path: "/admin/order/:id", element: <ViewOrderDetail /> },
+      { path: "/admin/order/create", element: <CreateOrder /> },
 
       //Discounts
       { path: "/admin/discounts", element: <ViewDiscountList /> },

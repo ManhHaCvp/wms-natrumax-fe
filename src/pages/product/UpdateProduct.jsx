@@ -1,84 +1,83 @@
-import { useState } from "react";
-import { Ban, Upload, Save } from "lucide-react";
+import React, { useState } from "react";
+import { Ban, Upload, Check } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
-import { Input } from "@/components/ui/input.jsx";
-import { Card, CardContent } from "@/components/ui/card.jsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
+import InputField from "@/components/common/InputField.jsx";
 
 const UpdateProduct = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [product, setProduct] = useState({
+    id: 1,
+    image: "https://natrumax.com/wp-content/uploads/2020/03/curcumin.jpg",
+    barcode: "8938540687295",
+    misaCode: "NA.8",
+    name: "Natrumax Curcumin 800gr",
+    category: "Sản phẩm cũ + ngũ cốc 200gr",
+    unit: "Hộp",
+    basePrice: 850000,
+    discount: 40,
+    stock: 100,
+    quantityToGetPromotion: 0,
+    description: "Natrumax Curcumin 800gr",
+    status: true,
+  });
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSelectedImage(reader.result);
+        setProduct({ ...product, image: reader.result });
       };
       reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        {/* Form Action */}
-        <h1 className="text-2xl font-bold text-[#182F73]">Sửa thông tin hàng hóa</h1>
-        <div className="flex gap-4">
-          <Button className="flex items-center gap-2 bg-[#1A2B68] text-white rounded-lg">
-            <Save size={16} /> Lưu
-          </Button>
-          <Button className="flex items-center gap-2 bg-red-600 text-white rounded-lg">
-            <Ban size={16} /> Vô hiệu hóa
-          </Button>
+    <div className="m-5">
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="text-[#182F73] text-3xl font-bold">Thông tin hàng hóa</h1>
+        <div>
+          <Button><Check />Lưu</Button>
+          <Button variant="destructive" className="ms-3"><Ban />Vô hiệu hóa</Button>
         </div>
       </div>
 
-      {/* File reader Imange */}
-      <div className="grid grid-cols-3 gap-6">
-        <Card className="col-span-1 flex flex-col items-center justify-center p-6">
-          <div className="w-80 h-80 bg-gray-200 rounded-md mb-4">{selectedImage && <img src={selectedImage} alt="Product" className="w-full h-full object-cover rounded-md" />}</div>
+      <div className="flex">
+        <Card className="flex flex-col items-center justify-center w-fit h-fit p-5">
+          <div className="bg-sidebar-border w-80 h-80 rounded mb-3">
+            {product.image &&
+              <img src={product.image} alt="Product" className="w-full h-full object-cover rounded-md" />
+            }
+          </div>
           <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="upload-image" />
-          <label htmlFor="upload-image" className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer flex items-center gap-2">
-            <Upload size={16} /> Tải ảnh lên
-          </label>
+          <Button asChild>
+            <label htmlFor="upload-image">
+              <Upload /> Tải ảnh lên
+            </label>
+          </Button>
         </Card>
 
-        {/* Form Informaion */}
-        <Card className="col-span-2 p-6">
-          <CardContent className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-gray-500">Tên hàng hóa</p>
-              <Input defaultValue="Tên hàng hóa" />
-            </div>
-            <div>
-              <p className="text-gray-500">Mã hàng</p>
-              <Input defaultValue="8938540687462" disabled />
-            </div>
-            <div>
-              <p className="text-gray-500">Mã MISA</p>
-              <Input defaultValue="NA.01" />
-            </div>
-            <div>
-              <p className="text-gray-500">Chiết khấu</p>
-              <Input defaultValue="40%" />
-            </div>
-            <div>
-              <p className="text-gray-500">Khuyến mãi (Số lượng mua để nhận khuyến mãi)</p>
-              <Input defaultValue="6" />
-            </div>
-            <div>
-              <p className="text-gray-500">Nhóm hàng</p>
-              <Input defaultValue="SP Genumil" />
-            </div>
-            <div>
-              <p className="text-gray-500">Đơn vị</p>
-              <Input defaultValue="Hộp" />
-            </div>
+        {/* Form product Information */}
+        <Card className="w-full h-fit ms-5">
+          <CardHeader>
+            <CardTitle>Thông tin cơ bản</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-3">
+            <InputField label="Tên hàng hóa" className="col-span-2" value={product.name} onChange={(e) => setProduct({ ...product, name: e.target.value })} />
+            <InputField label="Mã hàng" value={product.barcode} onChange={(e) => setProduct({ ...product, barcode: e.target.value })} />
+            <InputField label="Mã MISA" value={product.misaCode} onChange={(e) => setProduct({ ...product, misaCode: e.target.value })} />
+            <InputField label="Nhóm hàng" value={product.category} onChange={(e) => setProduct({ ...product, category: e.target.value })} />
+            <InputField label="Đơn vị" value={product.unit} onChange={(e) => setProduct({ ...product, unit: e.target.value })} />
+            <InputField label="Giá gốc" value={product.basePrice} onChange={(e) => setProduct({ ...product, basePrice: e.target.value })} />
+            <InputField label="Chiết khấu" value={product.discount} onChange={(e) => setProduct({ ...product, discount: e.target.value })} />
+            <InputField label="Số lượng" value={product.stock} onChange={(e) => setProduct({ ...product, stock: e.target.value })} />
+            <InputField label="Khuyến mại (Số lượng mua để nhận khuyến mại)" value={product.quantityToGetPromotion} onChange={(e) => setProduct({ ...product, quantityToGetPromotion: e.target.value })} />
+            <InputField label="Mô tả" className="col-span-2" value={product.description} onChange={(e) => setProduct({ ...product, description: e.target.value })} />
           </CardContent>
         </Card>
       </div>
     </div>
   );
-}
+};
 
 export default UpdateProduct;
