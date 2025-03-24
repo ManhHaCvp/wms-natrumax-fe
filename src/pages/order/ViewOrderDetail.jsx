@@ -1,21 +1,36 @@
-import React from "react";
-import { Pencil } from "lucide-react";
+import React, { useState } from "react";
+import { Accessibility, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
-import { Card, CardContent } from "@/components/ui/card.jsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
+import { Link } from "react-router-dom";
+import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table.jsx";
 
 const ViewOrderDetail = () => {
-  const order = {
+  const [order, setOrder] = useState({
+    id: 1,
     items: [
       { id: 1, code: "112", name: "Tên hàng hóa", price: 800000, quantity: 20 },
       { id: 2, code: "113", name: "Tên hàng hóa", price: 800000, quantity: 20 },
       { id: 3, code: "114", name: "Tên hàng hóa", price: 800000, quantity: 20 },
     ],
-    totalPrice: 200000000,
-    discount: 200000,
-    subtotal: 199800000,
-    status: "Đã thanh toán",
-    activities: [{ title: "Đã giao" }, { title: "Đang giao" }, { title: "Đã xác nhận" }],
+    discount: 0.2,
+    paymentStatus: "Đã thanh toán",
+    orderStatus: "Đã giao",
+    activities: [
+      { id: 1, title: "Đã giao", dateTime: "02:00 PM 20/2/2025" },
+      { id: 2, title: "Đang giao", dateTime: "02:00 PM 20/2/2025" },
+      { id: 3, title: "Đã xác nhận", dateTime: "02:00 PM 20/2/2025" },
+    ],
     customer: {
       name: "Chi nhánh 107",
       phone: "0123456789",
@@ -23,109 +38,150 @@ const ViewOrderDetail = () => {
       saleOrderCode: "BH001",
       warehouseCode: "XH001",
     },
-  };
+  });
+
+  const totalPrice = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const discountAmount = totalPrice * order.discount;
 
   return (
-    <div className="p-6 w-full mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[#182F73]">Thông tin đơn hàng</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate(`/admin/orders/edit/${order.id}`)} className="bg-[#182F73] hover:bg-gray-50 py-1 px-2 mr-2 flex text-white items-center">
-            <Pencil className="h-5 w-5 mt-1" /> Sửa
-          </Button>
-          {/* <Button variant="destructive">Cập nhật trạng thái</Button> */}
+    <div className="flex flex-col space-y-5 m-5">
+      <div className="flex justify-between items-center">
+        <h1 className="text-[#182F73] text-3xl font-bold">Thông tin đơn hàng</h1>
+        <div className="space-x-3">
+          <Button variant="outline"><Accessibility />Đổi trạng thái</Button>
+          <Button asChild><Link to={`/admin/order/update/${order.id}`}><Pencil />Sửa</Link></Button>
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2 space-y-4">
+      <div className="flex space-x-5">
+        <div className="w-full flex flex-col space-y-5">
           {/* Thong tin don hang */}
-          <Card className="bg-[#f8fafc] rounded-lg shadow-sm">
-            <CardContent className="p-4">
-              <h2 className="text-xl font-bold mb-0">Hàng đặt</h2>
-              <div className="divide-y divide-gray-200">
-                {order.items.map((item, index) => (
-                  <div key={item.id} className="flex justify-between items-center px-4 py-3 bg-[#f8fafc]">
-                    <span className="text-gray-800">{item.code}</span>
-                    <span className="text-gray-800">{item.name}</span>
-                    <span className="text-gray-800">{item.price.toLocaleString()} VND</span>
-                    <span className="text-gray-800">{item.quantity}</span>
-                  </div>
-                ))}
+          <Card>
+            <CardHeader>
+              <CardTitle>Hàng đặt</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[100px]">Mã hàng</TableHead>
+                      <TableHead>Tên hàng</TableHead>
+                      <TableHead>Giá tiền</TableHead>
+                      <TableHead>Số lượng</TableHead>
+                      <TableHead className="text-right">Tổng</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {order.items.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{item.code}</TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.price.toLocaleString()} VND</TableCell>
+                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell
+                          className="text-right">{(item.price * item.quantity).toLocaleString()} VND</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TableCell colSpan={4}>Tổng số tiền</TableCell>
+                      <TableCell className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
+                    </TableRow>
+                  </TableFooter>
+                </Table>
               </div>
             </CardContent>
           </Card>
 
           {/* Thanh toan */}
-          <Card className="bg-[#f8fafc]">
-            <CardContent className="p-4">
-              <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
-                Thanh toán <Badge className="bg-green-500 text-white">{order.status}</Badge>
-              </h2>
-              <div className="flex justify-between text-gray-700 mb-1 font-semibold">
-                <span>Tổng tiền hàng</span>
-                <span>{order.totalPrice.toLocaleString()} VND</span>
-              </div>
-              <div className="flex justify-between text-red-500 mb-3 font-semibold">
-                <span>Giảm giá</span>
-                <span>-{order.discount.toLocaleString()} VND</span>
-              </div>
-              <div className="border-t border-gray-200"></div>
-              <div className="flex justify-between font-bold mt-2 font-bold">
-                <span>Tổng thanh toán</span>
-                <span>{order.subtotal.toLocaleString()} VND</span>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <span className="me-3">Thanh toán</span>
+                <Badge>{order.paymentStatus}</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded border">
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                      <TableHead colSpan={2}>Mã hàng</TableHead>
+                      <TableCell className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableHead colSpan={2}>Giảm giá</TableHead>
+                      <TableCell
+                        className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
+                    </TableRow>
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TableCell colSpan={2}>Tổng số tiền</TableCell>
+                      <TableCell className="text-right">{(totalPrice - discountAmount).toLocaleString()} VND</TableCell>
+                    </TableRow>
+                  </TableFooter>
+                </Table>
               </div>
             </CardContent>
           </Card>
 
           {/* Activities */}
-          <Card className="bg-[#f8fafc]">
-            <CardContent className="p-4">
-              <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
-                Hoạt động <Badge className="bg-green-500 text-white">Đã hoàn thành</Badge>
-              </h2>
-              <ul className="list-none">
-                {order.activities.map((activity, index) => (
-                  <li key={index} className="flex items-center gap-2 py-1">
-                    <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                    {/* <span className="text-gray-700">{activity.time}</span> */}
-                    <span className="text-gray-500">{activity.title}</span>
-                  </li>
-                ))}
-              </ul>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <span className="me-3">Hoạt động</span>
+                <Badge>{order.orderStatus}</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="relative">
+                {/* Vertical line */}
+                <Separator orientation="vertical" className="absolute left-[5px] w-0.5 rounded" />
+
+                <ul className="space-y-5">
+                  {order.activities.map((activity, index) => (
+                    <li key={index} className="relative flex items-start">
+                      {/* Circle indicator */}
+                      <div className="absolute top-2 w-3 h-3 bg-[#182f73] rounded-full border-2 border-white"></div>
+
+                      {/* Activity content */}
+                      <div className="ml-7">
+                        <h3 className="font-semibold">{activity.title}</h3>
+                        <p className="text-sm text-gray-500">{activity.dateTime}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Nguoi dat hang */}
-        <div>
-          <Card className="bg-[#f8fafc] rounded-lg shadow-sm">
-            <CardContent className="p-4">
-              <h2 className="text-xl font-bold mb-2">Người đặt</h2>
-              <div className="text-gray-700 flex flex-col space-y-2">
-                <div className="flex flex-col">
-                  <span className="font-semibold">Tên:</span>
-                  <span>{order.customer.name}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold">Số điện thoại:</span>
-                  <span>{order.customer.phone}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold">Địa chỉ:</span>
-                  <span>{order.customer.address}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold">Mã phiếu bán hàng:</span>
-                  <span>{order.customer.saleOrderCode}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold">Mã phiếu xuất kho:</span>
-                  <span>{order.customer.warehouseCode}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="w-2/6 h-fit">
+          <CardHeader>
+            <CardTitle>Hàng đặt</CardTitle>
+          </CardHeader>
+          <CardContent className="font-semibold space-y-5">
+            <div>
+              <p className="text-muted-foreground">Tên</p>{order.customer.name}
+            </div>
+            <div>
+              <p className="text-muted-foreground">Liên lạc</p>{order.customer.phone}
+            </div>
+            <div>
+              <p className="text-muted-foreground">Địa chỉ</p>{order.customer.address}
+            </div>
+            <div>
+              <p className="text-muted-foreground">Phiếu bán hàng</p>{order.customer.saleOrderCode}
+            </div>
+            <div>
+              <p className="text-muted-foreground">Phiếu xuất kho</p>{order.customer.warehouseCode}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

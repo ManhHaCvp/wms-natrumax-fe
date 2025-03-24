@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Ban, Upload, Check } from "lucide-react";
-import { Button } from "@/components/ui/button.jsx";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
 import InputField from "@/components/common/InputField.jsx";
 
@@ -49,7 +50,7 @@ const UpdateProduct = () => {
               <img src={product.image} alt="Product" className="w-full h-full object-cover rounded-md" />
             }
           </div>
-          <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="upload-image" />
+          <Input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="upload-image" />
           <Button asChild>
             <label htmlFor="upload-image">
               <Upload /> Tải ảnh lên
