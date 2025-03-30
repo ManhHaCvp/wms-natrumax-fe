@@ -1,14 +1,13 @@
 import apiClient from "@/utils/apiClient.jsx";
 import { BASE_URL } from "@/utils/constants.jsx";
 
+const WAREHOUSE_BASE = `${BASE_URL}/v1/warehouses`;
+
 const warehouseApi = {
-  getWarehouseList: () => apiClient.get(`${BASE_URL}/v1/warehouses`),
-
-  getWarehouseById: (id) => apiClient.get(`${BASE_URL}/v1/warehouses/${id}`),
-
-  createWarehouse: (warehouseRequest) => apiClient.post(`${BASE_URL}/v1/warehouses`, warehouseRequest),
-
-  updateWarehouse: (warehouseRequest) => apiClient.put(`${BASE_URL}/v1/warehouses/${warehouseRequest.id}`, warehouseRequest),
-}
+  getAll: () => apiClient.get(WAREHOUSE_BASE),
+  getById: (id) => apiClient.get(`${WAREHOUSE_BASE}/${id}`),
+  create: (payload) => apiClient.post(WAREHOUSE_BASE, payload),
+  update: (payload) => apiClient.put(`${WAREHOUSE_BASE}/${payload.id}`, payload),
+};
 
 export default warehouseApi;

@@ -1,44 +1,87 @@
 import userApi from "@/api/userApi.jsx";
+import handleApiError from "@/utils/HandleApiError.jsx";
+
+const formatUser = (user) => ({
+  id: user.id,
+  accountName: user.accountName,
+  phoneNumber: user.phoneNumber,
+  address: user.address,
+  status: user.status,
+  role: user.role?.name || "Chưa phân quyền",
+});
 
 const userService = {
-  async getUserList(setData) {
+  async getAll(setData) {
     try {
-      const response = await userApi.getUserList();
+      const response = await userApi.getAll();
 
-      // Ensure data is an array
-      const users = Array.isArray(response.data) ? response.data : response.data?.users || [];
+      const users = Array.isArray(response.data)
+        ? response.data
+        : response.data?.users || [];
 
-      console.log(response);
-
-      const data = users.map((user) => ({
-        id: user.id,
-        accountName: user.accountName,
-        phoneNumber: user.phoneNumber,
-        address: user.address,
-        status: user.status,
-        role: user.role.name,
-      }));
-
-      setData(data);
+      setData(users.map(formatUser));
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
     }
   },
 
-  async getUserById(id, setUser) {
+  async getById(id, setData) {
     try {
-      const response = await userApi.getUserById(id);
-      const data = response.data;
-      setUser({
-        accountName: data.accountName,
-        role: data.role,
-        phoneNumber: data.phoneNumber,
-        email: data.email,
-        address: data.address,
-        status: data.status ? "Hoạt động" : "Vô hiệu hóa",
-      });
+      const response = await userApi.getById(id);
+      const user = response.data;
+
+      const data = Array.isArray(user)
+        ? user.map(formatUser)
+        : formatUser(user);
+
+      setData(data);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      handleApiError(error);
+    }
+  },
+
+  async getPaging(setData, page, size) {
+    try {
+      const response = await userApi.getPaging(page, size);
+      const users = Array.isArray(response.data.content)
+        ? response.data.content
+        : response.data.content?.users || [];
+
+      setData(users.map(formatUser));
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async create(payload) {
+    try {
+      await userApi.create(payload);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async update(payload) {
+    try {
+      await userApi.update(payload);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async changePassword(payload) {
+    try {
+      await userApi.changePassword(payload);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async changeStatus(id) {
+    try {
+      await userApi.changeStatus(id);
+    } catch (error) {
+      handleApiError(error);
     }
   },
 };

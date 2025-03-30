@@ -23,13 +23,6 @@ const CreateOrder = () => {
       { id: 3, code: "114", name: "Tên hàng hóa", price: 800000, quantity: 20 },
     ],
     discount: 0.2,
-    paymentStatus: "Đã thanh toán",
-    orderStatus: "Đã giao",
-    activities: [
-      { id: 1, title: "Đã giao", dateTime: "02:00 PM 20/2/2025" },
-      { id: 2, title: "Đang giao", dateTime: "02:00 PM 20/2/2025" },
-      { id: 3, title: "Đã xác nhận", dateTime: "02:00 PM 20/2/2025" },
-    ],
     customer: {
       name: "Chi nhánh 107",
       phone: "0123456789",

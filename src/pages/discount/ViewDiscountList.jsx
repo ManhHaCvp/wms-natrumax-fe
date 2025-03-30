@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import { Badge } from "@/components/ui/badge.jsx";
+import discountService from "@/services/discountService.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -85,7 +86,7 @@ const columns = [
     ),
     cell: (info) => <div>{info.getValue()}</div>,
   }),
-  columnHelper.accessor("startDate", {
+  columnHelper.accessor("activeDate", {
     name: "Ngày bắt đầu",
     header: ({ column }) => (
       <div
@@ -98,7 +99,7 @@ const columns = [
     ),
     cell: (info) => <div>{info.getValue()}</div>,
   }),
-  columnHelper.accessor("endDate", {
+  columnHelper.accessor("expiryDate", {
     name: "Ngày kết thúc",
     header: ({ column }) => (
       <div
@@ -115,9 +116,9 @@ const columns = [
     name: "Trạng thái",
     header: "Trạng thái",
     cell: (info) =>  (
-      info.getValue() === "Chưa bắt đầu" ? (
-        <Badge variant="tertiary">Còn hàng</Badge>
-      ) : info.getValue() === "Đang có hiệu lực" ? (
+      info.getValue() === "-1" ? (
+        <Badge variant="tertiary">Chưa bắt đầu</Badge>
+      ) : info.getValue() === "0" ? (
         <Badge>Đang có hiệu lực</Badge>
       ) : (
         <Badge variant="destructive">Đã hết hạn</Badge>
@@ -145,9 +146,9 @@ const columns = [
               Sao chép
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to={`/admin/discount/${data.id}`}>Xem</Link>
-            </DropdownMenuItem>
+            {/*<DropdownMenuItem asChild>*/}
+            {/*  <Link to={`/admin/discount/${data.id}`}>Xem</Link>*/}
+            {/*</DropdownMenuItem>*/}
             <DropdownMenuItem asChild>
               <Link to={`/admin/discount/update/${data.id}`}>Sửa</Link>
             </DropdownMenuItem>
@@ -160,20 +161,20 @@ const columns = [
 
 const ViewDiscountList = () => {
   const [data, setData] = useState([
-    { id: 1, minimumAmount: "1500000", discount: "10%", description: "Giảm giá cho khách hàng VIP", startDate: "01/03/2025", endDate: "31/03/2025", status: "Chưa bắt đầu" },
-    { id: 2, minimumAmount: "500000", discount: "5%", description: "Ưu đãi tháng 3", startDate: "10/03/2025", endDate: "20/03/2025", status: "Đang có hiệu lực" },
-    { id: 3, minimumAmount: "2000000", discount: "15%", description: "Giảm giá sinh nhật", startDate: "05/03/2025", endDate: "10/03/2025", status: "Đã hết hạn" },
-    { id: 4, minimumAmount: "3000000", discount: "20%", description: "Flash Sale", startDate: "15/03/2025", endDate: "16/03/2025", status: "Đang có hiệu lực" },
-    { id: 5, minimumAmount: "750000", discount: "8%", description: "Khuyến mãi ngày lễ", startDate: "20/03/2025", endDate: "25/03/2025", status: "Đang có hiệu lực" },
-    { id: 6, minimumAmount: "1200000", discount: "12%", description: "Giảm giá khách hàng thân thiết", startDate: "01/04/2025", endDate: "10/04/2025", status: "Đang có hiệu lực" },
-    { id: 7, minimumAmount: "950000", discount: "6%", description: "Ưu đãi cho đơn hàng đầu tiên", startDate: "05/04/2025", endDate: "15/04/2025", status: "Đang có hiệu lực" },
-    { id: 8, minimumAmount: "2500000", discount: "18%", description: "Đại hội giảm giá", startDate: "10/04/2025", endDate: "20/04/2025", status: "Đang có hiệu lực" },
+    { id: 1, minimumAmount: "1500000", discount: "10%", description: "Giảm giá cho khách hàng VIP", activeDate: "01/03/2025", expiryDate: "31/03/2025", status: "-1" },
+    { id: 2, minimumAmount: "500000", discount: "5%", description: "Ưu đãi tháng 3", activeDate: "10/03/2025", expiryDate: "20/03/2025", status: "0" },
+    { id: 3, minimumAmount: "2000000", discount: "15%", description: "Giảm giá sinh nhật", activeDate: "05/03/2025", expiryDate: "10/03/2025", status: "1" },
+    { id: 4, minimumAmount: "3000000", discount: "20%", description: "Flash Sale", activeDate: "15/03/2025", expiryDate: "16/03/2025", status: "1" },
+    { id: 5, minimumAmount: "750000", discount: "8%", description: "Khuyến mãi ngày lễ", activeDate: "20/03/2025", expiryDate: "25/03/2025", status: "1" },
+    { id: 6, minimumAmount: "1200000", discount: "12%", description: "Giảm giá khách hàng thân thiết", activeDate: "01/04/2025", expiryDate: "10/04/2025", status: "1" },
+    { id: 7, minimumAmount: "950000", discount: "6%", description: "Ưu đãi cho đơn hàng đầu tiên", activeDate: "05/04/2025", expiryDate: "15/04/2025", status: "0" },
+    { id: 8, minimumAmount: "2500000", discount: "18%", description: "Đại hội giảm giá", activeDate: "10/04/2025", expiryDate: "20/04/2025", status: "0" },
   ]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        //await discountService.getDiscountList(setData);
+        await discountService.getAll(setData);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }

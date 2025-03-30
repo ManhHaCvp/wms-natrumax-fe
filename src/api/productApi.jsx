@@ -1,16 +1,16 @@
 import apiClient from "@/utils/apiClient";
 import { BASE_URL } from "@/utils/constants.jsx";
 
+const PRODUCT_BASE = `${BASE_URL}/v1/products`;
+
 const productApi = {
-  getProductList: () => apiClient.get(`${BASE_URL}/v1/products/all-products`),
-
-  getProductListPaging: (page, size) => apiClient.get(`${BASE_URL}/v1/products/list-products-paging?page=${page}&size=${size}`),
-
-  createProduct: (productRequest) => apiClient.post(`${BASE_URL}/v1/products/create`, productRequest),
-
-  updateProduct: (productRequest) => apiClient.put(`${BASE_URL}/v1/products/update/${productRequest.id}`, productRequest),
-
-  changeStatus: (id) => apiClient.put(`${BASE_URL}/v1/products/${id}/status`),
-}
+  getAll: () => apiClient.get(PRODUCT_BASE),
+  getPaging: (page, size) =>
+    apiClient.get(`${PRODUCT_BASE}/list-products-paging?page=${page}&size=${size}`),
+  getById: (id) => apiClient.get(`${PRODUCT_BASE}/${id}`),
+  create: (payload) => apiClient.post(PRODUCT_BASE, payload),
+  update: (payload) => apiClient.put(`${PRODUCT_BASE}/${payload.id}`, payload),
+  changeStatus: (id) => apiClient.put(`${PRODUCT_BASE}/${id}/status`),
+};
 
 export default productApi;

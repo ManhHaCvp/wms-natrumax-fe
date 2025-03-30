@@ -160,7 +160,7 @@ const ViewUserList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        await userService.getUserList(setData);
+        await userService.getAll(setData);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }

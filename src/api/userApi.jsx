@@ -1,20 +1,18 @@
 import apiClient from "@/utils/apiClient";
 import { BASE_URL } from "@/utils/constants.jsx";
 
+const USER_BASE = `${BASE_URL}/v1/users`;
+
 const userApi = {
-  getUserList: () => apiClient.get(`${BASE_URL}/v1/users/all-user`),
-
-  getUserListPaging: (page, size) => apiClient.get(`${BASE_URL}/v1/users/list-users-paging?page=${page}&size=${size}`),
-
-  getUserById: (id) => apiClient.get(`${BASE_URL}/v1/users/${id}`),
-
-  createUser: (userRequest) => apiClient.post(`${BASE_URL}/v1/users/create`, userRequest),
-
-  updateUser: (userRequest) => apiClient.put(`${BASE_URL}/v1/users/update/${userRequest.id}`, userRequest),
-
-  changePassword: (changePasswordRequest) => apiClient.put(`${BASE_URL}/v1/users/${changePasswordRequest.id}/change-password`, changePasswordRequest),
-
-  changeStatus: (id) => apiClient.put(`${BASE_URL}/v1/users/${id}/toggle-status`),
+  getAll: () => apiClient.get(USER_BASE),
+  getPaging: (page, size) =>
+    apiClient.get(`${USER_BASE}/list-users-paging?page=${page}&size=${size}`),
+  getById: (id) => apiClient.get(`${USER_BASE}/${id}`),
+  create: (payload) => apiClient.post(USER_BASE, payload),
+  update: (payload) => apiClient.put(`${USER_BASE}/${payload.id}`, payload),
+  changePassword: (payload) =>
+    apiClient.put(`${USER_BASE}/${payload.id}/change-password`, payload),
+  changeStatus: (id) => apiClient.put(`${USER_BASE}/${id}/toggle-status`),
 };
 
 export default userApi;

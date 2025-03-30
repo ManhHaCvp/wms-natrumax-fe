@@ -1,14 +1,13 @@
 import apiClient from "@/utils/apiClient.jsx";
 import { BASE_URL } from "@/utils/constants.jsx";
 
+const ROLE_BASE = `${BASE_URL}/v1/roles`;
+
 const roleApi = {
-  getRoleList: () => apiClient.get(`${BASE_URL}/v1/roles`),
-
-  getRoleById: (id) => apiClient.get(`${BASE_URL}/v1/roles/${id}`),
-
-  createRole: (roleRequest) => apiClient.post(`${BASE_URL}/v1/roles`, roleRequest),
-
-  updateRole: (roleRequest) => apiClient.put(`${BASE_URL}/v1/roles/${roleRequest.id}`, roleRequest),
-}
+  getAll: () => apiClient.get(ROLE_BASE),
+  getById: (id) => apiClient.get(`${ROLE_BASE}/${id}`),
+  create: (payload) => apiClient.post(ROLE_BASE, payload),
+  update: (payload) => apiClient.put(`${ROLE_BASE}/${payload.id}`, payload),
+};
 
 export default roleApi;
