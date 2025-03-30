@@ -1,9 +1,9 @@
 import React from "react";
+import { SidebarProvider } from "@/components/ui/sidebar.jsx";
 import { Outlet } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
 import Navbar from "./NavBar.jsx";
 import Footer from "./Footer.jsx";
-import { SidebarProvider } from "@/components/ui/sidebar.jsx";
 
 const Layout = () => {
   return (

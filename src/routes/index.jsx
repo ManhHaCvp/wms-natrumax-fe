@@ -1,27 +1,31 @@
 import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
-import { useAuth } from "../providers/authProvider";
+import { useAuth } from "@/providers/authProvider";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { RoleProtectedRoute } from "./RoleProtectedRoute";
-import Layout from "@/components/layout/Layout.jsx";
-import AuthPage from "../pages/auth/AuthPage.jsx";
-import Dashboard from "../pages/main/Dashboard.jsx";
-import HomePage from "../pages/main/HomePage.jsx";
-import ViewUserList from "../pages/admin/ViewUserList";
-import ViewUserDetail from "../pages/admin/ViewUserDetail";
-import EditUser from "../pages/admin/EditUserProfile";
-import ViewProductList from "../pages/admin/ViewProductList";
-import ProductDetail from "@/components/product/ProductDetail.jsx";
-import UpdateProduct from "@/components/product/UpdateProduct.jsx";
-import ViewCategoryList from "../pages/admin/ViewCategoryList";
-import CreateCategory from "@/components/category/CreateCategory.jsx";
-import UpdateCategory from "@/components/category/UpdateCategory.jsx";
-import ViewRoleList from "../pages/admin/ViewRoleList";
-import ViewOrderList from "@/pages/admin/ViewOrderList";
-import ViewWarehouseList from "@/pages/admin/ViewWarehouseList";
-import OrderDetail from "@/components/order/OrderDetail.jsx";
-import CreateOrder from "@/components/order/CreateOrder.jsx";
-import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "../pages/error/ErrorPage.jsx";
-import ComingSoonPage from "../pages/error/ComingSoonPage.jsx";
+import Layout from "@/components/layout/Layout";
+import AuthPage from "@/pages/auth/AuthPage";
+import Dashboard from "@/pages/main/Dashboard";
+import HomePage from "@/pages/main/HomePage";
+import ViewUserList from "@/pages/user/ViewUserList";
+import ViewUserDetail from "@/pages/user/ViewUserDetail";
+import UpdateUser from "@/pages/user/UpdateUser";
+import ChangePassword from "@/pages/user/ChangePassword";
+import ViewRoleList from "@/pages/role/ViewRoleList";
+import ViewProductList from "@/pages/product/ViewProductList";
+import ViewProductDetail from "@/pages/product/ViewProductDetail";
+import UpdateProduct from "@/pages/product/UpdateProduct";
+import ViewCategoryList from "@/pages/category/ViewCategoryList";
+import CreateCategory from "@/pages/category/CreateCategory";
+import UpdateCategory from "@/pages/category/UpdateCategory";
+import ViewOrderList from "@/pages/order/ViewOrderList";
+import ViewOrderDetail from "@/pages/order/ViewOrderDetail";
+import CreateOrder from "@/pages/order/CreateOrder";
+import ViewDiscountList from "@/pages/discount/ViewDiscountList";
+import CreateDiscount from "@/pages/discount/CreateDiscount";
+import UpdateDiscount from "@/pages/discount/UpdateDiscount";
+import ViewWarehouseList from "@/pages/warehouse/ViewWarehouseList";
+import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "@/pages/error/ErrorPage";
+import ComingSoonPage from "@/pages/error/ComingSoonPage";
 
 const Routes = () => {
   const { token, user } = useAuth();
@@ -38,38 +42,42 @@ const Routes = () => {
     element: <Layout />,
     children: [
       { path: "/", element: startupRoute() },
-      { path: "/service", element: <div>Service Page</div> },
-      { path: "/about-us", element: <div>About Us</div> },
-      { path: "/coming-soon", element: <ComingSoonPage /> },
+      { path: "/dashboard", element: <Dashboard /> },
       { path: "*", element: <NotFoundPage /> },
       { path: "/404", element: <NotFoundPage /> },
       { path: "/500", element: <InternalServerErrorPage /> },
-      { path: "/dashboard", element: <Dashboard /> },
-      // for develop ui
-      { path: "/develop-ui/test", element: <div>Develop UI</div> },
+      { path: "/coming-soon", element: <ComingSoonPage /> },
+      { path: "/service", element: <div>Service Page</div> },
+      { path: "/about-us", element: <div>About Us</div> },
 
       //User
       { path: "/admin/users", element: <ViewUserList /> },
       { path: "/admin/user/:id", element: <ViewUserDetail /> },
-      { path: "/admin/user/edit/:id", element: <EditUser /> },
+      { path: "/admin/user/update/:id", element: <UpdateUser /> },
+      { path: "/admin/user/change-password", element: <ChangePassword /> },
+
+      //Role
+      { path: "/admin/roles", element: <ViewRoleList /> },
 
       //Product
       { path: "/admin/products", element: <ViewProductList /> },
-      { path: "/admin/products/:id", element: <ProductDetail /> },
-      { path: "/admin/products/edit/:id", element: <UpdateProduct /> },
+      { path: "/admin/product/:id", element: <ViewProductDetail /> },
+      { path: "/admin/product/update/:id", element: <UpdateProduct /> },
 
       //Category
-      { path: "/admin/category", element: <ViewCategoryList /> },
-      { path: "/admin/category/add", element: <CreateCategory /> },
-      { path: "/admin/category/edit/:id", element: <UpdateCategory /> },
-
-      //Role
-      { path: "/admin/role", element: <ViewRoleList /> },
+      { path: "/admin/categories", element: <ViewCategoryList /> },
+      { path: "/admin/category/create", element: <CreateCategory /> },
+      { path: "/admin/category/update/:id", element: <UpdateCategory /> },
 
       //Orders
       { path: "/admin/orders", element: <ViewOrderList /> },
-      { path: "/admin/orders/:id", element: <OrderDetail /> },
-      { path: "/admin/orders/add", element: <CreateOrder /> },
+      { path: "/admin/order/:id", element: <ViewOrderDetail /> },
+      { path: "/admin/order/create", element: <CreateOrder /> },
+
+      //Discounts
+      { path: "/admin/discounts", element: <ViewDiscountList /> },
+      { path: "/admin/discount/create", element: <CreateDiscount /> },
+      { path: "/admin/discount/update/:id", element: <UpdateDiscount /> },
 
       //Warehouse
       { path: "/admin/warehouses", element: <ViewWarehouseList /> },

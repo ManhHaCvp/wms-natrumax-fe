@@ -1,98 +1,184 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowUpDown, MoreHorizontal} from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { createColumnHelper } from "@tanstack/react-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
+import orderService from "@/services/orderService.jsx";
 import { Badge } from "@/components/ui/badge.jsx";
-import { Eye, Pencil } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import HomePage from "@/pages/main/HomePage.jsx";
+
+const columnHelper = createColumnHelper();
+
+const columns = [
+  columnHelper.display({
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  }),
+  columnHelper.accessor("id", {
+    name: "Mã đơn hàng",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
+      >
+        Mã đơn hàng
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
+    ),
+    cell: (info) => <div>{info.getValue()}</div>,
+  }),
+  columnHelper.accessor("orderDate", {
+    name: "Ngày đặt",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
+      >
+        Ngày đặt
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
+    ),
+    cell: (info) => <div>{info.getValue()}</div>,
+  }),
+  columnHelper.accessor("accountName", {
+    name: "Tài khoản",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
+      >
+        Tài khoản
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
+    ),
+    cell: (info) => <div>{info.getValue()}</div>,
+  }),
+  columnHelper.accessor("totalAmount", {
+    name: "Tổng số tiền",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
+      >
+        Tổng số tiền
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
+    ),
+    cell: (info) => {
+      const amount = parseFloat(info.getValue());
+      const formatted = new Intl.NumberFormat("vn-VN", {
+        style: "currency",
+        currency: "VND",
+      }).format(amount);
+      return <div className="font-medium">{formatted}</div>;
+    },
+  }),
+  columnHelper.accessor("status", {
+    name: "Trạng thái",
+    header: "Trạng thái",
+    cell: (info) =>  (
+      info.getValue() ? (
+        <Badge>Còn hàng</Badge>
+      ) : (
+        <Badge variant="destructive">Hết hàng</Badge>
+      )
+    ),
+  }),
+  columnHelper.display({
+    id: "actions",
+    header: "Thao tác",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const data = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}
+            >
+              Sao chép
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to={`/admin/order/${data.id}`}>Xem</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/admin/order/update/${data.id}`}>Sửa</Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  }),
+];
 
 const ViewOrderList = () => {
-  const [orders, setOrders] = useState([
-    { id: 1, orderCode: "#12345", date: "19/03/2025", account: "Chi nhánh 107", status: "Đã thanh toán", total: 20000000 },
-    { id: 2, orderCode: "#12346", date: "19/03/2025", account: "Chi nhánh 108", status: "Chưa thanh toán", total: 15000000 },
-    { id: 3, orderCode: "#12347", date: "19/03/2025", account: "Chi nhánh 109", status: "Đã thanh toán", total: 18000000 },
-    { id: 4, orderCode: "#12348", date: "19/03/2025", account: "Chi nhánh 110", status: "Chưa thanh toán", total: 22000000 },
-    { id: 5, orderCode: "#12349", date: "19/03/2025", account: "Chi nhánh 111", status: "Đã thanh toán", total: 25000000 },
-    { id: 6, orderCode: "#12350", date: "19/03/2025", account: "Chi nhánh 112", status: "Chưa thanh toán", total: 12000000 },
-    { id: 7, orderCode: "#12351", date: "19/03/2025", account: "Chi nhánh 113", status: "Đã thanh toán", total: 30000000 },
-    { id: 8, orderCode: "#12352", date: "19/03/2025", account: "Chi nhánh 114", status: "Chưa thanh toán", total: 27000000 },
-    { id: 9, orderCode: "#12353", date: "19/03/2025", account: "Chi nhánh 115", status: "Đã thanh toán", total: 19000000 },
-    { id: 10, orderCode: "#12354", date: "19/03/2025", account: "Chi nhánh 116", status: "Chưa thanh toán", total: 23000000 },
+  const [data, setData] = useState([
+    { id: 1, orderDate: "19/03/2025", accountName: "Chi nhánh 107", totalAmount: 20000000, status: "Đã thanh toán" },
+    { id: 2, orderDate: "19/03/2025", accountName: "Chi nhánh 108", totalAmount: 15000000, status: "Chưa thanh toán" },
+    { id: 3, orderDate: "19/03/2025", accountName: "Chi nhánh 109", totalAmount: 18000000, status: "Đã thanh toán" },
+    { id: 4, orderDate: "19/03/2025", accountName: "Chi nhánh 110", totalAmount: 22000000, status: "Chưa thanh toán" },
+    { id: 5, orderDate: "19/03/2025", accountName: "Chi nhánh 111", totalAmount: 25000000, status: "Đã thanh toán" },
+    { id: 6, orderDate: "19/03/2025", accountName: "Chi nhánh 112", totalAmount: 12000000, status: "Chưa thanh toán" },
+    { id: 7, orderDate: "19/03/2025", accountName: "Chi nhánh 113", totalAmount: 30000000, status: "Đã thanh toán" },
+    { id: 8, orderDate: "19/03/2025", accountName: "Chi nhánh 114", totalAmount: 27000000, status: "Chưa thanh toán" },
+    { id: 9, orderDate: "19/03/2025", accountName: "Chi nhánh 115", totalAmount: 19000000, status: "Đã thanh toán" },
+    { id: 10, orderDate: "19/03/2025", accountName: "Chi nhánh 116", totalAmount: 23000000, status: "Chưa thanh toán" },
   ]);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        //await orderService.getOrderList(setData);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
 
-  const filteredOrders = orders.filter((order) => order.orderCode.toLowerCase().includes(searchTerm.toLowerCase()));
-
-  const exportToExcel = () => {
-    const data = orders.map(({ id, orderCode, date, account, status, total }) => ({
-      "Mã đơn hàng": orderCode,
-      "Ngày đặt": date,
-      "Tài khoản": account,
-      "Trạng thái": status,
-      "Tổng số tiền": total.toLocaleString() + " VND",
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
-
-    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "Danh_sach_don_hang.xlsx");
-  };
+    fetchUsers().catch(console.error); // Handles the promise properly
+  }, []);
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-[#182F73]">Danh sách đơn hàng</h1>
-        <div className="flex gap-2">
-          <button onClick={exportToExcel} className="px-4 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-400 flex items-center gap-2">
-            Xuất File
-          </button>
-          <button onClick={() => navigate("/admin/orders/add")} className="px-4 py-2 bg-[#182F73] text-white rounded-lg hover:bg-[#0F1F50] flex items-center gap-2">
-            <span className="text-white text-lg">+</span> Thêm mới
-          </button>
-        </div>
-      </div>
-      <input type="text" placeholder="Tìm kiếm theo mã đơn hàng..." className="w-full p-2 mb-4 border rounded" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-      <div className="overflow-x-auto border rounded-lg">
-        <table className="min-w-full divide-y divide-gray-200 table-auto">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mã đơn hàng</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ngày đặt</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tài khoản</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tổng số tiền</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredOrders.map((order) => (
-              <tr key={order.id}>
-                <td className="px-6 py-4">{order.orderCode}</td>
-                <td className="px-6 py-4">{order.date}</td>
-                <td className="px-6 py-4">{order.account}</td>
-                <td className="px-6 py-4">
-                  <Badge className={order.status === "Đã thanh toán" ? "bg-green-200 text-black" : "bg-red-200 text-black"}>{order.status}</Badge>
-                </td>
-                <td className="px-6 py-4">{order.total.toLocaleString()} VND</td>
-                <td className="px-6 py-4">
-                  <button onClick={() => navigate(`/admin/orders/edit/${order.id}`)} className="bg-white hover:bg-gray-50 py-1 px-2 mr-2">
-                    <Pencil className="h-5 w-5" />
-                  </button>
-                  <button onClick={() => navigate(`/admin/orders/${order.id}`)} className="bg-white hover:bg-gray-50 py-1 px-2">
-                    <Eye className="h-5 w-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <DataTable
+      title="Danh sách đơn hàng"
+      columns={columns}
+      data={data}
+      addLink="/admin/order/create"
+    />
   );
-};
+}
 
 export default ViewOrderList;

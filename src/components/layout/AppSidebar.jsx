@@ -1,32 +1,29 @@
 import React from "react";
 import {
   Clock3,
-  UserRoundCog,
+  Users,
   Package,
   ShoppingCart,
+  CalendarCheck,
   Book,
   BookText,
   Banknote,
-  Tags,
-  Users,
-  Warehouse,
   ChevronRight,
   ChevronDown,
-  Gift
 } from "lucide-react";
 import {
+  Sidebar,
+  SidebarHeader,
   SidebarContent,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarHeader,
-  Sidebar,
+  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarGroupContent,
   SidebarMenuSub,
   SidebarMenuSubItem,
-  SidebarMenuSubButton
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar.jsx";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { Link, useNavigate } from "react-router-dom";
@@ -43,25 +40,17 @@ const AppSidebar = () => {
         items: [],
       },
       {
-        icon: UserRoundCog,
-        title: "Người dùng",
+        icon: Users,
+        title: "Đối tượng",
         url: "#",
         items: [
           {
-            title: "Danh sách",
+            title: "Người dùng",
             url: "/admin/users",
           },
           {
-            title: "Chi tiết",
-            url: "#",
-          },
-          {
-            title: "Sửa",
-            url: "#",
-          },
-          {
-            title: "Thêm mới",
-            url: "#",
+            title: "Vai trò",
+            url: "/admin/roles",
           },
         ],
       },
@@ -71,20 +60,16 @@ const AppSidebar = () => {
         url: "#",
         items: [
           {
-            title: "Danh sách",
+            title: "Hàng hóa",
             url: "/admin/products",
           },
           {
-            title: "Chi tiết",
-            url: "#",
+            title: "Nhóm hàng",
+            url: "/admin/categories",
           },
           {
-            title: "Sửa",
-            url: "#",
-          },
-          {
-            title: "Thêm mới",
-            url: "#",
+            title: "Kho",
+            url: "/admin/warehouses",
           },
         ],
       },
@@ -94,20 +79,12 @@ const AppSidebar = () => {
         url: "#",
         items: [
           {
-            title: "Danh sách",
+            title: "Đơn hàng",
             url: "/admin/orders",
           },
           {
-            title: "Chi tiết",
-            url: "#",
-          },
-          {
-            title: "Sửa",
-            url: "#",
-          },
-          {
-            title: "Thêm mới",
-            url: "#",
+            title: "Giảm giá",
+            url: "/admin/discounts",
           },
         ],
       },
@@ -121,107 +98,34 @@ const AppSidebar = () => {
             url: "#",
           },
           {
-            title: "Chi tiết",
+            title: "Chính sách",
             url: "#",
           },
           {
-            title: "Sửa",
-            url: "#",
-          },
-          {
-            title: "Thêm mới",
+            title: "Lịch sử",
             url: "#",
           },
         ],
       },
       {
-        icon: Tags,
-        title: "Loại hàng hóa",
+        icon: CalendarCheck,
+        title: "Sự kiện",
         url: "#",
         items: [
           {
-            title: "Danh sách",
-            url: "/admin/category",
-          },
-          {
-            title: "Chi tiết",
-            url: "/admin/category/add",
-          },
-          {
-            title: "Sửa",
+            title: "Khách hàng",
             url: "#",
           },
           {
-            title: "Thêm mới",
-            url: "#",
-          },
-        ],
-      },
-      {
-        icon: Users,
-        title: "Vai trò",
-        url: "#",
-        items: [
-          {
-            title: "Danh sách",
-            url: "/admin/role",
-          },
-          {
-            title: "Chi tiết",
-            url: "/admin/role/add",
-          },
-          {
-            title: "Sửa",
+            title: "Vé quay thưởng",
             url: "#",
           },
           {
-            title: "Thêm mới",
-            url: "#",
-          },
-        ],
-      },
-      {
-        icon: Warehouse,
-        title: "Kho",
-        url: "#",
-        items: [
-          {
-            title: "Danh sách",
+            title: "Phần thưởng",
             url: "#",
           },
           {
-            title: "Chi tiết",
-            url: "#",
-          },
-          {
-            title: "Sửa",
-            url: "#",
-          },
-          {
-            title: "Thêm mới",
-            url: "#",
-          },
-        ],
-      },
-      {
-        icon: Gift,
-        title: "Khuyến mại",
-        url: "#",
-        items: [
-          {
-            title: "Danh sách",
-            url: "#",
-          },
-          {
-            title: "Chi tiết",
-            url: "#",
-          },
-          {
-            title: "Sửa",
-            url: "#",
-          },
-          {
-            title: "Thêm mới",
+            title: "Quay thưởng",
             url: "#",
           },
         ],
@@ -245,43 +149,51 @@ const AppSidebar = () => {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Phân hệ</SidebarGroupLabel>
           <SidebarMenu>
-            {data.navMain.map((item, index) => (
-              <Collapsible
-                key={item.title}
-                className="group/collapsible"
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
+            {data.navMain.map((item) => (
+              item.url !== "#" ? (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link to={item.url}>
                       <item.icon />
-                      {item.url !== "#" ? (
-                        <Link to={item.url}>{item.title}</Link>
-                      ) : (
-                        <span>{item.title}</span>
-                      )}
-                      <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                      <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {item.items?.length ? (
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items.map((item) => (
-                          <SidebarMenuSubItem key={item.title}>
-                            <SidebarMenuSubButton
-                              asChild
-                              isActive={item.isActive}
-                            >
-                              <Link to={item.url}>{item.title}</Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  ) : null}
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
-              </Collapsible>
+              ) : (
+                <Collapsible
+                  key={item.title}
+                  className="group/collapsible"
+                >
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton>
+                        <item.icon />
+                        <span>{item.title}</span>
+                        <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
+                        <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    {item.items?.length ? (
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {item.items.map((item) => (
+                            <SidebarMenuSubItem key={item.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={item.isActive}
+                              >
+                                <Link to={item.url}>{item.title}</Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    ) : null}
+                  </SidebarMenuItem>
+                </Collapsible>
+              )
             ))}
           </SidebarMenu>
         </SidebarGroup>
@@ -291,26 +203,26 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="">
+                  <Link to="#">
                     <Book />
                     <span>Tài liệu hướng dẫn</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="">
+                  <Link to="">
                     <BookText />
                     <span>Điều khoản dịch vụ</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="">
+                  <Link to="">
                     <BookText />
                     <span>Chính sách bải mật</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

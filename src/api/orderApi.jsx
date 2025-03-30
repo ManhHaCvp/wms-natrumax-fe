@@ -1,12 +1,16 @@
 import apiClient from "@/utils/apiClient.jsx";
 import { BASE_URL } from "@/utils/constants.jsx";
 
+const ORDER_BASE = `${BASE_URL}/v1/orders`;
+
 const orderApi = {
-  createOrder: (orderRequest) => apiClient.post(`${BASE_URL}/v1/orders/create`, orderRequest),
+  create: (payload) => apiClient.post(`${ORDER_BASE}/create`, payload),
 
-  updateOrderCodes: (orderRequest) => apiClient.put(`${BASE_URL}/v1/orders/update-codes/${orderRequest.id}`, orderRequest),
+  updateCodes: (payload) =>
+    apiClient.put(`${ORDER_BASE}/update-codes/${payload.id}`, payload),
 
-  updateOrderStatus: (id, status, title) => apiClient.put(`${BASE_URL}/v1/orders/update-status/${orderRequest.id}?status=${status}&title=${title}`),
-}
+  updateStatus: (id, status, title) =>
+    apiClient.put(`${ORDER_BASE}/update-status/${id}?status=${status}&title=${title}`),
+};
 
 export default orderApi;

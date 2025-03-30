@@ -1,108 +1,133 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Pencil } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowUpDown, MoreHorizontal} from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { createColumnHelper } from "@tanstack/react-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu.jsx";
+import roleService from "@/services/roleService.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
+
+const columnHelper = createColumnHelper();
+
+const columns = [
+  columnHelper.display({
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  }),
+  columnHelper.accessor("name", {
+    name: "Tên vai trò",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
+      >
+        Tên vai trò
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
+    ),
+    cell: (info) => <div>{info.getValue()}</div>,
+  }),
+  columnHelper.accessor("description", {
+    name: "Mô tả",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center"
+      >
+        Mô tả
+        <ArrowUpDown size={16} className="ml-2" />
+      </div>
+    ),
+    cell: (info) => <div>{info.getValue()}</div>,
+  }),
+  columnHelper.display({
+    id: "actions",
+    header: "Thao tác",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const data = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}
+            >
+              Sao chép
+            </DropdownMenuItem>
+            {/*<DropdownMenuSeparator />*/}
+            {/*<DropdownMenuItem asChild>*/}
+            {/*  <Link to={`/admin/role/${data.id}`}>Xem</Link>*/}
+            {/*</DropdownMenuItem>*/}
+            {/*<DropdownMenuItem asChild>*/}
+            {/*  <Link to={`/admin/role/update/${data.id}`}>Sửa</Link>*/}
+            {/*</DropdownMenuItem>*/}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  }),
+];
 
 const ViewRoleList = () => {
-  const sampleRoles = [
+  const [data, setData] = useState([
     { id: 1, name: "Admin", description: "Quản trị hệ thống" },
-    { id: 2, name: "Distributor", description: "Nhà phân phối" },
-    { id: 3, name: "User", description: "Người dùng thông thường" },
-  ];
-
-  const [roles, setRoles] = useState(sampleRoles);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRoles, setSelectedRoles] = useState([]);
-  const rolesPerPage = 10;
-  const navigate = useNavigate();
+    { id: 2, name: "Accountant", description: "Kế toán" },
+    { id: 3, name: "Distributor", description: "Nhà phân phối" },
+    { id: 4, name: "Branch Owner", description: "Chủ chi nhánh" },
+    { id: 5, name: "Customer", description: "Khách mua hàng" },
+  ]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/role/list")
-      .then((response) => {
-        const data = response.data.map((role) => ({
-          id: role.id,
-          name: role.name,
-          description: role.description || "Chưa cập nhật",
-        }));
-        setRoles(data);
-      })
-      .catch(() => {
-        setRoles(sampleRoles);
-      });
+    const fetchUsers = async () => {
+      try {
+        await roleService.getAll(setData);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+
+    fetchUsers().catch(console.error); // Handles the promise properly
   }, []);
 
-  const handleEditRole = (roleId) => {
-    navigate(`/admin/role/edit/${roleId}`);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleCheckboxChange = (roleId) => {
-    setSelectedRoles((prev) => (prev.includes(roleId) ? prev.filter((id) => id !== roleId) : [...prev, roleId]));
-  };
-
-  const handleSelectAll = () => {
-    if (selectedRoles.length === roles.length) {
-      setSelectedRoles([]);
-    } else {
-      setSelectedRoles(roles.map((role) => role.id));
-    }
-  };
-
-  const filteredRoles = roles.filter((role) => role.name.toLowerCase().includes(searchTerm.toLowerCase()));
-
-  const indexOfLastRole = currentPage * rolesPerPage;
-  const indexOfFirstRole = indexOfLastRole - rolesPerPage;
-  const currentRoles = filteredRoles.slice(indexOfFirstRole, indexOfLastRole);
-
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-[#182F73]">Danh sách vai trò</h1>
-        <button onClick={() => navigate("/admin/role/add")} className="px-4 py-2 bg-[#182F73] text-white rounded-lg hover:bg-[#0F1F50] flex items-center gap-2">
-          <span className="text-white text-lg">+</span> Thêm mới
-        </button>
-      </div>
-
-      <input type="text" placeholder="Tìm kiếm vai trò" value={searchTerm} onChange={handleSearchChange} className="px-4 py-2 border rounded-lg w-full mb-4" />
-
-      <div className="overflow-x-auto border rounded-lg">
-        <table className="min-w-full divide-y divide-gray-200 table-auto">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                <input type="checkbox" onChange={handleSelectAll} checked={selectedRoles.length === roles.length} />
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vai trò</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mô tả</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {currentRoles.map((role) => (
-              <tr key={role.id}>
-                <td className="px-6 py-4">
-                  <input type="checkbox" checked={selectedRoles.includes(role.id)} onChange={() => handleCheckboxChange(role.id)} />
-                </td>
-                <td className="px-6 py-4">{role.name}</td>
-                <td className="px-6 py-4">{role.description}</td>
-                <td className="px-6 py-4">
-                  <button onClick={() => handleEditRole(role.id)} className="bg-white hover:bg-gray-50 py-1 px-2 mr-2">
-                    <Pencil className="h-5 w-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <DataTable
+      title="Danh sách vai trò"
+      columns={columns}
+      data={data}
+      addLink="/admin/role/create"
+    />
   );
-};
+}
 
 export default ViewRoleList;
