@@ -17,7 +17,10 @@ import { useAuth } from "@/providers/authProvider.jsx";
 
 const Navbar = () => {
   const { setAuthData } = useAuth();
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   // Logout function
   const handleLogout = () => {
@@ -47,7 +50,7 @@ const Navbar = () => {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-52">
-            <DropdownMenuLabel>{user.accountName}</DropdownMenuLabel>
+            <DropdownMenuLabel>{user ? user.accountName : "Tài khoản"}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>

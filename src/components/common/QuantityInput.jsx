@@ -27,7 +27,7 @@ const QuantityInput = ({ item, onChange }) => {
       <Button onClick={handleDecrease} className="p-1 h-fit" disabled={quantity <= 1} variant="outline">
         <Minus />
       </Button>
-      <span className="px-4 py-2 border rounded-lg">{quantity}</span>
+      <span className="bg-white px-4 py-2 border rounded-lg">{quantity}</span>
       <Button onClick={handleIncrease} className="p-1 h-fit" disabled={quantity >= item.max} variant="outline">
         <Plus />
       </Button>

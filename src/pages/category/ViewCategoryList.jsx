@@ -39,7 +39,7 @@ const columns = [
     enableSorting: false,
     enableHiding: false,
   }),
-  columnHelper.accessor("name", {
+  columnHelper.accessor("categoryName", {
     name: "Tên nhóm hàng",
     header: ({ column }) => (
       <div
@@ -90,7 +90,7 @@ const columns = [
             {/*  <Link to={`/admin/category/${data.id}`}>Xem</Link>*/}
             {/*</DropdownMenuItem>*/}
             <DropdownMenuItem asChild>
-              <Link to={`/admin/category/update/${data.id}`}>Sửa</Link>
+              <Link to={`/admin/category/update/${data.categoryId}`}>Sửa</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -101,12 +101,12 @@ const columns = [
 
 const ViewCategoryList = () => {
   const [data, setData] = useState([
-    { id: 1, name: "Nhóm hàng A", description: "Mô tả nhóm hàng A" },
-    { id: 2, name: "Nhóm hàng B", description: "Mô tả nhóm hàng B" },
-    { id: 3, name: "Nhóm hàng C", description: "Mô tả nhóm hàng A" },
-    { id: 4, name: "Nhóm hàng D", description: "Mô tả nhóm hàng B" },
-    { id: 5, name: "Nhóm hàng E", description: "Mô tả nhóm hàng A" },
-    { id: 6, name: "Nhóm hàng F", description: "Mô tả nhóm hàng B" },
+    { categoryId: 1, categoryName: "Nhóm hàng A", description: "Mô tả nhóm hàng A" },
+    { categoryId: 2, categoryName: "Nhóm hàng B", description: "Mô tả nhóm hàng B" },
+    { categoryId: 3, categoryName: "Nhóm hàng C", description: "Mô tả nhóm hàng A" },
+    { categoryId: 4, categoryName: "Nhóm hàng D", description: "Mô tả nhóm hàng B" },
+    { categoryId: 5, categoryName: "Nhóm hàng E", description: "Mô tả nhóm hàng A" },
+    { categoryId: 6, categoryName: "Nhóm hàng F", description: "Mô tả nhóm hàng B" },
   ]);
 
   useEffect(() => {

@@ -1,14 +1,23 @@
 import productApi from "@/api/productApi.jsx";
 import handleApiError from "@/utils/HandleApiError.jsx";
 import toast from "react-hot-toast";
+import warehouseApi from "@/api/warehouseApi.jsx";
 
 const formatProduct = (product) => ({
-  id: product.id,
-  barcode: product.barcode || "",
-  name: product.name || "Chưa cập nhật",
-  price: product.basePrice,
-  stock: product.quantity,
-  status: product.status ? "Hoạt động" : "Bị khóa",
+  productId: product.productId,
+  barcode: product.barcode,
+  misaCode: product.misaCode,
+  name: product.name,
+  image: product.image,
+  category: product.category ? product.category.name : "",
+  basePrice: product.basePrice,
+  discount: product.discount,
+  price: product.basePrice * (1 - product.discount/100),
+  quantity: product.quantity,
+  unit: product.unit,
+  quantityToGetPromotion: product.quantityToGetPromotion,
+  description: product.description,
+  status: product.status,
 });
 
 const productService = {
@@ -18,6 +27,21 @@ const productService = {
       const products = Array.isArray(response.data)
         ? response.data
         : response.data?.products || [];
+
+      setData(products.map(formatProduct));
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async getAllByWarehouseId(id, setData) {
+    try {
+      const response = await warehouseApi.getAllByWarehouseId(id);
+      const products = Array.isArray(response.data)
+        ? response.data
+        : response.data?.products || [];
+
+      console.log(products);
 
       setData(products.map(formatProduct));
     } catch (error) {
@@ -43,9 +67,32 @@ const productService = {
       const response = await productApi.getById(id);
       const product = response.data;
 
+      console.log(product);
+
       const data = Array.isArray(product)
         ? product.map(formatProduct)
         : formatProduct(product);
+
+      console.log(data);
+
+      setData(data);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async getByProductIdAndWarehouseId(productId, warehouseId, setData) {
+    try {
+      const response = await productApi.getByProductIdAndWarehouseId(productId, warehouseId);
+      const product = response.data;
+
+      console.log(product);
+
+      const data = Array.isArray(product)
+        ? product.map(formatProduct)
+        : formatProduct(product);
+
+      console.log(data);
 
       setData(data);
     } catch (error) {

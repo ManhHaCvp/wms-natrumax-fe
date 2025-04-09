@@ -9,9 +9,9 @@ const formatDiscount = (discount, now) => {
   const status = now < activeDate ? "-1" : now < expiryDate ? "0" : "1";
 
   return {
-    id: discount.id,
+    discountId: discount.discountId,
     minimumAmount: discount.minimumAmount,
-    discount: `${discount.discountPercent}%`,
+    discountPercent: `${discount.discountPercent}%`,
     description: discount.description,
     activeDate: formatDate.formatJsonToDate(discount.activeDate),
     expiryDate: formatDate.formatJsonToDate(discount.expiryDate),

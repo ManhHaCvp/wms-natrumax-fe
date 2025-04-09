@@ -2,8 +2,8 @@ import roleApi from "@/api/roleApi";
 import handleApiError from "@/utils/HandleApiError.jsx";
 
 const formatRole = (role) => ({
-  id: role.id,
-  name: role.name,
+  roleId: role.id,
+  roleName: role.name,
   description: role.description,
 });
 

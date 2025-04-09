@@ -11,8 +11,8 @@ const UpdateCategory = () => {
   const { id } = useParams();
 
   const [data, setData] = useState({
-    id: id,
-    name: "",
+    categoryId: id,
+    categoryName: "",
     description: "",
   });
 
@@ -52,8 +52,8 @@ const UpdateCategory = () => {
           <CardTitle>Thông tin cơ bản</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-3">
-          <InputField label="Tên nhóm hàng" value={data.name}
-                      onChange={(e) => setData({ ...data, name: e.target.value })} />
+          <InputField label="Tên nhóm hàng" value={data.categoryName}
+                      onChange={(e) => setData({ ...data, categoryName: e.target.value })} />
           <InputField label="Mô tả" value={data.description}
                       onChange={(e) => setData({ ...data, description: e.target.value })} />
         </CardContent>

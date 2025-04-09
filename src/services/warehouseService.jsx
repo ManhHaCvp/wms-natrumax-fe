@@ -2,8 +2,8 @@ import warehouseApi from "@/api/warehouseApi.jsx";
 import handleApiError from "@/utils/HandleApiError.jsx";
 
 const formatWarehouse = (warehouse) => ({
-  id: warehouse.id,
-  name: warehouse.name,
+  warehouseId: warehouse.warehouseId,
+  warehouseName: warehouse.warehouseName,
   province: warehouse.province,
   description: warehouse.description,
 });

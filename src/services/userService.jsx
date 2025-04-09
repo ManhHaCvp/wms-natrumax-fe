@@ -6,6 +6,8 @@ const formatUser = (user) => ({
   accountName: user.accountName,
   phoneNumber: user.phoneNumber,
   address: user.address,
+  email: user.email,
+  detail: user.detail,
   status: user.status,
   role: user.role?.name || "Chưa phân quyền",
 });

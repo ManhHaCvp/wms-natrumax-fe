@@ -73,7 +73,7 @@ const columns = [
       return <div className="font-medium">{formatted}</div>;
     },
   }),
-  columnHelper.accessor("discount", {
+  columnHelper.accessor("discountPercent", {
     name: "Mức giảm giá",
     header: ({ column }) => (
       <div
@@ -150,7 +150,7 @@ const columns = [
             {/*  <Link to={`/admin/discount/${data.id}`}>Xem</Link>*/}
             {/*</DropdownMenuItem>*/}
             <DropdownMenuItem asChild>
-              <Link to={`/admin/discount/update/${data.id}`}>Sửa</Link>
+              <Link to={`/admin/discount/update/${data.discountId}`}>Sửa</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -161,14 +161,14 @@ const columns = [
 
 const ViewDiscountList = () => {
   const [data, setData] = useState([
-    { id: 1, minimumAmount: "1500000", discount: "10%", description: "Giảm giá cho khách hàng VIP", activeDate: "01/03/2025", expiryDate: "31/03/2025", status: "-1" },
-    { id: 2, minimumAmount: "500000", discount: "5%", description: "Ưu đãi tháng 3", activeDate: "10/03/2025", expiryDate: "20/03/2025", status: "0" },
-    { id: 3, minimumAmount: "2000000", discount: "15%", description: "Giảm giá sinh nhật", activeDate: "05/03/2025", expiryDate: "10/03/2025", status: "1" },
-    { id: 4, minimumAmount: "3000000", discount: "20%", description: "Flash Sale", activeDate: "15/03/2025", expiryDate: "16/03/2025", status: "1" },
-    { id: 5, minimumAmount: "750000", discount: "8%", description: "Khuyến mãi ngày lễ", activeDate: "20/03/2025", expiryDate: "25/03/2025", status: "1" },
-    { id: 6, minimumAmount: "1200000", discount: "12%", description: "Giảm giá khách hàng thân thiết", activeDate: "01/04/2025", expiryDate: "10/04/2025", status: "1" },
-    { id: 7, minimumAmount: "950000", discount: "6%", description: "Ưu đãi cho đơn hàng đầu tiên", activeDate: "05/04/2025", expiryDate: "15/04/2025", status: "0" },
-    { id: 8, minimumAmount: "2500000", discount: "18%", description: "Đại hội giảm giá", activeDate: "10/04/2025", expiryDate: "20/04/2025", status: "0" },
+    { discountId: 1, minimumAmount: "1500000", discountPercent: "10%", description: "Giảm giá cho khách hàng VIP", activeDate: "01/03/2025", expiryDate: "31/03/2025", status: "-1" },
+    { discountId: 2, minimumAmount: "500000", discountPercent: "5%", description: "Ưu đãi tháng 3", activeDate: "10/03/2025", expiryDate: "20/03/2025", status: "0" },
+    { discountId: 3, minimumAmount: "2000000", discountPercent: "15%", description: "Giảm giá sinh nhật", activeDate: "05/03/2025", expiryDate: "10/03/2025", status: "1" },
+    { discountId: 4, minimumAmount: "3000000", discountPercent: "20%", description: "Flash Sale", activeDate: "15/03/2025", expiryDate: "16/03/2025", status: "1" },
+    { discountId: 5, minimumAmount: "750000", discountPercent: "8%", description: "Khuyến mãi ngày lễ", activeDate: "20/03/2025", expiryDate: "25/03/2025", status: "1" },
+    { discountId: 6, minimumAmount: "1200000", discountPercent: "12%", description: "Giảm giá khách hàng thân thiết", activeDate: "01/04/2025", expiryDate: "10/04/2025", status: "1" },
+    { discountId: 7, minimumAmount: "950000", discountPercent: "6%", description: "Ưu đãi cho đơn hàng đầu tiên", activeDate: "05/04/2025", expiryDate: "15/04/2025", status: "0" },
+    { discountId: 8, minimumAmount: "2500000", discountPercent: "18%", description: "Đại hội giảm giá", activeDate: "10/04/2025", expiryDate: "20/04/2025", status: "0" },
   ]);
 
   useEffect(() => {

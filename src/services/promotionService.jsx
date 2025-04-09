@@ -3,9 +3,10 @@ import handleApiError from "@/utils/HandleApiError.jsx";
 import toast from "react-hot-toast";
 
 const formatPromotion = (promotion) => ({
-  id: promotion.id,
-  name: promotion.name,
-  description: promotion.description,
+  promotionId: promotion.promotionId,
+  isSameProduct: promotion.isSameProduct,
+  quantityToGetPromotion: promotion.quantityToGetPromotion,
+  bonusQuantity: promotion.bonusQuantity,
 });
 
 const promotionService = {

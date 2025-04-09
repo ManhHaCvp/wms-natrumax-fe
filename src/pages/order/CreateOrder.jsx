@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -15,31 +15,78 @@ import {
 import QuantityInput from "@/components/common/QuantityInput.jsx";
 
 const CreateOrder = () => {
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  const detail = user?.detail ? JSON.parse(user.detail) : null;
+
+  const location = useLocation();
+  const selectedProducts = location.state?.selectedProducts || [];
+
   const [order, setOrder] = useState({
-    id: 1,
-    items: [
-      { id: 1, code: "112", name: "Tên hàng hóa", price: 800000, quantity: 20 },
-      { id: 2, code: "113", name: "Tên hàng hóa", price: 800000, quantity: 20 },
-      { id: 3, code: "114", name: "Tên hàng hóa", price: 800000, quantity: 20 },
-    ],
-    discount: 0.2,
-    customer: {
-      name: "Chi nhánh 107",
-      phone: "0123456789",
-      address: "Hải Dương",
-      saleOrderCode: "BH001",
-      warehouseCode: "XH001",
+    userId: 1,
+    createOrderDetailRequests: [],
+    createOrderInvoiceRequests: {
+      discountId: 0,
+      totalAmount: 0,
+      paymentMethod: "Chuyển khoản", // hoặc "Tiền mặt", tuỳ vào bạn
+      status: "PENDING",
+      createDate: new Date().toISOString(),
     },
   });
 
-  const totalPrice = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discountAmount = totalPrice * order.discount;
+  const [discount, setDiscount] = useState({
+    discountId: 1,
+    minimumAmount: "1500000",
+    discountPercent: 10,
+    description: "Giảm giá cho khách hàng VIP",
+    activeDate: "01/03/2025",
+    expiryDate: "31/03/2025",
+  });
+
+  useEffect(() => {
+    if (selectedProducts.length > 0) {
+      const detailRequests = selectedProducts.map((item) => ({
+        quantity: 1,
+        price: item.price,
+        productId: item.productId,
+        bonus: false,
+        maxQuantity: item.stock,
+        name: item.name,
+      }));
+
+      setOrder(prev => ({
+        ...prev,
+        createOrderDetailRequests: detailRequests,
+      }));
+    }
+  }, [selectedProducts]);
+
+  useEffect(() => {
+    const total = order.createOrderDetailRequests.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
+
+    setOrder(prev => ({
+      ...prev,
+      createOrderInvoiceRequests: {
+        ...prev.createOrderInvoiceRequests,
+        totalAmount: total,
+      },
+    }));
+  }, [order.createOrderDetailRequests]);
+
+  const totalPrice = order.createOrderInvoiceRequests.totalAmount;
+  const discountAmount = totalPrice * (1 - discount.discountPercent/100);
 
   return (
     <div className="flex flex-col space-y-5 m-5">
       <div className="flex justify-between items-center">
         <h1 className="text-[#182F73] text-3xl font-bold">Tạo đơn hàng</h1>
-          <Button asChild><Link to={`/admin/order/update/${order.id}`}><Check/>Đặt hàng</Link></Button>
+        <Button asChild><Link to={`/admin/order/update/${order.id}`}><Check />Đặt hàng</Link></Button>
       </div>
       <div className="flex space-x-5">
         <div className="w-full flex flex-col space-y-5">
@@ -61,26 +108,27 @@ const CreateOrder = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {order.items.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{item.code}</TableCell>
+                    {order.createOrderDetailRequests.map((item) => (
+                      <TableRow key={item.productId}>
+                        <TableCell>{item.productId}</TableCell>
                         <TableCell>{item.name}</TableCell>
                         <TableCell>{item.price.toLocaleString()} VND</TableCell>
                         <TableCell>
                           <QuantityInput
-                            item={{ ...item, max: 20 }}
+                            item={{ ...item, max: item.maxQuantity }}
                             onChange={(id, newQuantity) => {
                               setOrder((prev) => ({
                                 ...prev,
-                                items: prev.items.map((i) =>
-                                  i.id === id ? { ...i, quantity: newQuantity } : i,
+                                createOrderDetailRequests: prev.createOrderDetailRequests.map((i) =>
+                                  i.productId === id ? { ...i, quantity: newQuantity } : i,
                                 ),
                               }));
                             }}
                           />
                         </TableCell>
-                        <TableCell
-                          className="text-right">{(item.price * item.quantity).toLocaleString()} VND</TableCell>
+                        <TableCell className="text-right">
+                          {(item.price * item.quantity).toLocaleString()} VND
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -135,19 +183,13 @@ const CreateOrder = () => {
           </CardHeader>
           <CardContent className="font-semibold space-y-5">
             <div>
-              <p className="text-muted-foreground">Tên</p>{order.customer.name}
+              <p className="text-muted-foreground">Tên</p>{detail.accountName}
             </div>
             <div>
-              <p className="text-muted-foreground">Liên lạc</p>{order.customer.phone}
+              <p className="text-muted-foreground">Liên lạc</p>{detail.phoneNumber}
             </div>
             <div>
-              <p className="text-muted-foreground">Địa chỉ</p>{order.customer.address}
-            </div>
-            <div>
-              <p className="text-muted-foreground">Phiếu bán hàng</p>{order.customer.saleOrderCode}
-            </div>
-            <div>
-              <p className="text-muted-foreground">Phiếu xuất kho</p>{order.customer.warehouseCode}
+              <p className="text-muted-foreground">Địa chỉ</p>{detail.address}
             </div>
           </CardContent>
         </Card>

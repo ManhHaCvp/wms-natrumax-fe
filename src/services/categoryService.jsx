@@ -3,8 +3,8 @@ import handleApiError from "@/utils/HandleApiError.jsx";
 import toast from "react-hot-toast";
 
 const formatCategory = (category) => ({
-  id: category.id,
-  name: category.name,
+  categoryId: category.categoryId,
+  categoryName: category.categoryName,
   description: category.description,
 });
 

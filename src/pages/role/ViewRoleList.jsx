@@ -39,7 +39,7 @@ const columns = [
     enableSorting: false,
     enableHiding: false,
   }),
-  columnHelper.accessor("name", {
+  columnHelper.accessor("roleName", {
     name: "Tên vai trò",
     header: ({ column }) => (
       <div
@@ -101,11 +101,11 @@ const columns = [
 
 const ViewRoleList = () => {
   const [data, setData] = useState([
-    { id: 1, name: "Admin", description: "Quản trị hệ thống" },
-    { id: 2, name: "Accountant", description: "Kế toán" },
-    { id: 3, name: "Distributor", description: "Nhà phân phối" },
-    { id: 4, name: "Branch Owner", description: "Chủ chi nhánh" },
-    { id: 5, name: "Customer", description: "Khách mua hàng" },
+    { roleId: 1, roleName: "Admin", description: "Quản trị hệ thống" },
+    { roleId: 2, roleName: "Accountant", description: "Kế toán" },
+    { roleId: 3, roleName: "Distributor", description: "Nhà phân phối" },
+    { roleId: 4, roleName: "Branch Owner", description: "Chủ chi nhánh" },
+    { roleId: 5, roleName: "Customer", description: "Khách mua hàng" },
   ]);
 
   useEffect(() => {

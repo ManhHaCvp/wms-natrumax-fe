@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, CloudDownload, Plus} from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, CloudDownload, Plus, ShoppingCart, Warehouse } from "lucide-react";
 import { Input } from "@/components/ui/input.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import { Button } from "@/components/ui/button.jsx";
@@ -32,7 +32,9 @@ import {
   TableRow,
 } from "@/components/ui/table.jsx";
 import productService from "@/services/productService.jsx";
-import ViewProductDetail from "@/pages/product/ViewProductDetail.jsx";
+import toast from "react-hot-toast";
+import warehouseService from "@/services/warehouseService.jsx";
+import { formatCurrency } from "@/utils/formatCurrency.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -96,16 +98,9 @@ const columns = [
         <ArrowUpDown size={16} className="ml-2" />
       </div>
     ),
-    cell: (info) => {
-      const amount = parseFloat(info.getValue());
-      const formatted = new Intl.NumberFormat("vn-VN", {
-        style: "currency",
-        currency: "VND",
-      }).format(amount);
-      return <div className="font-medium">{formatted}</div>;
-    },
+    cell: (info) => <div className="font-medium">{formatCurrency(info.getValue())}</div>,
   }),
-  columnHelper.accessor("stock", {
+  columnHelper.accessor("quantity", {
     name: "Số lượng",
     header: ({ column }) => (
       <div
@@ -123,9 +118,9 @@ const columns = [
     header: "Trạng thái",
     cell: (info) =>  (
       info.getValue() ? (
-        <Badge>Còn hàng</Badge>
+        <Badge>Hoạt động</Badge>
       ) : (
-        <Badge variant="destructive">Hết hàng</Badge>
+        <Badge variant="destructive">Bị khóa</Badge>
       )
     ),
   }),
@@ -151,10 +146,10 @@ const columns = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to={`/admin/product/${product.id}`}>Xem</Link>
+              <Link to={`/admin/product/${product.productId}`}>Xem</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to={`/admin/product/update/${product.id}`}>Sửa</Link>
+              <Link to={`/admin/product/update/${product.productId}`}>Sửa</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -164,23 +159,44 @@ const columns = [
 ];
 
 const ViewProductList = () => {
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  const detail = user?.detail ? JSON.parse(user.detail) : null;
+  const [warehouse, setWarehouse] = useState({
+    warehouseId: "",
+    warehouseName: "",
+    province: "",
+    description: "",
+  });
   const [data, setData] = useState([
-    { id: 1, barcode: "#187654", name: "Sữa tươi Vinamilk", price: 25000, stock: 100, status: "Còn hàng" },
-    { id: 2, barcode: "#187654", name: "Sữa chua TH true Milk", price: 15000, stock: 50, status: "Còn hàng" },
-    { id: 3, barcode: "#187654", name: "Sữa đậu nành Fami", price: 12000, stock: 80, status: "Còn hàng" },
-    { id: 4, barcode: "#187654", name: "Sữa hộp Milo", price: 30000, stock: 40, status: "Còn hàng" },
-    { id: 5, barcode: "#187654", name: "Sữa Ensure Gold", price: 50000, stock: 30, status: "Hết hàng" },
-    { id: 6, barcode: "#187654", name: "Sữa Nutifood GrowPLUS+", price: 40000, stock: 60, status: "Còn hàng" },
-    { id: 7, barcode: "#187654", name: "Sữa bột Dielac Alpha", price: 45000, stock: 20, status: "Hết hàng" },
-    { id: 8, barcode: "#187654", name: "Sữa óc chó Hàn Quốc", price: 55000, stock: 25, status: "Còn hàng" },
+    {
+      productId: 1,
+      barcode: "#187654",
+      name: "Sữa tươi Vinamilk",
+      price: 25000,
+      quantity: 100,
+      quantityToGetPromotion: 0,
+      status: "Còn hàng"
+    },
   ]);
+
+  const navigate = useNavigate();
+
+  const handleCreateOrder = () => {
+    const selectedProducts = table.getSelectedRowModel().rows.map(row => row.original);
+    navigate("/admin/order/create", { state: { selectedProducts } });
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        await productService.getAll(setData);
+        await warehouseService.getById(detail.warehouse_id, setWarehouse);
+        await productService.getAllByWarehouseId(detail.warehouse_id, setData);
       } catch (error) {
-        console.error("Failed to fetch users:", error);
+        toast.error("Failed to fetch users:", error);
       }
     };
 
@@ -215,10 +231,14 @@ const ViewProductList = () => {
   return (
     <Card className="space-y-3 m-5 p-5">
       <div className="flex justify-between items-center">
-        <h1 className="text-[#182F73] text-3xl font-bold">Danh sách hàng hóa</h1>
-        <div>
+        <div className="flex items-center space-x-3">
+          <h1 className="text-[#182F73] text-3xl font-bold">Danh sách hàng hóa</h1>
+          <Button variant="outline"><Warehouse/>{warehouse.warehouseName}</Button>
+        </div>
+        <div className="space-x-3">
           <Button variant="outline"><CloudDownload/>Xuất file</Button>
-          <Button variant="default" className="ms-3"><Plus/>Thêm mới</Button>
+          <Button variant="default"><Plus/>Thêm mới</Button>
+          <Button variant="default" onClick={handleCreateOrder}><ShoppingCart /> Tạo đơn hàng</Button>
         </div>
       </div>
       <div className="flex items-center space-x-3">

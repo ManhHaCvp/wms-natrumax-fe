@@ -11,9 +11,9 @@ const UpdateDiscount = () => {
   const { id } = useParams();
 
   const [data, setData] = useState({
-    id: id,
+    discountId: id,
     minimumAmount: "",
-    discount: "",
+    discountPercent: "",
     description: "",
     activeDate: "",
     expiryDate: "",
@@ -60,8 +60,8 @@ const UpdateDiscount = () => {
                       onChange={(e) => setData({ ...data, description: e.target.value })} />
           <InputField label="Số tiền tối thiểu" value={data.minimumAmount}
                       onChange={(e) => setData({ ...data, minimumAmount: e.target.value })} />
-          <InputField label="Mức giảm giá" value={data.discount}
-                      onChange={(e) => setData({ ...data, discount: e.target.value })} />
+          <InputField label="Mức giảm giá" value={data.discountPercent}
+                      onChange={(e) => setData({ ...data, discountPercent: e.target.value })} />
           <InputField label="Ngày bắt đầu" value={data.activeDate}
                       onChange={(e) => setData({ ...data, activeDate: e.target.value })} />
           <InputField label="Ngày kết thúc" value={data.expiryDate}

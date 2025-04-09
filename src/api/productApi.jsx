@@ -8,6 +8,7 @@ const productApi = {
   getPaging: (page, size) =>
     apiClient.get(`${PRODUCT_BASE}/list-products-paging?page=${page}&size=${size}`),
   getById: (id) => apiClient.get(`${PRODUCT_BASE}/${id}`),
+  getByProductIdAndWarehouseId: (productId, warehouseId) => apiClient.get(`${PRODUCT_BASE}/${productId}/warehouse/${warehouseId}`),
   create: (payload) => apiClient.post(PRODUCT_BASE, payload),
   update: (payload) => apiClient.put(`${PRODUCT_BASE}/${payload.id}`, payload),
   changeStatus: (id) => apiClient.put(`${PRODUCT_BASE}/${id}/status`),
