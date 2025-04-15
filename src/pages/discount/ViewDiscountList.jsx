@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpDown, MoreHorizontal} from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -214,7 +214,7 @@ const ViewDiscountList = () => {
       addButton={
         <Sheet>
           <SheetTrigger asChild>
-            <Button>+ Thêm khuyến mãi</Button>
+            <Button className="ms-3"><Plus /> Thêm mới</Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>

@@ -66,7 +66,7 @@ const DataTable = ({ title, columns, data, addLink,addButton }) => {
               <Plus /> <Link to={addLink}>Thêm mới</Link>
             </Button>
           )}
-          {addButton && <Button variant="default" className="ms-3">{addButton}</Button>}
+          {addButton && addButton}
         </div>
       </div>
       <div className="flex items-center space-x-3">
