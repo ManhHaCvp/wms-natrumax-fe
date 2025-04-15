@@ -6,6 +6,13 @@ const formatWarehouse = (warehouse) => ({
   warehouseName: warehouse.warehouseName,
   province: warehouse.province,
   description: warehouse.description,
+  accessCode: warehouse.accessCode
+});
+
+const formatProvince = (province) => ({
+  provinceId: province.provinceId,
+  provinceName: province.name,
+
 });
 
 const warehouseService = {
@@ -22,7 +29,19 @@ const warehouseService = {
       handleApiError(error);
     }
   },
+  async getAllProvinces() {
+    try {
+      const response = await warehouseApi.getAllProvinces();
+      
+      const provinces = Array.isArray(response.data)
+        ? response.data
+        : response.data?.provinces || [];
 
+        return provinces.map(formatProvince);
+      } catch (error) {
+      handleApiError(error);
+    }
+  },
   async getById(id, setData) {
     try {
       const response = await warehouseApi.getById(id);
@@ -46,9 +65,9 @@ const warehouseService = {
     }
   },
 
-  async update(payload) {
+  async update(warehouseId,payload) {
     try {
-      await warehouseApi.update(payload);
+      await warehouseApi.update(warehouseId,payload);
     } catch (error) {
       handleApiError(error);
     }

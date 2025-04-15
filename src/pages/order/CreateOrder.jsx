@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
 import { Link, useLocation } from "react-router-dom";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table.jsx";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table.jsx";
 import QuantityInput from "@/components/common/QuantityInput.jsx";
+import discountService from "@/services/discountService";
 
 const CreateOrder = () => {
   const [user, setUser] = useState(() => {
@@ -37,27 +30,48 @@ const CreateOrder = () => {
     },
   });
 
-  const [discount, setDiscount] = useState({
-    discountId: 1,
-    minimumAmount: "1500000",
-    discountPercent: 10,
-    description: "Giảm giá cho khách hàng VIP",
-    activeDate: "01/03/2025",
-    expiryDate: "31/03/2025",
-  });
+  const [discount, setDiscount] = useState(null);
+
+  const totalPrice = order.createOrderInvoiceRequests.totalAmount;
+
+  // Tính discountAmount khi discount hoặc totalPrice thay đổi
+  const discountAmount = useMemo(() => {
+    if (!discount?.discountPercent || totalPrice <= 0) return 0;
+    return totalPrice * (discount.discountPercent / 100);
+  }, [discount, totalPrice]);
+
+  // Thêm vào đầu component:
+  useEffect(() => {
+    const fetchDiscount = async () => {
+      try {
+        if (totalPrice > 0) {
+          await discountService.getByTotalAmount({ totalAmount: totalPrice }, setDiscount);
+          console.log(discount);
+        } else {
+          setDiscount(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch discount:", error);
+        setDiscount(null); // reset discount nếu lỗi
+      }
+    };
+
+    fetchDiscount(); // chỉ gọi khi totalPrice thay đổi
+  }, [totalPrice]);
 
   useEffect(() => {
     if (selectedProducts.length > 0) {
       const detailRequests = selectedProducts.map((item) => ({
+        id: item.productId,
         quantity: 1,
         price: item.price,
-        productId: item.productId,
+        barcode: item.barcode,
         bonus: false,
-        maxQuantity: item.stock,
+        maxQuantity: item.quantity,
         name: item.name,
       }));
 
-      setOrder(prev => ({
+      setOrder((prev) => ({
         ...prev,
         createOrderDetailRequests: detailRequests,
       }));
@@ -65,12 +79,9 @@ const CreateOrder = () => {
   }, [selectedProducts]);
 
   useEffect(() => {
-    const total = order.createOrderDetailRequests.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0,
-    );
+    const total = order.createOrderDetailRequests.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    setOrder(prev => ({
+    setOrder((prev) => ({
       ...prev,
       createOrderInvoiceRequests: {
         ...prev.createOrderInvoiceRequests,
@@ -79,14 +90,16 @@ const CreateOrder = () => {
     }));
   }, [order.createOrderDetailRequests]);
 
-  const totalPrice = order.createOrderInvoiceRequests.totalAmount;
-  const discountAmount = totalPrice * (1 - discount.discountPercent/100);
-
   return (
     <div className="flex flex-col space-y-5 m-5">
       <div className="flex justify-between items-center">
         <h1 className="text-[#182F73] text-3xl font-bold">Tạo đơn hàng</h1>
-        <Button asChild><Link to={`/admin/order/update/${order.id}`}><Check />Đặt hàng</Link></Button>
+        <Button asChild>
+          <Link to={`/admin/order/update/${order.id}`}>
+            <Check />
+            Đặt hàng
+          </Link>
+        </Button>
       </div>
       <div className="flex space-x-5">
         <div className="w-full flex flex-col space-y-5">
@@ -109,8 +122,8 @@ const CreateOrder = () => {
                   </TableHeader>
                   <TableBody>
                     {order.createOrderDetailRequests.map((item) => (
-                      <TableRow key={item.productId}>
-                        <TableCell>{item.productId}</TableCell>
+                      <TableRow key={item.id}>
+                        <TableCell>{item.barcode}</TableCell>
                         <TableCell>{item.name}</TableCell>
                         <TableCell>{item.price.toLocaleString()} VND</TableCell>
                         <TableCell>
@@ -119,16 +132,12 @@ const CreateOrder = () => {
                             onChange={(id, newQuantity) => {
                               setOrder((prev) => ({
                                 ...prev,
-                                createOrderDetailRequests: prev.createOrderDetailRequests.map((i) =>
-                                  i.productId === id ? { ...i, quantity: newQuantity } : i,
-                                ),
+                                createOrderDetailRequests: prev.createOrderDetailRequests.map((i) => (i.id === id ? { ...i, quantity: newQuantity } : i)),
                               }));
                             }}
                           />
                         </TableCell>
-                        <TableCell className="text-right">
-                          {(item.price * item.quantity).toLocaleString()} VND
-                        </TableCell>
+                        <TableCell className="text-right">{(item.price * item.quantity).toLocaleString()} VND</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -160,8 +169,7 @@ const CreateOrder = () => {
                     </TableRow>
                     <TableRow>
                       <TableHead colSpan={2}>Giảm giá</TableHead>
-                      <TableCell
-                        className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
+                      <TableCell className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
                     </TableRow>
                   </TableBody>
                   <TableFooter>
@@ -179,17 +187,20 @@ const CreateOrder = () => {
         {/* Nguoi dat hang */}
         <Card className="w-2/6 h-fit">
           <CardHeader>
-            <CardTitle>Hàng đặt</CardTitle>
+            <CardTitle>Thông tin người đặt</CardTitle>
           </CardHeader>
           <CardContent className="font-semibold space-y-5">
             <div>
-              <p className="text-muted-foreground">Tên</p>{detail.accountName}
+              <p className="text-muted-foreground">Tên: </p>
+              {user.accountName}
             </div>
             <div>
-              <p className="text-muted-foreground">Liên lạc</p>{detail.phoneNumber}
+              <p className="text-muted-foreground">Số liên lạc: </p>
+              {user.phoneNumber}
             </div>
             <div>
-              <p className="text-muted-foreground">Địa chỉ</p>{detail.address}
+              <p className="text-muted-foreground">Địa chỉ: </p>
+              {user.address}
             </div>
           </CardContent>
         </Card>

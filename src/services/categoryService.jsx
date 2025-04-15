@@ -25,6 +25,7 @@ const categoryService = {
   async getById(id, setData) {
     try {
       const response = await categoryApi.getById(id);
+      console.log(id);
       const category = response.data;
 
       // Nếu API trả về object thay vì array
@@ -42,15 +43,16 @@ const categoryService = {
     try {
       await categoryApi.create(payload);
       toast.success("Category created!");
+      window.location.reload();
     } catch (error) {
       handleApiError(error);
     }
   },
 
-  async update(payload) {
+  async update(categoryId,payload) {
     try {
-      await categoryApi.update(payload);
-      toast.success("Category updated!");
+      await categoryApi.update(categoryId,payload);
+      toast.success("Cập nhật thành công!");
     } catch (error) {
       handleApiError(error);
     }

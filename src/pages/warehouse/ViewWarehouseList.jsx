@@ -13,7 +13,10 @@ import {
 } from "@/components/ui/dropdown-menu.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import warehouseService from "@/services/warehouseService.jsx";
-
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import toast from "react-hot-toast";
 const columnHelper = createColumnHelper();
 
 const columns = [
@@ -39,7 +42,7 @@ const columns = [
     enableSorting: false,
     enableHiding: false,
   }),
-  columnHelper.accessor("name", {
+  columnHelper.accessor("warehouseName", {
     name: "Tên kho",
     header: ({ column }) => (
       <div
@@ -63,7 +66,7 @@ const columns = [
         <ArrowUpDown size={16} className="ml-2" />
       </div>
     ),
-    cell: (info) => <div>{info.getValue()}</div>,
+    cell: (info) => <div>{info.getValue()?.name}</div>,
   }),
   columnHelper.accessor("description", {
     name: "Mô tả",
@@ -93,18 +96,53 @@ const columns = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}
-            >
-              Sao chép
+            {/* Nút "Xem chi tiết" */}
+            <DropdownMenuItem asChild>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button className="w-full pl-2 text-sm text-left">Xem chi tiết</button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle> Kho</SheetTitle>
+                    <SheetDescription>Thông tin chi tiết kho.</SheetDescription>
+                  </SheetHeader>
+                  <ViewDetailWarehouseInline warehouseId={data.warehouseId} />
+                </SheetContent>
+              </Sheet>
             </DropdownMenuItem>
+              {/* Nút "Sửa" */}
+                        <DropdownMenuItem asChild>
+                          <Sheet>
+                            <SheetTrigger asChild>
+                              <button className="w-full pl-2 text-sm text-left">Sửa</button>
+                            </SheetTrigger>
+                            <SheetContent>
+                              <SheetHeader>
+                                <SheetTitle>Sửa kho</SheetTitle>
+                                <SheetDescription>Chỉnh sửa thông tin kho.</SheetDescription>
+                              </SheetHeader>
+                              <EditWarehouseInline warehouseId={data.warehouseId} />
+                            </SheetContent>
+                          </Sheet>
+                        </DropdownMenuItem>
+                        {/* Nút "Thêm" */}
+                        <DropdownMenuItem asChild>
+                          <Sheet>
+                            <SheetTrigger asChild>
+                              <button className="w-full pl-2 text-sm text-left">Thêm</button>
+                            </SheetTrigger>
+                            <SheetContent>
+                              <SheetHeader>
+                                <SheetTitle>Sửa kho</SheetTitle>
+                                <SheetDescription>Thêm  kho.</SheetDescription>
+                              </SheetHeader>
+                              <CreateWarehouseInline/>
+                            </SheetContent>
+                          </Sheet>
+                        </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to={`/admin/warehouse/${data.id}`}>Xem</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to={`/admin/warehouse/update/${data.id}`}>Sửa</Link>
-            </DropdownMenuItem>
+            
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -114,20 +152,21 @@ const columns = [
 
 const ViewWarehouseList = () => {
   const [data, setData] = useState([
-    { id: 1, name: "Kho A", province: "Hà Nội", description: "Kho trung tâm Hà Nội" },
-    { id: 2, name: "Kho B", province: "Hà Nội", description: "Kho phụ trợ Hà Nội" },
-    { id: 3, name: "Kho C", province: "Hải Dương", description: "Kho trung chuyển Hải Dương" },
-    { id: 4, name: "Kho D", province: "Hải Dương", description: "Kho chính Hải Dương" },
-    { id: 5, name: "Kho E", province: "Hà Nội", description: "Kho dự trữ Hà Nội" },
-    { id: 6, name: "Kho F", province: "Hải Dương", description: "Kho tổng hợp Hải Dương" },
-    { id: 7, name: "Kho G", province: "Hà Nội", description: "Kho hàng hóa Hà Nội" },
-    { id: 8, name: "Kho H", province: "Hải Dương", description: "Kho phân phối Hải Dương" }
+    // { id: 1, name: "Kho A", province: "Hà Nội", description: "Kho trung tâm Hà Nội" },
+    // { id: 2, name: "Kho B", province: "Hà Nội", description: "Kho phụ trợ Hà Nội" },
+    // { id: 3, name: "Kho C", province: "Hải Dương", description: "Kho trung chuyển Hải Dương" },
+    // { id: 4, name: "Kho D", province: "Hải Dương", description: "Kho chính Hải Dương" },
+    // { id: 5, name: "Kho E", province: "Hà Nội", description: "Kho dự trữ Hà Nội" },
+    // { id: 6, name: "Kho F", province: "Hải Dương", description: "Kho tổng hợp Hải Dương" },
+    // { id: 7, name: "Kho G", province: "Hà Nội", description: "Kho hàng hóa Hà Nội" },
+    // { id: 8, name: "Kho H", province: "Hải Dương", description: "Kho phân phối Hải Dương" }
   ]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        await warehouseService.getWarehouseList(setData);
+       const data= await warehouseService.getAll(setData);
+        // console.log(data);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }
@@ -141,9 +180,195 @@ const ViewWarehouseList = () => {
       title="Danh sách kho"
       columns={columns}
       data={data}
-      addLink="/admin/warehouse/create"
+      addButton={
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button>+ Thêm kho</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Thêm kho</SheetTitle>
+              <SheetDescription>Nhập thông tin kho mới</SheetDescription>
+            </SheetHeader>
+            <CreateWarehouseInline />
+          </SheetContent>
+        </Sheet>}
     />
   );
 }
+const ViewDetailWarehouseInline = ({ warehouseId }) => {
+  const { register, handleSubmit, reset } = useForm();
+  const [warehouse, setWarehouse] = useState(null); // Lưu dữ liệu chi tiết
 
+  useEffect(() => {
+    const fetchRole = async () => {
+      await warehouseService.getById(warehouseId, (data) => {
+        setWarehouse(data);
+        console.log(data)
+        // Nếu data là 1 object đơn thì truyền trực tiếp, nếu là array thì lấy phần tử đầu
+        reset({
+          name: data.name || data.warehouseName || "",
+          description: data.description || "",
+          province: data.province.name || "",
+          accessCode: data.accessCode
+        });
+      });
+    };
+
+    fetchRole();
+  }, [warehouseId, reset]);
+
+  return (
+    <form className="mt-6 space-y-4">
+      <div>
+        <label className="block mb-1 text-sm font-medium">Tên kho</label>
+        <Input {...register("name")} disabled />
+      </div>
+      <div>
+        <label className="block mb-1 text-sm font-medium">Access Code</label>
+        <Input {...register("accessCode")} disabled />
+      </div>
+      <div>
+        <label className="block mb-1 text-sm font-medium">Tỉnh</label>
+        <Input {...register("province")} disabled />
+      </div>
+      <div>
+        <label className="block mb-1 text-sm font-medium">Mô tả</label>
+        <Input {...register("description")} disabled />
+      </div>
+    </form>
+  );
+};
+const EditWarehouseInline = ({ warehouseId }) => {
+  const { register, handleSubmit, reset } = useForm();
+  const [warehouse, setWarehouse] = useState(null); // Lưu dữ liệu chi tiết
+  const [provinces, setProvinces] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+         // Lấy danh sách tỉnh
+         const fetchedProvinces = await warehouseService.getAllProvinces();
+         setProvinces(fetchedProvinces);
+         console.log("Fetched provinces:", fetchedProvinces);
+
+      await warehouseService.getById(warehouseId, (data) => {
+        setWarehouse(data);
+        // Nếu data là 1 object đơn thì truyền trực tiếp, nếu là array thì lấy phần tử đầu
+        reset({
+          name: data.name || data.warehouseName || "",
+          description: data.description || "",
+          province: data.province?.provinceId || "", // Sử dụng provinceId để gán vào select
+          accessCode: data.accessCode
+
+        });
+      });
+    
+    };
+   
+    fetchData();
+  }, [warehouseId, reset]);
+
+  const onSubmit = async (formData) => {
+    try {
+      await warehouseService.update(warehouseId, {
+        name: formData.name,
+        description: formData.description,
+        provinceId: formData.province,
+        accessCode: formData.accessCode
+      });
+      toast.success("Cập nhật thành công!");
+      window.location.reload();
+    } catch (error) {
+      console.error("Lỗi cập nhật kho:", error);
+      toast.error("Cập nhật thất bại!");
+    }
+  };
+
+  return (
+    <form  onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+    <div>
+      <label className="block mb-1 text-sm font-medium">Tên kho</label>
+      <Input {...register("name")}  />
+    </div>
+    <div>
+        <label className="block mb-1 text-sm font-medium">Access Code</label>
+        <Input {...register("accessCode")}  />
+      </div>
+    <div>
+      <label className="block mb-1 text-sm font-medium">Mô tả</label>
+      <Input {...register("description")}  />
+    </div>
+    <div>
+  <label className="block mb-1 text-sm font-medium">Tỉnh</label>
+  
+</div>
+      <Button type="submit">Lưu thay đổi</Button>
+  </form>
+  );
+};
+const CreateWarehouseInline = () => {
+  const { register, handleSubmit, reset } = useForm();
+  const [warehouse, setWarehouse] = useState(null); // Lưu dữ liệu chi tiết
+  const [provinces, setProvinces] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+         // Lấy danh sách tỉnh
+         const fetchedProvinces = await warehouseService.getAllProvinces();
+         setProvinces(fetchedProvinces);
+         console.log("Fetched provinces:", fetchedProvinces);
+    };
+   
+    fetchData();
+  }, []);
+
+  const onSubmit = async (formData) => {
+    try {
+      await warehouseService.create({
+        name: formData.name,
+        description: formData.description,
+        provinceId: formData.province,
+        accessCode : formData.accessCode
+      });
+      toast.success("Cập nhật thành công!");
+      window.location.reload();
+    } catch (error) {
+      console.error("Lỗi cập nhật kho:", error);
+      toast.error("Cập nhật thất bại!");
+    }
+  };
+
+  return (
+    <form  onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+    <div>
+      <label className="block mb-1 text-sm font-medium">Tên kho</label>
+      <Input {...register("name")}  />
+    </div>
+    <div>
+      <label className="block mb-1 text-sm font-medium">Access code</label>
+      <Input {...register("accessCode")}  />
+    </div>
+    <div>
+      <label className="block mb-1 text-sm font-medium">Mô tả</label>
+      <Input {...register("description")}  />
+    </div>
+    <div>
+  <label className="block mb-1 text-sm font-medium">Tỉnh</label>
+  <select
+    {...register("province")}
+    className="w-full border rounded p-2"
+    defaultValue=""
+  >
+    <option value="" disabled>Chọn tỉnh</option>
+    {provinces.map((province) => (
+      <option key={province.provinceId} value={province.provinceId}>
+        {province.provinceName}
+      </option>
+    ))}
+  </select>
+</div>
+      <Button type="submit">Thêm kho</Button>
+  </form>
+  );
+};
 export default ViewWarehouseList;

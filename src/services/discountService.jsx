@@ -11,7 +11,7 @@ const formatDiscount = (discount, now) => {
   return {
     discountId: discount.discountId,
     minimumAmount: discount.minimumAmount,
-    discountPercent: `${discount.discountPercent}%`,
+    discountPercent: discount.discountPercent,
     description: discount.description,
     activeDate: formatDate.formatJsonToDate(discount.activeDate),
     expiryDate: formatDate.formatJsonToDate(discount.expiryDate),
@@ -47,7 +47,18 @@ const discountService = {
       handleApiError(error);
     }
   },
-
+  async getByTotalAmount(payload,setData) {
+    try {
+      const response = await discountApi.getByTotalAmount(payload);
+      console.log(response);
+      const raw = response.data;
+      const now = new Date();
+      const formatted = formatDiscount(raw, now);
+      setData(formatted);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
   async create(payload) {
     try {
       await discountApi.create(payload);
@@ -56,9 +67,9 @@ const discountService = {
     }
   },
 
-  async update(payload) {
+  async update(discountId,payload) {
     try {
-      await discountApi.update(payload);
+      await discountApi.update(discountId,payload);
     } catch (error) {
       handleApiError(error);
     }

@@ -44,9 +44,9 @@ const roleService = {
     }
   },
 
-  async update(payload) {
+  async update(roleId,payload) {
     try {
-      await roleApi.update(payload);
+      await roleApi.update(roleId,payload);
     } catch (error) {
       handleApiError(error);
     }

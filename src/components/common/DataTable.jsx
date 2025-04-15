@@ -28,7 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table.jsx";
 
-const DataTable = ({ title, columns, data, addLink }) => {
+const DataTable = ({ title, columns, data, addLink,addButton }) => {
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -66,6 +66,7 @@ const DataTable = ({ title, columns, data, addLink }) => {
               <Plus /> <Link to={addLink}>Thêm mới</Link>
             </Button>
           )}
+          {addButton && <Button variant="default" className="ms-3">{addButton}</Button>}
         </div>
       </div>
       <div className="flex items-center space-x-3">

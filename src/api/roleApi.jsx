@@ -7,7 +7,7 @@ const roleApi = {
   getAll: () => apiClient.get(ROLE_BASE),
   getById: (id) => apiClient.get(`${ROLE_BASE}/${id}`),
   create: (payload) => apiClient.post(ROLE_BASE, payload),
-  update: (payload) => apiClient.put(`${ROLE_BASE}/${payload.id}`, payload),
+  update: (roleId,payload) => apiClient.put(`${ROLE_BASE}/${roleId}`, payload),
 };
 
 export default roleApi;
