@@ -9,26 +9,30 @@ import warehouseService from "@/services/warehouseService";
 
 const UpdateUser = () => {
   const [user, setUser] = useState({
-    id: 1,
-    accountName: "admin",
-    phoneNumber: "0812497838",
-    email: "admin@example.com",
-    address: "Admin Street, City",
-    province: "Hai Duong",
-    status: true,
-    role: "ROLE_ADMIN",
-    retailer: "haiyenhd",
-    clientId: "ba477a2c4a9f-4be8-9996-f7cdf2b46119",
-    clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
+    // id: 1,
+    // accountName: "admin",
+    // phoneNumber: "0812497838",
+    // email: "admin@example.com",
+    // address: "Admin Street, City",
+    // province: "Hai Duong",
+    // status: true,
+    // role: "ROLE_ADMIN",
+    // retailer: "haiyenhd",
+    // clientId: "ba477a2c4a9f-4be8-9996-f7cdf2b46119",
+    // clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
   });
 
   const { id } = useParams("id");
   const [provinces, setProvinces] = useState([]);
+  const [apiConnection,setApiConnection] = useState({});
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        await userService.getById(id, setUser);
+        const data = await userService.getById(id, setUser);
+        console.log(data);
+        // console.log(data.detail);
+        setApiConnection(JSON.parse(data.detail));
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
@@ -54,11 +58,13 @@ const UpdateUser = () => {
       const payload = {
         ...user, // sao chép tất cả thông tin từ `user`
         id: id, // thêm `id` vào payload
-        role: user.role.id,
-        // provinceId: user.provinceId
+        roleId: user.role.id,
+        provinceId: user.province,
+        detail: JSON.stringify(apiConnection)
       };
+      // console.log(user.province);
       // Cập nhật thông tin người dùng với tỉnh thành đã chọn
-      await userService.update(user);
+      await userService.update(payload);
       alert("Cập nhật thành công!");
       // Hoặc bạn có thể chuyển hướng hoặc hiển thị toast thành công
     } catch (error) {
@@ -98,7 +104,7 @@ const UpdateUser = () => {
           />
           <InputField
             label="Role"
-            value={user.role.name}
+            value={user.role?.name || ""}
             onChange={(e) => setUser({ ...user, role: e.target.value })}
           />
           <InputField
@@ -142,18 +148,18 @@ const UpdateUser = () => {
         <CardContent className="grid grid-cols-2 gap-3">
           <InputField
             label="Retailer"
-            value={user.retailer}
-            onChange={(e) => setUser({ ...user, retailer: e.target.value })}
+            value={apiConnection.retailer}
+            onChange={(e) => setApiConnection({ ...user, retailer: e.target.value })}
           />
           <InputField
             label="Client ID"
-            value={user.clientId}
-            onChange={(e) => setUser({ ...user, clientId: e.target.value })}
+            value={apiConnection.client_id}
+            onChange={(e) => setApiConnection({ ...user, clientId: e.target.value })}
           />
           <InputField
             label="Client Secret"
-            value={user.clientSecret}
-            onChange={(e) => setUser({ ...user, clientSecret: e.target.value })}
+            value={apiConnection.client_secret}
+            onChange={(e) => setApiConnection({ ...user, clientSecret: e.target.value })}
             className="col-span-2"
           />
         </CardContent>

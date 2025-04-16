@@ -13,9 +13,9 @@ import Warehouse from "@/components/user/Warehouse";
 
 import ApiConnection from "@/components/user/ApiConnection";
 import userService from "@/services/userService";
-import { checkUserRole, checkUserRoleByUser } from "@/utils/checkUserRole";
+import { checkUserRoleByUser } from "@/utils/checkUserRole";
 
-const ViewUserDetail = () => {
+const UserProfile = () => {
   const [user, setUser] = useState({
     // id: 1,
     // accountName: "admin",
@@ -114,9 +114,9 @@ const ViewUserDetail = () => {
             <TabsTrigger value="wallet">Ví</TabsTrigger>
             <TabsTrigger value="commission">Hoa hồng</TabsTrigger>
             <TabsTrigger value="promotion">Khuyến mại</TabsTrigger>
-            {checkUserRoleByUser(user,"ROLE_BRANCH_OWNER") && (
-            <TabsTrigger value="warehouse">Kho</TabsTrigger>
-            )}
+             {checkUserRoleByUser(user,"ROLE_BRANCH_OWNER") && (
+                        <TabsTrigger value="warehouse">Kho</TabsTrigger>
+                        )}
             <TabsTrigger value="api-connection">Kết nối API</TabsTrigger>
           </TabsList>
           <TabsContent value="order-history">
@@ -125,9 +125,6 @@ const ViewUserDetail = () => {
             </Card>
           </TabsContent>
           <TabsContent value="wallet">
-            <Card>
-              <Wallet />
-            </Card>
             <Card>
               <Wallet />
             </Card>
@@ -147,16 +144,15 @@ const ViewUserDetail = () => {
               <ApiConnection retailer={warehouse.retailer} clientId={warehouse.client_id} clientSecret={warehouse.client_secret} />
             </Card>
           </TabsContent>
-            <TabsContent value="warehouse">
+          <TabsContent value="warehouse">
             <Card>
               <Warehouse warehouse = {warehouse} />
             </Card>
           </TabsContent>
-          
         </Tabs>
       </div>
     </div>
   );
 }
 
-export default ViewUserDetail;
+export default UserProfile;

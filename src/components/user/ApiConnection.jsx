@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 const ApiConnection = ({retailer, clientId, clientSecret}) => {
   const [isSecretVisible, setIsSecretVisible] = useState(false);
-
+  console.log(retailer, clientId, clientSecret);
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");

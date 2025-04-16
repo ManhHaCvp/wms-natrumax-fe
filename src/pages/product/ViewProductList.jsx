@@ -35,6 +35,13 @@ import productService from "@/services/productService.jsx";
 import toast from "react-hot-toast";
 import warehouseService from "@/services/warehouseService.jsx";
 import { formatCurrency } from "@/utils/formatCurrency.jsx";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -116,7 +123,7 @@ const columns = [
   columnHelper.accessor("status", {
     name: "Trạng thái",
     header: "Trạng thái",
-    cell: (info) =>  (
+    cell: (info) => (
       info.getValue() ? (
         <Badge>Hoạt động</Badge>
       ) : (
@@ -163,8 +170,10 @@ const ViewProductList = () => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-
   const detail = user?.detail ? JSON.parse(user.detail) : null;
+  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+  const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState(null);
   const [warehouse, setWarehouse] = useState({
     warehouseId: "",
     warehouseName: "",
@@ -190,19 +199,61 @@ const ViewProductList = () => {
     navigate("/admin/order/create", { state: { selectedProducts } });
   };
 
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       if (isAdmin) {
+  //         const result = await warehouseService.getAll(setWarehouses);
+  //         // setSelectedWarehouseId(result);
+  //         console.log(result);
+  //         const defaultWarehouseId = 1;
+  //         setSelectedWarehouseId(selectedWarehouseId ? selectedWarehouseId : defaultWarehouseId);
+  //         await productService.getAllByWarehouseId(selectedWarehouseId, setData);
+  //       } else {
+  //         await warehouseService.getById(detail.warehouse_id, setWarehouse);
+  //         await productService.getAllByWarehouseId(detail.warehouse_id, setData);
+  //       }
+  //     } catch (error) {
+  //       toast.error("Failed to fetch users:", error);
+  //     }
+  //   };
+
+  //   fetchUsers().catch(console.error); // Handles the promise properly
+  // }, [selectedWarehouseId]);
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchWarehouses = async () => {
       try {
-        await warehouseService.getById(detail.warehouse_id, setWarehouse);
-        await productService.getAllByWarehouseId(detail.warehouse_id, setData);
+        if (isAdmin) {
+          const result = await warehouseService.getAll(setWarehouses);
+          const defaultWarehouseId = result[0]?.warehouseId;
+          setSelectedWarehouseId(defaultWarehouseId); // Gọi 1 lần duy nhất ở đây
+        } else {
+          await warehouseService.getById(detail.warehouse_id, setWarehouse);
+          await productService.getAllByWarehouseId(detail.warehouse_id, setData);
+        }
       } catch (error) {
-        toast.error("Failed to fetch users:", error);
+        toast.error("Failed to fetch warehouses");
       }
     };
-
-    fetchUsers().catch(console.error); // Handles the promise properly
-  }, []);
-
+  
+    fetchWarehouses().catch(console.error);
+  }, []); // chạy 1 lần đầu
+  
+  // Mỗi khi selectedWarehouseId thay đổi thì fetch lại product
+  useEffect(() => {
+    if (!selectedWarehouseId) return;
+  
+    const fetchProducts = async () => {
+      try {
+        await productService.getAllByWarehouseId(selectedWarehouseId, setData);
+      } catch (error) {
+        toast.error("Failed to fetch products");
+      }
+    };
+  
+    fetchProducts().catch(console.error);
+  }, [selectedWarehouseId]);
+  
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState([]);
@@ -233,11 +284,36 @@ const ViewProductList = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <h1 className="text-[#182F73] text-3xl font-bold">Danh sách hàng hóa</h1>
-          <Button variant="outline"><Warehouse/>{warehouse.warehouseName}</Button>
+          {isAdmin ? (
+  <Select
+    value={selectedWarehouseId}
+    onValueChange={(value) => setSelectedWarehouseId(value)}
+  >
+    <SelectTrigger className="w-[240px] flex items-center gap-2">
+      <Warehouse className="h-4 w-4 text-muted-foreground" />
+      <SelectValue placeholder="Chọn kho" />
+    </SelectTrigger>
+    <SelectContent>
+      {warehouses.map((w) => (
+        <SelectItem key={w.warehouseId} value={w.warehouseId}>
+          {w.warehouseName}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+) : (
+  <Button variant="outline">
+    <Warehouse className="mr-2 h-4 w-4" />
+    {warehouse.warehouseName}
+  </Button>
+)}
+
+
+
         </div>
         <div className="space-x-3">
-          <Button variant="outline"><CloudDownload/>Xuất file</Button>
-          <Button variant="default"><Plus/>Thêm mới</Button>
+          <Button variant="outline"><CloudDownload />Xuất file</Button>
+          <Button variant="default"><Plus />Thêm mới</Button>
           <Button variant="default" onClick={handleCreateOrder}><ShoppingCart /> Tạo đơn hàng</Button>
         </div>
       </div>

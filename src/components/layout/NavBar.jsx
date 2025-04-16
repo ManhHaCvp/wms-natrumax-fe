@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar.jsx";
 import { useAuth } from "@/providers/authProvider.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { setAuthData } = useAuth();
@@ -27,6 +28,15 @@ const Navbar = () => {
     setAuthData();
     toast.success("Đăng xuất thành công!");
     window.location.href = "/login";
+  };
+  const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    console.log(user);
+    if (user.id) {
+      navigate(`/user/${user.id}`);
+    }
+    
   };
 
   return (
@@ -53,7 +63,7 @@ const Navbar = () => {
             <DropdownMenuLabel>{user ? user.accountName : "Tài khoản"}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleProfileClick}>
                 Tài khoản
               </DropdownMenuItem>
               <DropdownMenuItem>

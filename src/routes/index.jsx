@@ -26,6 +26,7 @@ import UpdateDiscount from "@/pages/discount/UpdateDiscount";
 import ViewWarehouseList from "@/pages/warehouse/ViewWarehouseList";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "@/pages/error/ErrorPage";
 import ComingSoonPage from "@/pages/error/ComingSoonPage";
+import UserProfile from "@/pages/user/UserProfile";
 
 const Routes = () => {
   const { token, user } = useAuth();
@@ -55,6 +56,7 @@ const Routes = () => {
       { path: "/admin/user/:id", element: <ViewUserDetail /> },
       { path: "/admin/user/update/:id", element: <UpdateUser /> },
       { path: "/admin/user/change-password", element: <ChangePassword /> },
+      { path: "/user/:id", element: <UserProfile /> },
 
       //Role
       { path: "/admin/roles", element: <ViewRoleList /> },

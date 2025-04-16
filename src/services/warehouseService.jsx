@@ -25,6 +25,7 @@ const warehouseService = {
         : response.data?.warehouses || [];
 
       setData(warehouses.map(formatWarehouse));
+      return response.data;
     } catch (error) {
       handleApiError(error);
     }

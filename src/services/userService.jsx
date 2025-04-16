@@ -10,6 +10,7 @@ const formatUser = (user) => ({
   detail: user.detail,
   status: user.status,
   role: user.role || "Chưa phân quyền",
+  provice: user.province
 });
 
 const userService = {
@@ -31,8 +32,6 @@ const userService = {
     try {
       const response = await userApi.getById(id);
       const user = response.data;
-      // console.log(user.detail);
-
       const data = Array.isArray(user)
         ? user.map(formatUser)
         : formatUser(user);
