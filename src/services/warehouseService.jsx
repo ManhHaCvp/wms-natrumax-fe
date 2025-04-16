@@ -59,12 +59,15 @@ const warehouseService = {
 
   async create(payload) {
     try {
-      await warehouseApi.create(payload);
+      const res = await warehouseApi.create(payload);
+      console.log(res);
+      return res; // nếu cần trả kết quả
     } catch (error) {
       handleApiError(error);
+      throw error; // QUAN TRỌNG: ném lỗi ra ngoài để component catch được
     }
   },
-
+  
   async update(warehouseId,payload) {
     try {
       await warehouseApi.update(warehouseId,payload);

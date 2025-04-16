@@ -9,30 +9,34 @@ import PaymentHistory from "@/components/user/OrderHistory";
 import Wallet from "@/components/user/Wallet";
 import Commission from "@/components/user/Commission";
 import Promotion from "@/components/user/Promotion";
+import Warehouse from "@/components/user/Warehouse";
+
 import ApiConnection from "@/components/user/ApiConnection";
 import userService from "@/services/userService";
 
 const ViewUserDetail = () => {
   const [user, setUser] = useState({
-    id: 1,
-    accountName: "admin",
-    phoneNumber: "0812497838",
-    email: "admin@example.com",
-    address: "Admin Street, City",
-    province: "Hai Duong",
-    status: true,
-    role: "ROLE_ADMIN",
-    retailer: "haiyenhd",
-    clientId: "ba477a2c4a9f-4be8-9996-f7cdf2b46119",
-    clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
+    // id: 1,
+    // accountName: "admin",
+    // phoneNumber: "0812497838",
+    // email: "admin@example.com",
+    // address: "Admin Street, City",
+    // province: "Hai Duong",
+    // status: true,
+    // role: "ROLE_ADMIN",
+    // retailer: "haiyenhd",
+    // clientId: "ba477a2c4a9f-4be8-9996-f7cdf2b46119",
+    // clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
   });
-
+  // const [warehouse, setWarehouse] = ({});
   const { id } = useParams("id");
-
+  const [warehouse,setWarehouse] = useState({});
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        await userService.getById(id, setUser);
+        const data = await userService.getById(id, setUser);
+        // console.log(data.detail);
+        setWarehouse(JSON.parse(data.detail));
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }
@@ -69,8 +73,8 @@ const ViewUserDetail = () => {
           <div className="flex justify-between items-center">
             <div>
               <div className="text-3xl font-semibold">{user.accountName}</div>
-              <CardDescription>{user.role}</CardDescription>
-            </div>
+              <CardDescription>{user.role?.name}</CardDescription>
+              </div>
             <Button variant="outline" asChild><Link to={`/admin/user/update/${user.id}`}><Pencil /></Link></Button>
           </div>
           <div className="font-semibold grid grid-cols-1 gap-5 mt-7">
@@ -100,11 +104,12 @@ const ViewUserDetail = () => {
           </div>
         </Card>
         <Tabs defaultValue="order-history" className="w-full ms-5">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-5 ">
             <TabsTrigger value="order-history">Lịch sử đặt hàng</TabsTrigger>
             <TabsTrigger value="wallet">Ví</TabsTrigger>
             <TabsTrigger value="commission">Hoa hồng</TabsTrigger>
             <TabsTrigger value="promotion">Khuyến mại</TabsTrigger>
+            <TabsTrigger value="warehouse">Kho</TabsTrigger>
             <TabsTrigger value="api-connection">Kết nối API</TabsTrigger>
           </TabsList>
           <TabsContent value="order-history">
@@ -130,6 +135,11 @@ const ViewUserDetail = () => {
           <TabsContent value="api-connection">
             <Card>
               <ApiConnection retailer={user.retailer} clientId={user.clientId} clientSecret={user.clientSecret} />
+            </Card>
+          </TabsContent>
+          <TabsContent value="warehouse">
+            <Card>
+              <Warehouse warehouse = {warehouse} />
             </Card>
           </TabsContent>
         </Tabs>

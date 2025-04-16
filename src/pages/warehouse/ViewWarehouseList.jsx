@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 const columnHelper = createColumnHelper();
 
-const columns = [
+const columns =(setData) => [
   columnHelper.display({
     id: "select",
     header: ({ table }) => (
@@ -122,11 +122,11 @@ const columns = [
                                 <SheetTitle>Sửa kho</SheetTitle>
                                 <SheetDescription>Chỉnh sửa thông tin kho.</SheetDescription>
                               </SheetHeader>
-                              <EditWarehouseInline warehouseId={data.warehouseId} />
+                              <EditWarehouseInline warehouseId={data.warehouseId}  setData={setData} />
                             </SheetContent>
                           </Sheet>
                         </DropdownMenuItem>
-                        {/* Nút "Thêm" */}
+                        {/* Nút "Thêm"
                         <DropdownMenuItem asChild>
                           <Sheet>
                             <SheetTrigger asChild>
@@ -140,7 +140,7 @@ const columns = [
                               <CreateWarehouseInline/>
                             </SheetContent>
                           </Sheet>
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
             <DropdownMenuSeparator />
             
           </DropdownMenuContent>
@@ -161,6 +161,7 @@ const ViewWarehouseList = () => {
     // { id: 7, name: "Kho G", province: "Hà Nội", description: "Kho hàng hóa Hà Nội" },
     // { id: 8, name: "Kho H", province: "Hải Dương", description: "Kho phân phối Hải Dương" }
   ]);
+  const [openCreateSheet, setOpenCreateSheet] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -178,10 +179,10 @@ const ViewWarehouseList = () => {
   return (
     <DataTable
       title="Danh sách kho"
-      columns={columns}
+      columns={columns(setData)}
       data={data}
       addButton={
-        <Sheet>
+        <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet} >
           <SheetTrigger asChild>
           <Button className="ms-3"><Plus /> Thêm mới</Button>
           </SheetTrigger>
@@ -190,7 +191,7 @@ const ViewWarehouseList = () => {
               <SheetTitle>Thêm kho</SheetTitle>
               <SheetDescription>Nhập thông tin kho mới</SheetDescription>
             </SheetHeader>
-            <CreateWarehouseInline />
+            <CreateWarehouseInline setData = {setData} onClose={() => setOpenCreateSheet(false)}  />
           </SheetContent>
         </Sheet>}
     />
@@ -221,25 +222,24 @@ const ViewDetailWarehouseInline = ({ warehouseId }) => {
   return (
     <form className="mt-6 space-y-4">
       <div>
-        <label className="block mb-1 text-sm font-medium">Tên kho</label>
-        <Input {...register("name")} disabled />
+      
+        <div>
+        <p className="text-muted-foreground">Tên kho</p>
+        <p>{ warehouse?.warehouseName || "Không có dữ liệu"}</p>
+            </div>
       </div>
       <div>
-        <label className="block mb-1 text-sm font-medium">Access Code</label>
-        <Input {...register("accessCode")} disabled />
-      </div>
+        <p className="text-muted-foreground">Tỉnh</p>
+        <p>{ warehouse?.province.name || "Không có dữ liệu"}</p>
+            </div>
       <div>
-        <label className="block mb-1 text-sm font-medium">Tỉnh</label>
-        <Input {...register("province")} disabled />
-      </div>
-      <div>
-        <label className="block mb-1 text-sm font-medium">Mô tả</label>
-        <Input {...register("description")} disabled />
-      </div>
+        <p className="text-muted-foreground">Mô tả</p>
+        <p>{ warehouse?.description || "Không có dữ liệu"}</p>
+            </div>
     </form>
   );
 };
-const EditWarehouseInline = ({ warehouseId }) => {
+const EditWarehouseInline = ({ warehouseId, setData }) => {
   const { register, handleSubmit, reset } = useForm();
   const [warehouse, setWarehouse] = useState(null); // Lưu dữ liệu chi tiết
   const [provinces, setProvinces] = useState([]);
@@ -247,9 +247,9 @@ const EditWarehouseInline = ({ warehouseId }) => {
   useEffect(() => {
     const fetchData = async () => {
          // Lấy danh sách tỉnh
-         const fetchedProvinces = await warehouseService.getAllProvinces();
-         setProvinces(fetchedProvinces);
-         console.log("Fetched provinces:", fetchedProvinces);
+        //  const fetchedProvinces = await warehouseService.getAllProvinces();
+        //  setProvinces(fetchedProvinces);
+        //  console.log("Fetched provinces:", fetchedProvinces);
 
       await warehouseService.getById(warehouseId, (data) => {
         setWarehouse(data);
@@ -259,10 +259,9 @@ const EditWarehouseInline = ({ warehouseId }) => {
           description: data.description || "",
           province: data.province?.provinceId || "", // Sử dụng provinceId để gán vào select
           accessCode: data.accessCode
-
         });
       });
-    
+      
     };
    
     fetchData();
@@ -270,6 +269,10 @@ const EditWarehouseInline = ({ warehouseId }) => {
 
   const onSubmit = async (formData) => {
     try {
+      if (!formData.name?.trim()) {
+        toast.error("Tên kho là bắt buộc");
+        return;
+      }
       await warehouseService.update(warehouseId, {
         name: formData.name,
         description: formData.description,
@@ -277,7 +280,20 @@ const EditWarehouseInline = ({ warehouseId }) => {
         accessCode: formData.accessCode
       });
       toast.success("Cập nhật thành công!");
-      window.location.reload();
+      const data= await warehouseService.getAll(setData);
+     
+      //     item.id === warehouseId
+      //       ? {
+      //           ...item,
+      //           name: formData.name,
+      //           description: formData.description,
+      //           province: provinces.find(p => p.provinceId === formData.province),
+      //           accessCode: formData.accessCode
+      //         }
+      //       : item
+      //   )
+      // );
+      // window.location.reload();
     } catch (error) {
       console.error("Lỗi cập nhật kho:", error);
       toast.error("Cập nhật thất bại!");
@@ -290,26 +306,26 @@ const EditWarehouseInline = ({ warehouseId }) => {
       <label className="block mb-1 text-sm font-medium">Tên kho</label>
       <Input {...register("name")}  />
     </div>
-    <div>
+    {/* <div>
         <label className="block mb-1 text-sm font-medium">Access Code</label>
         <Input {...register("accessCode")}  />
-      </div>
+      </div> */}
     <div>
       <label className="block mb-1 text-sm font-medium">Mô tả</label>
       <Input {...register("description")}  />
     </div>
     <div>
-  <label className="block mb-1 text-sm font-medium">Tỉnh</label>
   
 </div>
       <Button type="submit">Lưu thay đổi</Button>
   </form>
   );
 };
-const CreateWarehouseInline = () => {
+const CreateWarehouseInline = ({setData,onClose }) => {
   const { register, handleSubmit, reset } = useForm();
   const [warehouse, setWarehouse] = useState(null); // Lưu dữ liệu chi tiết
   const [provinces, setProvinces] = useState([]);
+const [openCreateSheet, setOpenCreateSheet] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -323,6 +339,14 @@ const CreateWarehouseInline = () => {
   }, []);
 
   const onSubmit = async (formData) => {
+    if (!formData.name?.trim()) {
+      toast.error("Tên kho là bắt buộc");
+      return;
+    }
+    if (!formData.province?.trim()) {
+      toast.error("Tên tỉnh là bắt buộc");
+      return;
+    }
     try {
       await warehouseService.create({
         name: formData.name,
@@ -330,11 +354,14 @@ const CreateWarehouseInline = () => {
         provinceId: formData.province,
         accessCode : formData.accessCode
       });
-      toast.success("Cập nhật thành công!");
-      window.location.reload();
+      toast.success("Thêm mới thành công!");
+      const data= await warehouseService.getAll(setData);
+      onClose?.(); // Gọi hàm đóng Sheet
+      reset(); 
+      // window.location.reload();
     } catch (error) {
-      console.error("Lỗi cập nhật kho:", error);
-      toast.error("Cập nhật thất bại!");
+      console.error("Lỗi thêm mới  kho:", error);
+      // toast.error("Thêm mới thất bại!");
     }
   };
 

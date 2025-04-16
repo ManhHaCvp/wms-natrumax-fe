@@ -139,22 +139,22 @@ const columns = [
 
 const ViewUserList = () => {
   const [data, setData] = useState([
-    {
-      id: 1,
-      accountName: "admin",
-      phoneNumber: "0812497838",
-      address: "Admin Street, City",
-      status: true,
-      role: "ROLE_ADMIN",
-    },
-    {
-      id: 2,
-      accountName: "accountant",
-      phoneNumber: "0812497838",
-      address: "User Street, City",
-      status: true,
-      role: "ROLE_ACCOUNTANT",
-    },
+    // {
+    //   id: 1,
+    //   accountName: "admin",
+    //   phoneNumber: "0812497838",
+    //   address: "Admin Street, City",
+    //   status: true,
+    //   role: "ROLE_ADMIN",
+    // },
+    // {
+    //   id: 2,
+    //   accountName: "accountant",
+    //   phoneNumber: "0812497838",
+    //   address: "User Street, City",
+    //   status: true,
+    //   role: "ROLE_ACCOUNTANT",
+    // },
   ]);
 
   useEffect(() => {

@@ -79,6 +79,8 @@ const Routes = () => {
       { path: "/admin/discount/create", element: <CreateDiscount /> },
       { path: "/admin/discount/update/:id", element: <UpdateDiscount /> },
 
+       //Rewards
+      //  { path: "/admin/rewards", element: <ViewRewardList /> },
       //Warehouse
       { path: "/admin/warehouses", element: <ViewWarehouseList /> },
     ],
