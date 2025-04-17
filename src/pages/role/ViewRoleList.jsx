@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 
 const columnHelper = createColumnHelper();
 
-const columns = [
+const columns = (setData)=> [
   columnHelper.display({
     id: "select",
     header: ({ table }) => (
@@ -91,7 +91,7 @@ const columns = [
                     <SheetTitle>Sửa vai trò</SheetTitle>
                     <SheetDescription>Chỉnh sửa thông tin vai trò.</SheetDescription>
                   </SheetHeader>
-                  <EditRoleInline roleId={data.roleId} />
+                  <EditRoleInline roleId={data.roleId}  setData={setData} />
                 </SheetContent>
               </Sheet>
             </DropdownMenuItem>
@@ -135,9 +135,9 @@ const ViewRoleList = () => {
   return (
     <DataTable
       title="Danh sách vai trò"
-      columns={columns}
+      columns={columns(setData)}
       data={data}
-      addLink="/admin/role/create"
+      // addLink="/admin/role/create"
       // addButton={
       //   <Sheet>
       //     <SheetTrigger asChild>
@@ -156,7 +156,7 @@ const ViewRoleList = () => {
 };
 
 export default ViewRoleList;
-const EditRoleInline = ({ roleId }) => {
+const EditRoleInline = ({ roleId, setData }) => {
   const { register, handleSubmit, reset } = useForm();
   const [role, setRole] = useState(null); // Lưu dữ liệu chi tiết
 
@@ -181,7 +181,9 @@ const EditRoleInline = ({ roleId }) => {
         description: formData.description,
       });
       toast.success("Cập nhật thành công!");
-      window.location.reload();
+      const data= await roleService.getAll(setData);
+
+      // window.location.reload();
     } catch (error) {
       console.error("Lỗi cập nhật vai trò:", error);
     }

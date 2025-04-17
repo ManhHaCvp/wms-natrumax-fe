@@ -243,7 +243,10 @@ const EditWarehouseInline = ({ warehouseId, setData }) => {
   const { register, handleSubmit, reset } = useForm();
   const [warehouse, setWarehouse] = useState(null); // Lưu dữ liệu chi tiết
   const [provinces, setProvinces] = useState([]);
-
+   const [user, setUser] = useState(() => {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    });
   useEffect(() => {
     const fetchData = async () => {
          // Lấy danh sách tỉnh
@@ -258,7 +261,7 @@ const EditWarehouseInline = ({ warehouseId, setData }) => {
           name: data.name || data.warehouseName || "",
           description: data.description || "",
           province: data.province?.provinceId || "", // Sử dụng provinceId để gán vào select
-          accessCode: data.accessCode
+          // accessCode: data.accessCode
         });
       });
       
@@ -277,7 +280,8 @@ const EditWarehouseInline = ({ warehouseId, setData }) => {
         name: formData.name,
         description: formData.description,
         provinceId: formData.province,
-        accessCode: formData.accessCode
+        userId: user.id
+        // accessCode: formData.accessCode
       });
       toast.success("Cập nhật thành công!");
       const data= await warehouseService.getAll(setData);

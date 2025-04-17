@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 const columnHelper = createColumnHelper();
 
-const columns = [
+const columns = (setData) =>[
   columnHelper.display({
     id: "select",
     header: ({ table }) => (
@@ -121,7 +121,7 @@ const columns = [
                                 <SheetTitle>Sửa nhóm hàng</SheetTitle>
                                 <SheetDescription>Chỉnh sửa thông tin nhóm hàng.</SheetDescription>
                               </SheetHeader>
-                              <EditCategoryInline categoryId={data.categoryId} />
+                              <EditCategoryInline categoryId={data.categoryId} setData={setData} />
                             </SheetContent>
                           </Sheet>
                         </DropdownMenuItem>
@@ -160,7 +160,7 @@ const ViewCategoryList = () => {
   return (
     <DataTable
       title="Danh sách nhóm hàng"
-      columns={columns}
+      columns={columns(setData)}
       data={data}
       // addLink="/admin/category/create"
       addButton={
@@ -170,10 +170,10 @@ const ViewCategoryList = () => {
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
-              <SheetTitle>Thêm vai trò</SheetTitle>
-              <SheetDescription>Nhập thông tin vai trò mới</SheetDescription>
+              <SheetTitle>Thêm nhóm hàng</SheetTitle>
+              <SheetDescription>Nhập thông tin nhóm hàng mới</SheetDescription>
             </SheetHeader>
-            <CreateCategoryInline />
+            <CreateCategoryInline setData = {setData} />
           </SheetContent>
         </Sheet>}
     />
@@ -212,7 +212,7 @@ const ViewDetailRoleInline = ({ categoryId }) => {
     </form>
   );
 };
-const EditCategoryInline = ({ categoryId }) => {
+const EditCategoryInline = ({ categoryId, setData }) => {
   const { register, handleSubmit, reset } = useForm();
   const [category, setCategory] = useState(null); // Lưu dữ liệu chi tiết
 
@@ -232,12 +232,13 @@ const EditCategoryInline = ({ categoryId }) => {
   }, [categoryId, reset]);
   const onSubmit = async (formData) => {
     try {
-
       await categoryService.update(categoryId, {
         name: formData.name,
         description: formData.description,      });
       // toast.success("Cập nhật thành công!");
-      window.location.reload();
+      // window.location.reload();
+      const data= await categoryService.getAll(setData);
+
     } catch (error) {
       console.error("Lỗi cập nhật vai trò:", error);
     }
@@ -257,7 +258,7 @@ const EditCategoryInline = ({ categoryId }) => {
     </form>
   );
 };
-const CreateCategoryInline = () => {
+const CreateCategoryInline = ({setData,onClose }) => {
   // console.log(roleId);
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -272,6 +273,8 @@ const CreateCategoryInline = () => {
         description: formData.description,
       });
       // toast.success("Tạo vai trò thành công!");
+      const data= await categoryService.getAll(setData);
+
     } catch (error) {
       console.error("Lỗi cập nhật vai trò:", error);
     }
