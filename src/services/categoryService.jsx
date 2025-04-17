@@ -42,8 +42,7 @@ const categoryService = {
   async create(payload) {
     try {
       await categoryApi.create(payload);
-      toast.success("Category created!");
-      window.location.reload();
+      toast.success("Tạo mới nhóm hàng thành công");
     } catch (error) {
       handleApiError(error);
     }

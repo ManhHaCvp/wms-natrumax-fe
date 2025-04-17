@@ -136,6 +136,8 @@ const columns = (setData) =>[
 ];
 
 const ViewCategoryList = () => {
+    const [openCreateSheet, setOpenCreateSheet] = useState(false);
+  
   const [data, setData] = useState([
     // { categoryId: 1, categoryName: "Nhóm hàng A", description: "Mô tả nhóm hàng A" },
     // { categoryId: 2, categoryName: "Nhóm hàng B", description: "Mô tả nhóm hàng B" },
@@ -164,7 +166,7 @@ const ViewCategoryList = () => {
       data={data}
       // addLink="/admin/category/create"
       addButton={
-        <Sheet>
+        <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
           <SheetTrigger asChild>
           <Button className="ms-3"><Plus /> Thêm mới</Button>
           </SheetTrigger>
@@ -173,7 +175,7 @@ const ViewCategoryList = () => {
               <SheetTitle>Thêm nhóm hàng</SheetTitle>
               <SheetDescription>Nhập thông tin nhóm hàng mới</SheetDescription>
             </SheetHeader>
-            <CreateCategoryInline setData = {setData} />
+            <CreateCategoryInline setData = {setData} onClose={() => setOpenCreateSheet(false)} />
           </SheetContent>
         </Sheet>}
     />
@@ -267,6 +269,10 @@ const CreateCategoryInline = ({setData,onClose }) => {
     },
   });
   const onSubmit = async (formData) => {
+    if (!formData.name?.trim()) {
+          toast.error("Tên nhóm hàng là bắt buộc");
+          return;
+        }
     try {
       await categoryService.create({
         name: formData.name,
@@ -274,7 +280,8 @@ const CreateCategoryInline = ({setData,onClose }) => {
       });
       // toast.success("Tạo vai trò thành công!");
       const data= await categoryService.getAll(setData);
-
+      onClose?.(); // Gọi hàm đóng Sheet
+      reset(); 
     } catch (error) {
       console.error("Lỗi cập nhật vai trò:", error);
     }

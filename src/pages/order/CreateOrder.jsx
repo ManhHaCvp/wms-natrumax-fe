@@ -168,7 +168,7 @@ const CreateOrder = () => {
                       <TableCell className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableHead colSpan={2}>Giảm giá</TableHead>
+                      <TableHead colSpan={2}>Giảm giá: {discount.description} ({discount.discountPercent}%) </TableHead>
                       <TableCell className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
                     </TableRow>
                   </TableBody>

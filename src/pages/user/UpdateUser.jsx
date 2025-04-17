@@ -21,7 +21,7 @@ const UpdateUser = () => {
     // clientId: "ba477a2c4a9f-4be8-9996-f7cdf2b46119",
     // clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
   });
-
+  console.log(user);
   const { id } = useParams("id");
   const [provinces, setProvinces] = useState([]);
   const [apiConnection,setApiConnection] = useState({});
@@ -30,8 +30,6 @@ const UpdateUser = () => {
     const fetchUserData = async () => {
       try {
         const data = await userService.getById(id, setUser);
-        console.log(data);
-        // console.log(data.detail);
         setApiConnection(JSON.parse(data.detail));
       } catch (error) {
         console.error("Failed to fetch user:", error);
@@ -46,7 +44,6 @@ const UpdateUser = () => {
       // Lấy danh sách tỉnh từ API
       const fetchedProvinces = await warehouseService.getAllProvinces();
       setProvinces(fetchedProvinces);
-      console.log("Fetched provinces:", fetchedProvinces);
     };
 
     fetchData();
@@ -56,16 +53,21 @@ const UpdateUser = () => {
   const handleSave = async () => {
     try {
       const payload = {
-        ...user, // sao chép tất cả thông tin từ `user`
-        id: id, // thêm `id` vào payload
-        roleId: user.role.id,
-        provinceId: user.province,
-        detail: JSON.stringify(apiConnection)
+        userId: user.id,
+        accountName: user.accountName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        address: user.address,
+        retailer: apiConnection.retailer,
+        clientId: apiConnection.phoneNumber,
+        clientSecret: apiConnection.phoneNumber,
+        provinceId: user.province.provinceId,
+        roleId: user.role.id
       };
       // console.log(user.province);
       // Cập nhật thông tin người dùng với tỉnh thành đã chọn
       await userService.update(payload);
-      alert("Cập nhật thành công!");
+      // alert("Cập nhật thành công!");
       // Hoặc bạn có thể chuyển hướng hoặc hiển thị toast thành công
     } catch (error) {
       console.error("Cập nhật thất bại", error);
@@ -96,6 +98,7 @@ const UpdateUser = () => {
         <CardHeader>
           <CardTitle>Thông tin cơ bản</CardTitle>
         </CardHeader>
+        {/* <span>{user.wallet.wallet}</span> */}
         <CardContent className="grid grid-cols-2 gap-3">
           <InputField
             label="Tên tài khoản"
@@ -126,7 +129,7 @@ const UpdateUser = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700">Tỉnh thành</label>
             <select
-              value={user.province}
+              value={user.province.provinceId}
               onChange={handleProvinceChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             >
@@ -149,17 +152,17 @@ const UpdateUser = () => {
           <InputField
             label="Retailer"
             value={apiConnection.retailer}
-            onChange={(e) => setApiConnection({ ...user, retailer: e.target.value })}
+            onChange={(e) => setApiConnection({ ...apiConnection, retailer: e.target.value })}
           />
           <InputField
             label="Client ID"
             value={apiConnection.client_id}
-            onChange={(e) => setApiConnection({ ...user, clientId: e.target.value })}
+            onChange={(e) => setApiConnection({ ...apiConnection, clientId: e.target.value })}
           />
           <InputField
             label="Client Secret"
             value={apiConnection.client_secret}
-            onChange={(e) => setApiConnection({ ...user, clientSecret: e.target.value })}
+            onChange={(e) => setApiConnection({ ...apiConnection, clientSecret: e.target.value })}
             className="col-span-2"
           />
         </CardContent>

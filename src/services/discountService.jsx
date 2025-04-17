@@ -6,8 +6,8 @@ const formatDiscount = (discount, now) => {
   const activeDate = new Date(discount.activeDate);
   const expiryDate = new Date(discount.expiryDate);
 
-  const status = now < activeDate ? "-1" : now < expiryDate ? "0" : "1";
-
+  // const status = now < activeDate ? "-1" : now < expiryDate ? "0" : "1";
+  console.log(discount)
   return {
     discountId: discount.discountId,
     minimumAmount: discount.minimumAmount,
@@ -15,7 +15,7 @@ const formatDiscount = (discount, now) => {
     description: discount.description,
     activeDate: formatDate.formatJsonToDate(discount.activeDate),
     expiryDate: formatDate.formatJsonToDate(discount.expiryDate),
-    status,
+    status: discount.status?"1":"0",
   };
 };
 
@@ -70,6 +70,13 @@ const discountService = {
   async update(discountId,payload) {
     try {
       await discountApi.update(discountId,payload);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+  async updateStatus(id) {
+    try {
+      await discountApi.changeStatus(id);
     } catch (error) {
       handleApiError(error);
     }

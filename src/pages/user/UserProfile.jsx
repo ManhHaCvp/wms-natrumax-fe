@@ -39,7 +39,7 @@ const UserProfile = () => {
       try {
         const data = await userService.getById(id, setUser);
         setWarehouse(JSON.parse(data.detail));
-        // setResult(data);
+        setResult(data);
         // console.log(result);
 
       } catch (error) {
@@ -109,7 +109,7 @@ const UserProfile = () => {
           </div>
         </Card>
         <Tabs defaultValue="order-history" className="w-full ms-5">
-          <TabsList className="grid w-full grid-cols-5 ">
+          <TabsList className="grid w-full grid-cols-6 ">
             <TabsTrigger value="order-history">Lịch sử đặt hàng</TabsTrigger>
             <TabsTrigger value="wallet">Ví</TabsTrigger>
             <TabsTrigger value="commission">Hoa hồng</TabsTrigger>

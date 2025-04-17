@@ -10,7 +10,7 @@ const formatUser = (user) => ({
   detail: user.detail,
   status: user.status,
   role: user.role || "Chưa phân quyền",
-  provice: user.province
+  provice: user.provice
 });
 
 const userService = {
@@ -35,8 +35,7 @@ const userService = {
       const data = Array.isArray(user)
         ? user.map(formatUser)
         : formatUser(user);
-
-      setData(data);
+      setData(user);
       return user;
     } catch (error) {
       handleApiError(error);

@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Plus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { createColumnHelper } from "@tanstack/react-table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.jsx";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import { Badge } from "@/components/ui/badge.jsx";
 import discountService from "@/services/discountService.jsx";
@@ -20,36 +14,24 @@ import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 const columnHelper = createColumnHelper();
 
-const columns = [
+const columns = (setData) => [
   columnHelper.display({
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
     enableSorting: false,
     enableHiding: false,
   }),
   columnHelper.accessor("description", {
     name: "Mô tả",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Mô tả
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -59,10 +41,7 @@ const columns = [
   columnHelper.accessor("minimumAmount", {
     name: "Số tiền tối thiểu",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Số tiền tối thiểu
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -79,10 +58,7 @@ const columns = [
   columnHelper.accessor("discountPercent", {
     name: "Mức giảm giá",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Mức giảm giá
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -92,10 +68,7 @@ const columns = [
   columnHelper.accessor("activeDate", {
     name: "Ngày bắt đầu",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Ngày bắt đầu
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -105,10 +78,7 @@ const columns = [
   columnHelper.accessor("expiryDate", {
     name: "Ngày kết thúc",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Ngày kết thúc
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -116,18 +86,17 @@ const columns = [
     cell: (info) => <div>{info.getValue()}</div>,
   }),
   columnHelper.accessor("status", {
-    name: "Trạng thái",
+    id: "status",
     header: "Trạng thái",
-    cell: (info) =>  (
-      info.getValue() === "-1" ? (
-        <Badge variant="tertiary">Chưa bắt đầu</Badge>
-      ) : info.getValue() === "0" ? (
-        <Badge>Đang có hiệu lực</Badge>
-      ) : (
-        <Badge variant="destructive">Đã hết hạn</Badge>
-      )
-    ),
+    cell: (info) => {
+      const value = info.getValue();
+      if (value === "-1") return <Badge variant="tertiary">Chưa bắt đầu</Badge>;
+      if (value === "1") return <Badge>Đang có hiệu lực</Badge>;
+      if (value === "0") return <Badge variant="destructive">Đã hết hạn</Badge>;
+      return <Badge variant="outline">Không xác định</Badge>;
+    },
   }),
+
   columnHelper.display({
     id: "actions",
     header: "Thao tác",
@@ -143,8 +112,8 @@ const columns = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-             {/* Nút "Xem chi tiết" */}
-             <DropdownMenuItem asChild>
+            {/* Nút "Xem chi tiết" */}
+            <DropdownMenuItem asChild>
               <Sheet>
                 <SheetTrigger asChild>
                   <button className="w-full pl-2 text-sm text-left">Xem chi tiết</button>
@@ -158,23 +127,35 @@ const columns = [
                 </SheetContent>
               </Sheet>
             </DropdownMenuItem>
-             <DropdownMenuItem asChild>
-                                      <Sheet>
-                                        <SheetTrigger asChild>
-                                          <button className="w-full pl-2 text-sm text-left">Sửa</button>
-                                        </SheetTrigger>
-                                        <SheetContent>
-                                          <SheetHeader>
-                                            <SheetTitle>Sửa kho</SheetTitle>
-                                            <SheetDescription>Chỉnh sửa thông tin kho.</SheetDescription>
-                                          </SheetHeader>
-                                          <EditDiscountInline discountId={data.discountId} />
-                                        </SheetContent>
-                                      </Sheet>
-                                    </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button className="w-full pl-2 text-sm text-left">Sửa</button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Sửa kho</SheetTitle>
+                    <SheetDescription>Chỉnh sửa thông tin kho.</SheetDescription>
+                  </SheetHeader>
+                  <EditDiscountInline discountId={data.discountId} setData={setData} />
+                </SheetContent>
+              </Sheet>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <button className="w-full pl-2 text-sm text-left"
+                 onClick={async () => {
+                  try {
+                    await discountService.updateStatus(data.discountId);
+                    toast.success("Đã cập nhật trạng thái thành công");
+                    await discountService.getAll(setData)
+                  } catch (error) {
+                    toast.error("Cập nhật trạng thái thất bại");
+                    console.error(error);
+                  }
+                }}
+              >Chuyển đổi trạng thái</button>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-         
-           
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -193,6 +174,7 @@ const ViewDiscountList = () => {
     // { discountId: 7, minimumAmount: "950000", discountPercent: "6%", description: "Ưu đãi cho đơn hàng đầu tiên", activeDate: "05/04/2025", expiryDate: "15/04/2025", status: "0" },
     // { discountId: 8, minimumAmount: "2500000", discountPercent: "18%", description: "Đại hội giảm giá", activeDate: "10/04/2025", expiryDate: "20/04/2025", status: "0" },
   ]);
+  const [openCreateSheet, setOpenCreateSheet] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -209,25 +191,28 @@ const ViewDiscountList = () => {
   return (
     <DataTable
       title="Danh sách giảm giá"
-      columns={columns}
+      columns={columns(setData)}
       data={data}
       addButton={
-        <Sheet>
+        <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
           <SheetTrigger asChild>
-            <Button className="ms-3"><Plus /> Thêm mới</Button>
+            <Button className="ms-3">
+              <Plus /> Thêm mới
+            </Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
               <SheetTitle>Thêm khuyến mãi</SheetTitle>
               <SheetDescription>Nhập thông tin khuyến mãi mới</SheetDescription>
             </SheetHeader>
-            <CreateDiscountInline />
+            <CreateDiscountInline setData={setData} onClose={() => setOpenCreateSheet(false)} />
           </SheetContent>
-        </Sheet>}
+        </Sheet>
+      }
       // addLink="/admin/discount/create"
     />
   );
-}
+};
 const ViewDetailDiscountInline = ({ discountId }) => {
   const { register, handleSubmit, reset } = useForm();
   const [discount, setDiscount] = useState(null); // Lưu dữ liệu chi tiết
@@ -245,7 +230,7 @@ const ViewDetailDiscountInline = ({ discountId }) => {
           activeDate: convertToDateInputFormat(data.activeDate),
           expiryDate: convertToDateInputFormat(data.expiryDate),
           status: data.status === "1" ? "Đang hoạt động" : "Ngưng hoạt động",
-        });    
+        });
       });
     };
 
@@ -286,7 +271,7 @@ const ViewDetailDiscountInline = ({ discountId }) => {
     </form>
   );
 };
-const EditDiscountInline = ({ discountId }) => {
+const EditDiscountInline = ({ discountId, setData }) => {
   const { register, handleSubmit, reset } = useForm();
   const [discount, setDiscount] = useState(null); // Lưu dữ liệu chi tiết
 
@@ -303,7 +288,7 @@ const EditDiscountInline = ({ discountId }) => {
           activeDate: convertToDateInputFormat(data.activeDate),
           expiryDate: convertToDateInputFormat(data.expiryDate),
           status: data.status === "1" ? "Đang hoạt động" : "Ngưng hoạt động",
-        });    
+        });
       });
     };
 
@@ -321,76 +306,98 @@ const EditDiscountInline = ({ discountId }) => {
         minimumAmount: Number(formData.minimumAmount),
         activeDate: formatToDateTime(formData.activeDate),
         expiryDate: formatToDateTime(formData.expiryDate),
-        status: formData.status === "Đang hoạt động", // boolean
       });
       toast.success("Cập nhật thành công!");
-      window.location.reload();
+      const data = await discountService.getAll(setData);
     } catch (error) {
       console.error("Lỗi cập nhật vai trò:", error);
       toast.error("Cập nhật thất bại!");
     }
   };
   return (
-    <form  onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
       <div>
         <label className="block mb-1 text-sm font-medium">Mô tả</label>
-        <Input {...register("description")}  />
+        <Input {...register("description")} />
       </div>
 
       <div>
         <label className="block mb-1 text-sm font-medium">Phần trăm giảm (%)</label>
-        <Input type="number" {...register("discountPercent")}  />
+        <Input type="number" {...register("discountPercent")} />
       </div>
 
       <div>
         <label className="block mb-1 text-sm font-medium">Số tiền tối thiểu (VND)</label>
-        <Input type="number" {...register("minimumAmount")}  />
+        <Input type="number" {...register("minimumAmount")} />
       </div>
 
       <div>
         <label className="block mb-1 text-sm font-medium">Ngày bắt đầu</label>
-        <Input type="date" {...register("activeDate")}  />
+        <Input type="date" {...register("activeDate")} />
       </div>
 
       <div>
         <label className="block mb-1 text-sm font-medium">Ngày kết thúc</label>
-        <Input type="date" {...register("expiryDate")}  />
+        <Input type="date" {...register("expiryDate")} />
       </div>
 
-      <div>
-        <label className="block mb-1 text-sm font-medium">Trạng thái</label>
-        <Input {...register("status")}  />
-      </div>
-            <Button type="submit">Lưu thay đổi</Button>
-      
+      <Button type="submit">Lưu thay đổi</Button>
     </form>
   );
 };
 
-const CreateDiscountInline = () => {
+const CreateDiscountInline = ({ setData, onClose }) => {
   const { register, handleSubmit, reset } = useForm();
+  const [openCreateSheet, setOpenCreateSheet] = useState(false);
 
   const onSubmit = async (formData) => {
     try {
       const formatToDateTime = (dateStr) => {
         return `${dateStr}T10:00:00`; // Hoặc T00:00:00 nếu không cần giờ cụ thể
       };
+      if (!formData.discountPercent?.trim()) {
+        toast.error("Phần trăm giảm là bắt buộc");
+        return;
+      }
+      if (formData.discountPercent?.trim()>100) {
+        toast.error("Phần trăm giảm phải nhỏ hơn 100%");
+        return;
+      }
+      if (!formData.minimumAmount?.trim()) {
+        toast.error("Số tiền tối thiểu là bắt buộc");
+        return;
+      }
+      if (!formData.activeDate?.trim()) {
+        toast.error("Ngày bắt đầu là bắt buộc");
+        return;
+      }
+      if (!formData.expiryDate?.trim()) {
+        toast.error("Ngày kết thúc là bắt buộc");
+        return;
+      }
+      const activeDate = new Date(formData.activeDate);
+      const expiryDate = new Date(formData.expiryDate);
 
+      if (activeDate >= expiryDate) {
+        toast.error("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
+        return;
+      }
       const payload = {
         description: formData.description,
         discountPercent: Number(formData.discountPercent),
         minimumAmount: Number(formData.minimumAmount),
         activeDate: formatToDateTime(formData.activeDate),
         expiryDate: formatToDateTime(formData.expiryDate),
-        status: formData.status === "Đang hoạt động",
       };
 
       await discountService.create(payload);
       toast.success("Tạo mới thành công!");
-      reset(); // Reset form sau khi submit
+      const data = await discountService.getAll(setData);
+      onClose?.(); // Gọi hàm đóng Sheet
+      reset();
     } catch (error) {
       console.error("Lỗi tạo mới giảm giá:", error);
-      toast.error("Tạo mới thất bại!");
+      // toast.error("Tạo mới thất bại!");
     }
   };
 
@@ -421,13 +428,13 @@ const CreateDiscountInline = () => {
         <Input type="date" {...register("expiryDate")} />
       </div>
 
-      <div>
+      {/* <div>
         <label className="block mb-1 text-sm font-medium">Trạng thái</label>
         <select {...register("status")} className="w-full border rounded p-2">
           <option value="Đang hoạt động">Đang hoạt động</option>
           <option value="Ngưng hoạt động">Ngưng hoạt động</option>
         </select>
-      </div>
+      </div> */}
 
       <Button type="submit">Tạo mới</Button>
     </form>
