@@ -1,16 +1,5 @@
 import React from "react";
-import {
-  Clock3,
-  Users,
-  Package,
-  ShoppingCart,
-  CalendarCheck,
-  Book,
-  BookText,
-  Banknote,
-  ChevronRight,
-  ChevronDown,
-} from "lucide-react";
+import { Clock3, Users, Package, ShoppingCart, CalendarCheck, Book, BookText, Banknote, ChevronRight, ChevronDown } from "lucide-react";
 import {
   Sidebar,
   SidebarHeader,
@@ -95,7 +84,7 @@ const AppSidebar = () => {
         items: [
           {
             title: "Danh sách",
-            url: "#",
+            url: "admin/commissions",
           },
           {
             title: "Chính sách",
@@ -151,7 +140,7 @@ const AppSidebar = () => {
         <SidebarGroup>
           <SidebarGroupLabel>Phân hệ</SidebarGroupLabel>
           <SidebarMenu>
-            {data.navMain.map((item) => (
+            {data.navMain.map((item) =>
               item.url !== "#" ? (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
@@ -162,10 +151,7 @@ const AppSidebar = () => {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ) : (
-                <Collapsible
-                  key={item.title}
-                  className="group/collapsible"
-                >
+                <Collapsible key={item.title} className="group/collapsible">
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton>
@@ -180,10 +166,7 @@ const AppSidebar = () => {
                         <SidebarMenuSub>
                           {item.items.map((item) => (
                             <SidebarMenuSubItem key={item.title}>
-                              <SidebarMenuSubButton
-                                asChild
-                                isActive={item.isActive}
-                              >
+                              <SidebarMenuSubButton asChild isActive={item.isActive}>
                                 <Link to={item.url}>{item.title}</Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -193,8 +176,8 @@ const AppSidebar = () => {
                     ) : null}
                   </SidebarMenuItem>
                 </Collapsible>
-              )
-            ))}
+              ),
+            )}
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>

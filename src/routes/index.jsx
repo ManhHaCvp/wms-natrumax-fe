@@ -22,6 +22,11 @@ import ViewOrderDetail from "@/pages/order/ViewOrderDetail";
 import CreateOrder from "@/pages/order/CreateOrder.jsx";
 import ViewDiscountList from "@/pages/discount/ViewDiscountList.jsx";
 import ViewWarehouseList from "@/pages/warehouse/ViewWarehouseList";
+import ViewCommissionList from "@/pages/commission/ViewCommissionList";
+import CommissionPolicy from "@/pages/commission/CommissionPolicy";
+import CommissionHistory from "@/pages/commission/CommissionHistory";
+import CommissionDetail from "@/pages/commission/CommissionDetail";
+import AddCommission from "@/pages/commission/AddCommission";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "@/pages/error/ErrorPage";
 import ComingSoonPage from "@/pages/error/ComingSoonPage";
 
@@ -77,6 +82,13 @@ const Routes = () => {
 
       //Warehouse
       { path: "/admin/warehouses", element: <ViewWarehouseList /> },
+
+      //Commission
+      { path: "/admin/commissions", element: <ViewCommissionList /> },
+      { path: "/admin/commissions/create", element: <AddCommission /> },
+      { path: "/admin/commissions/policy/:id", element: <CommissionPolicy /> },
+      { path: "/admin/commissions/history/:id", element: <CommissionHistory /> },
+      { path: "/admin/commissions/history/detail/:id", element: <CommissionDetail /> },
     ],
   };
 

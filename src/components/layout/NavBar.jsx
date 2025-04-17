@@ -3,15 +3,7 @@ import { Bell, Settings } from "lucide-react";
 import toast from "react-hot-toast";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Avatar } from "@/components/ui/avatar.jsx";
-import {
-  DropdownMenu,
-  DropdownMenuGroup,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuGroup, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar.jsx";
 import { useAuth } from "@/providers/authProvider.jsx";
 
@@ -47,27 +39,20 @@ const Navbar = () => {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-52">
-            <DropdownMenuLabel>{user.accountName}</DropdownMenuLabel>
+            {/* <DropdownMenuLabel>{user.accountName}</DropdownMenuLabel> */}
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                Tài khoản
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Cài đặt
-              </DropdownMenuItem>
+              <DropdownMenuItem>Tài khoản</DropdownMenuItem>
+              <DropdownMenuItem>Cài đặt</DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Hỗ trợ</DropdownMenuItem>
             <DropdownMenuItem>GitHub</DropdownMenuItem>
             <DropdownMenuItem disabled>API</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              Đăng xuất
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
       </div>
     </nav>
   );
