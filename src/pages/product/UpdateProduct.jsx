@@ -34,8 +34,8 @@ const UpdateProduct = () => {
   };
 
   return (
-    <div className="m-5">
-      <div className="flex justify-between items-center mb-5">
+    <div className="space-y-5 m-5">
+      <div className="flex justify-between items-center">
         <h1 className="text-[#182F73] text-3xl font-bold">Thông tin hàng hóa</h1>
         <div>
           <Button><Check />Lưu</Button>
@@ -43,7 +43,7 @@ const UpdateProduct = () => {
         </div>
       </div>
 
-      <div className="flex">
+      <div className="flex space-x-5">
         <Card className="flex flex-col items-center justify-center w-fit h-fit p-5">
           <div className="bg-sidebar-border w-80 h-80 rounded mb-3">
             {product.image &&
@@ -59,7 +59,7 @@ const UpdateProduct = () => {
         </Card>
 
         {/* Form product Information */}
-        <Card className="w-full h-fit ms-5">
+        <Card className="w-full h-fit">
           <CardHeader>
             <CardTitle>Thông tin cơ bản</CardTitle>
           </CardHeader>

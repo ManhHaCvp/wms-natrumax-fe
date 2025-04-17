@@ -32,7 +32,7 @@ const ViewUserDetail = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        await userService.getUserById(id, setUser);
+        await userService.getById(id, setUser);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }

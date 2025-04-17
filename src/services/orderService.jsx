@@ -1,7 +1,7 @@
 import orderApi from "@/api/orderApi.jsx";
 
 const orderService = {
-  async getOrderList(setData) {
+  async getAll(setData) {
     try {
       //const response = await orderApi.getOrderList();
       const response = [];

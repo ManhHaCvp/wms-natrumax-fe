@@ -1,14 +1,13 @@
 import apiClient from "@/utils/apiClient.jsx";
 import { BASE_URL } from "@/utils/constants.jsx";
 
+const CATEGORY_BASE = `${BASE_URL}/v1/categories`;
+
 const categoryApi = {
-  getCategoryList: () => apiClient.get(`${BASE_URL}/v1/categories/all-categories`),
-
-  getCategoryById: (id) => apiClient.get(`${BASE_URL}/v1/categories/${id}`),
-
-  createCategory: (categoryRequest) => apiClient.post(`${BASE_URL}/v1/categories`, categoryRequest),
-
-  updateCategory: (categoryRequest) => apiClient.put(`${BASE_URL}/v1/categories/${categoryRequest.id}`, categoryRequest),
-}
+  getAll: () => apiClient.get(CATEGORY_BASE),
+  getById: (id) => apiClient.get(`${CATEGORY_BASE}/${id}`),
+  create: (payload) => apiClient.post(CATEGORY_BASE, payload),
+  update: (payload) => apiClient.put(`${CATEGORY_BASE}/${payload.id}`, payload),
+};
 
 export default categoryApi;

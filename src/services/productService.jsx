@@ -1,46 +1,82 @@
 import productApi from "@/api/productApi.jsx";
+import handleApiError from "@/utils/HandleApiError.jsx";
+import toast from "react-hot-toast";
+
+const formatProduct = (product) => ({
+  id: product.id,
+  barcode: product.barcode || "",
+  name: product.name || "Chưa cập nhật",
+  price: product.basePrice,
+  stock: product.quantity,
+  status: product.status ? "Hoạt động" : "Bị khóa",
+});
 
 const productService = {
-  async getProductList(setProducts) {
+  async getAll(setData) {
     try {
-      const response = await productApi.getProductList();
-      // Ensure data is an array
-      const products = Array.isArray(response.data) ? response.data : response.data?.products || [];
+      const response = await productApi.getAll();
+      const products = Array.isArray(response.data)
+        ? response.data
+        : response.data?.products || [];
 
-      const data = products.map((product) => ({
-        id: product.id,
-        barcode: product.barcode, // Fallback to accountName
-        name: product.name || "Chưa cập nhật",
-        price: product.basePrice,
-        stock: product.quantity,
-        status: product.quantity !== 0,
-      }));
-
-      setProducts(data);
+      setData(products.map(formatProduct));
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
     }
   },
 
-  async getProductListPaging(setProducts, page, size) {
+  async getPaging(setData, page, size) {
     try {
-      const response = await productApi.getProductListPaging(page, size);
+      const response = await productApi.getPaging(page, size);
+      const products = Array.isArray(response.data.content)
+        ? response.data.content
+        : response.data.content?.products || [];
 
-      // Ensure data is an array
-      const products = Array.isArray(response.data.content) ? response.data.content : response.data.content?.products || [];
-
-      const data = products.map((product) => ({
-        id: product.id,
-        code: product.barcode, // Fallback to accountName
-        name: product.name || "Chưa cập nhật",
-        price: product.basePrice,
-        stock: product.quantity,
-        status: product.status ? "Hoạt động" : "Bị khóa",
-      }));
-
-      setProducts(data);
+      setData(products.map(formatProduct));
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
+    }
+  },
+
+  async getById(id, setData) {
+    try {
+      const response = await productApi.getById(id);
+      const product = response.data;
+
+      const data = Array.isArray(product)
+        ? product.map(formatProduct)
+        : formatProduct(product);
+
+      setData(data);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async create(payload) {
+    try {
+      await productApi.create(payload);
+      toast.success("Product created!");
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async update(payload) {
+    try {
+      await productApi.update(payload);
+      toast.success("Product updated!");
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async changeStatus(id) {
+    try {
+      await productApi.changeStatus(id);
+      toast.success("Product status updated!");
+    } catch (error) {
+      handleApiError(error);
     }
   },
 };

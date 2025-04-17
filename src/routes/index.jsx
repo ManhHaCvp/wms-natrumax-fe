@@ -9,18 +9,20 @@ import HomePage from "@/pages/main/HomePage";
 import ViewUserList from "@/pages/user/ViewUserList";
 import ViewUserDetail from "@/pages/user/ViewUserDetail";
 import UpdateUser from "@/pages/user/UpdateUser";
-import ChangePassword from "@/pages/user/ChangePassword.jsx";
+import ChangePassword from "@/pages/user/ChangePassword";
 import ViewRoleList from "@/pages/role/ViewRoleList";
 import ViewProductList from "@/pages/product/ViewProductList";
 import ViewProductDetail from "@/pages/product/ViewProductDetail";
-import UpdateProduct from "@/pages/product/UpdateProduct.jsx";
+import UpdateProduct from "@/pages/product/UpdateProduct";
 import ViewCategoryList from "@/pages/category/ViewCategoryList";
-import CreateCategory from "@/pages/category/CreateCategory.jsx";
-import UpdateCategory from "@/pages/category/UpdateCategory.jsx";
+import CreateCategory from "@/pages/category/CreateCategory";
+import UpdateCategory from "@/pages/category/UpdateCategory";
 import ViewOrderList from "@/pages/order/ViewOrderList";
 import ViewOrderDetail from "@/pages/order/ViewOrderDetail";
-import CreateOrder from "@/pages/order/CreateOrder.jsx";
-import ViewDiscountList from "@/pages/discount/ViewDiscountList.jsx";
+import CreateOrder from "@/pages/order/CreateOrder";
+import ViewDiscountList from "@/pages/discount/ViewDiscountList";
+import CreateDiscount from "@/pages/discount/CreateDiscount";
+import UpdateDiscount from "@/pages/discount/UpdateDiscount";
 import ViewWarehouseList from "@/pages/warehouse/ViewWarehouseList";
 import ViewCommissionList from "@/pages/commission/ViewCommissionList";
 import CommissionPolicy from "@/pages/commission/CommissionPolicy";
@@ -79,6 +81,8 @@ const Routes = () => {
 
       //Discounts
       { path: "/admin/discounts", element: <ViewDiscountList /> },
+      { path: "/admin/discount/create", element: <CreateDiscount /> },
+      { path: "/admin/discount/update/:id", element: <UpdateDiscount /> },
 
       //Warehouse
       { path: "/admin/warehouses", element: <ViewWarehouseList /> },

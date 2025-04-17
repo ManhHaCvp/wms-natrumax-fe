@@ -85,13 +85,13 @@ const columns = [
             >
               Sao chép
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to={`/admin/role/${data.id}`}>Xem</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to={`/admin/role/update/${data.id}`}>Sửa</Link>
-            </DropdownMenuItem>
+            {/*<DropdownMenuSeparator />*/}
+            {/*<DropdownMenuItem asChild>*/}
+            {/*  <Link to={`/admin/role/${data.id}`}>Xem</Link>*/}
+            {/*</DropdownMenuItem>*/}
+            {/*<DropdownMenuItem asChild>*/}
+            {/*  <Link to={`/admin/role/update/${data.id}`}>Sửa</Link>*/}
+            {/*</DropdownMenuItem>*/}
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -111,7 +111,7 @@ const ViewRoleList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        await roleService.getRoleList(setData);
+        await roleService.getAll(setData);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }

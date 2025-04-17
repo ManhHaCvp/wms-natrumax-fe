@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
 import authApi from "@/api/authApi";
+import handleApiError from "@/utils/HandleApiError.jsx";
 
 const authService = {
   async loginRequestOtp(phoneNumber, password, handleShowOtpForm) {
@@ -8,7 +9,7 @@ const authService = {
       handleShowOtpForm();
       toast.success(`Mã OTP đã được gửi đến ${phoneNumber}.`);
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
       toast.error(error.response?.data || "Số điện thoại hoặc mật khẩu không hợp lệ.");
     }
   },
@@ -22,7 +23,7 @@ const authService = {
       setAuthData(newToken, userData);
       navigate("/dashboard");
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
       toast.error(error.response?.data?.message || "OTP không hợp lệ hoặc đã hết hạn.");
     }
   },
@@ -32,7 +33,7 @@ const authService = {
       await authApi.resendOtp(phoneNumber);
       toast.success(`Mã OTP đã được gửi lại đến ${phoneNumber}.`);
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
       toast.error(error.response?.data || "Không thể gửi lại OTP.");
     }
   },
@@ -43,7 +44,7 @@ const authService = {
       handleShowOtpForm();
       toast.success(`Mã OTP đã được gửi đến ${phoneNumber}.`);
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
       toast.error(error.response?.data || "Số điện thoại không hợp lệ.");
     }
   },
@@ -54,7 +55,7 @@ const authService = {
       toast.success("OTP hợp lệ.");
       handleShowResetPasswordForm();
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
       toast.error(error.response?.data?.message || "OTP không hợp lệ hoặc đã hết hạn.");
     }
   },
@@ -69,7 +70,7 @@ const authService = {
       toast.success("Cài lại mật khẩu thành công.");
       handleShowLoginForm();
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
       toast.error(error.response?.data || "Không thể cài lại mật khẩu.");
     }
   }

@@ -56,8 +56,8 @@ const DataTable = ({ title, columns, data, addLink }) => {
   });
 
   return (
-    <Card className="m-5 p-5">
-      <div className="flex justify-between items-center mb-3">
+    <Card className="space-y-3 m-5 p-5">
+      <div className="flex justify-between items-center">
         <h1 className="text-[#182F73] text-3xl font-bold">{title}</h1>
         <div>
           <Button variant="outline"><CloudDownload /> Xuất file</Button>
@@ -68,7 +68,7 @@ const DataTable = ({ title, columns, data, addLink }) => {
           )}
         </div>
       </div>
-      <div className="flex items-center pb-3">
+      <div className="flex items-center space-x-3">
         <Input
           placeholder="Tìm kiếm nhanh..."
           value={globalFilter}
@@ -76,7 +76,7 @@ const DataTable = ({ title, columns, data, addLink }) => {
             setGlobalFilter(e.target.value);
             table.setGlobalFilter(e.target.value);
           }}
-          className="w-full me-3"
+          className="w-full"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -132,7 +132,7 @@ const DataTable = ({ title, columns, data, addLink }) => {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 pt-3">
+      <div className="flex items-center justify-end space-x-2">
         <div className="flex-1 text-sm text-muted-foreground">
           Đã chọn {table.getFilteredSelectedRowModel().rows.length} trên {table.getFilteredRowModel().rows.length} hàng.
         </div>

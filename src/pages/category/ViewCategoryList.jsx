@@ -86,9 +86,9 @@ const columns = [
               Sao chép
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to={`/admin/category/${data.id}`}>Xem</Link>
-            </DropdownMenuItem>
+            {/*<DropdownMenuItem asChild>*/}
+            {/*  <Link to={`/admin/category/${data.id}`}>Xem</Link>*/}
+            {/*</DropdownMenuItem>*/}
             <DropdownMenuItem asChild>
               <Link to={`/admin/category/update/${data.id}`}>Sửa</Link>
             </DropdownMenuItem>
@@ -112,9 +112,9 @@ const ViewCategoryList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        await categoryService.getCategoryList(setData);
+        await categoryService.getAll(setData);
       } catch (error) {
-        console.error("Failed to fetch users:", error);
+        console.error("Failed to fetch data:", error);
       }
     };
 
