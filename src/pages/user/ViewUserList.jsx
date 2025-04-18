@@ -175,6 +175,19 @@ const ViewUserList = () => {
       columns={columns}
       data={data}
       addLink="/admin/user/create"
+      addButton={
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button>+ Thêm người dùng</Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Thêm vai trò</SheetTitle>
+                <SheetDescription>Nhập thông tin vai trò mới</SheetDescription>
+              </SheetHeader>
+              <CreateRoleInline />
+            </SheetContent>
+          </Sheet>}
     />
   );
 }

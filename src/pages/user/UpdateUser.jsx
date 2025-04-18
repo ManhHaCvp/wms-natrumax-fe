@@ -21,15 +21,18 @@ const UpdateUser = () => {
     // clientId: "ba477a2c4a9f-4be8-9996-f7cdf2b46119",
     // clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
   });
-  console.log(user);
   const { id } = useParams("id");
   const [provinces, setProvinces] = useState([]);
   const [apiConnection,setApiConnection] = useState({});
+  const [data,setData] = useState({});
+
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const data = await userService.getById(id, setUser);
+        console.log(data);
+        setData(data);
         setApiConnection(JSON.parse(data.detail));
       } catch (error) {
         console.error("Failed to fetch user:", error);
@@ -59,9 +62,9 @@ const UpdateUser = () => {
         phoneNumber: user.phoneNumber,
         address: user.address,
         retailer: apiConnection.retailer,
-        clientId: apiConnection.phoneNumber,
-        clientSecret: apiConnection.phoneNumber,
-        provinceId: user.province.provinceId,
+        clientId: apiConnection.client_id,
+        clientSecret: apiConnection.client_secret,
+        provinceId: user.province?.provinceId,
         roleId: user.role.id
       };
       // console.log(user.province);
@@ -77,8 +80,13 @@ const UpdateUser = () => {
 
   // Hàm xử lý khi người dùng thay đổi tỉnh thành
   const handleProvinceChange = (e) => {
-    setUser({ ...user, province: e.target.value });
+    const selectedProvince = provinces.find(
+      (p) => String(p.provinceId) === e.target.value
+    );
+    console.log(selectedProvince);
+    setUser({ ...user, province: selectedProvince });
   };
+  
 
   return (
     <div className="flex flex-col m-5">
@@ -129,7 +137,7 @@ const UpdateUser = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700">Tỉnh thành</label>
             <select
-              value={user.province.provinceId}
+              value={user.province?.provinceId}
               onChange={handleProvinceChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             >
@@ -157,12 +165,12 @@ const UpdateUser = () => {
           <InputField
             label="Client ID"
             value={apiConnection.client_id}
-            onChange={(e) => setApiConnection({ ...apiConnection, clientId: e.target.value })}
+            onChange={(e) => setApiConnection({ ...apiConnection, client_id: e.target.value })}
           />
           <InputField
             label="Client Secret"
             value={apiConnection.client_secret}
-            onChange={(e) => setApiConnection({ ...apiConnection, clientSecret: e.target.value })}
+            onChange={(e) => setApiConnection({ ...apiConnection, client_secret: e.target.value })}
             className="col-span-2"
           />
         </CardContent>
