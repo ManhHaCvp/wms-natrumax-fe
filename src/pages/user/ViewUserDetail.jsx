@@ -128,9 +128,7 @@ const ViewUserDetail = () => {
             <Card>
               <Wallet />
             </Card>
-            <Card>
-              <Wallet />
-            </Card>
+           
           </TabsContent>
           <TabsContent value="commission">
             <Card>

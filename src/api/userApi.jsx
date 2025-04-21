@@ -2,7 +2,7 @@ import apiClient from "@/utils/apiClient";
 import { BASE_URL } from "@/utils/constants.jsx";
 
 const USER_BASE = `${BASE_URL}/v1/users`;
-
+const WALLET_BASE = `${BASE_URL}/v1/wallets`
 const userApi = {
   getAll: () => apiClient.get(USER_BASE),
   getPaging: (page, size) =>
@@ -11,8 +11,11 @@ const userApi = {
   create: (payload) => apiClient.post(USER_BASE, payload),
   update: (payload) => apiClient.put(`${USER_BASE}/${payload.userId}`, payload),
   changePassword: (payload) =>
-    apiClient.put(`${USER_BASE}/${payload.id}/change-password`, payload),
+  apiClient.put(`${USER_BASE}/${payload.id}/change-password`, payload),
   changeStatus: (id) => apiClient.put(`${USER_BASE}/${id}/toggle-status`),
+  //wallet
+  getWalletByUserId: (id) => apiClient.get(`${WALLET_BASE}/user/${id}`),
+
 };
 
 export default userApi;

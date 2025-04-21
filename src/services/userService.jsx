@@ -86,6 +86,13 @@ const userService = {
       handleApiError(error);
     }
   },
+  async getWalletByUserId(id) {
+    try {
+      return await userApi.getWalletByUserId(id);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
 };
 
 export default userService;
