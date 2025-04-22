@@ -52,6 +52,10 @@ const AppSidebar = () => {
             title: "Vai trò",
             url: "/admin/roles",
           },
+          {
+            title: "Duyệt đơn thanh toán",
+            url: "/admin/check-bills",
+          },
         ],
       },
       {

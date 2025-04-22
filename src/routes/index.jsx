@@ -27,6 +27,7 @@ import ViewWarehouseList from "@/pages/warehouse/ViewWarehouseList";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "@/pages/error/ErrorPage";
 import ComingSoonPage from "@/pages/error/ComingSoonPage";
 import UserProfile from "@/pages/user/UserProfile";
+import CheckBill from "@/pages/user/CheckBill";
 
 const Routes = () => {
   const { token, user } = useAuth();
@@ -57,6 +58,7 @@ const Routes = () => {
       { path: "/admin/user/update/:id", element: <UpdateUser /> },
       { path: "/admin/user/change-password", element: <ChangePassword /> },
       { path: "/user/:id", element: <UserProfile /> },
+      { path: "/admin/check-bills", element: <CheckBill /> },
 
       //Role
       { path: "/admin/roles", element: <ViewRoleList /> },
