@@ -8,5 +8,19 @@ const transactionService = {
         handleApiError(error);
       }
     },
+    async getByWalletId(walletId) {
+      try {
+        return await transactionApi.getByWalletId(walletId);
+      } catch (error) {
+        handleApiError(error);
+      }
+    },
+    async uploadTranferImage(id,formdata) {
+      try {
+        return await transactionApi.uploadTranferImage(id,formdata);
+      } catch (error) {
+        handleApiError(error);
+      }
+    },
   };
 export default transactionService;

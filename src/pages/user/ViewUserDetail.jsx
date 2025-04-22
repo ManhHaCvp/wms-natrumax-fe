@@ -126,7 +126,7 @@ const ViewUserDetail = () => {
           </TabsContent>
           <TabsContent value="wallet">
             <Card>
-              <Wallet />
+              <Wallet userId={user.id} />
             </Card>
            
           </TabsContent>

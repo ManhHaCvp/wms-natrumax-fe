@@ -12,25 +12,24 @@ import toast from "react-hot-toast";
 import userService from "@/services/userService";
 import transactionService from "@/services/transactionService";
 import discountService from "@/services/discountService";
+import ListTransactionByWalletId from "./ListTransactionByWalletId";
 
-const Wallet = () => {
+const Wallet = ({userId}) => {
   const [amount, setAmount] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [qrUrl, setQrUrl] = useState("");
   const [wallet, setWallet] = useState(null);
   const [discount, setDiscount] = useState(null);
 
-  const [user] = useState(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-
+  // const [user] = useState(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   return storedUser ? JSON.parse(storedUser) : null;
+  // });
+  console.log(userId);
   useEffect(() => {
     const fetchWalletData = async () => {
-      if (!user?.id) return;
-
       try {
-        const data = await userService.getWalletByUserId(user.id);
+        const data = await userService.getWalletByUserId(userId);
         setWallet(data.data);
         console.log("Ví nạp được:", data);
       } catch (error) {
@@ -40,7 +39,7 @@ const Wallet = () => {
     };
 
     fetchWalletData();
-  }, [user]);
+  }, [userId]);
 
   useEffect(() => {
     const fetchDiscount = async () => {
@@ -99,7 +98,7 @@ const Wallet = () => {
     }
 
     const payload = {
-      totalAmount: numberAmount,
+      totalAmount: numberAmount ,
       walletId: wallet.walletId,
       discountId: discount?.discountId || null,
     };
@@ -137,7 +136,7 @@ const Wallet = () => {
           Gửi
         </Button>
       </div>
-
+      {wallet?.walletId && <ListTransactionByWalletId walletId={wallet.walletId} />}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
