@@ -22,5 +22,12 @@ const transactionService = {
         handleApiError(error);
       }
     },
+    async uploadRefundImage(id,formdata) {
+      try {
+        return await transactionApi.uploadRefundImage(id,formdata);
+      } catch (error) {
+        handleApiError(error);
+      }
+    },
   };
 export default transactionService;

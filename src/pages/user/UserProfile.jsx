@@ -30,11 +30,15 @@ const UserProfile = () => {
     // clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
   });
   // const [warehouse, setWarehouse] = ({});
-  const { id } = useParams("id");
+  const userLocalStorage = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const id = userLocalStorage[0].id;
   const [warehouse,setWarehouse] = useState({});
   const [result,setResult] = useState({});
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchUserData = async () => {
       try {
         const data = await userService.getById(id, setUser);
@@ -126,7 +130,7 @@ const UserProfile = () => {
           </TabsContent>
           <TabsContent value="wallet">
             <Card>
-              <Wallet />
+              <Wallet  userId={id}  />
             </Card>
           </TabsContent>
           <TabsContent value="commission">

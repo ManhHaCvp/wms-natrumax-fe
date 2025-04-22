@@ -34,7 +34,7 @@ const Navbar = () => {
   const handleProfileClick = () => {
     console.log(user);
     if (user.id) {
-      navigate(`/user/${user.id}`);
+      navigate(`/profile`);
     }
     
   };

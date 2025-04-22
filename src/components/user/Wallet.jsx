@@ -14,18 +14,14 @@ import transactionService from "@/services/transactionService";
 import discountService from "@/services/discountService";
 import ListTransactionByWalletId from "./ListTransactionByWalletId";
 
-const Wallet = ({userId}) => {
+const Wallet = ({ userId }) => {
   const [amount, setAmount] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [qrUrl, setQrUrl] = useState("");
   const [wallet, setWallet] = useState(null);
   const [discount, setDiscount] = useState(null);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
-  // const [user] = useState(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   return storedUser ? JSON.parse(storedUser) : null;
-  // });
-  console.log(userId);
   useEffect(() => {
     const fetchWalletData = async () => {
       try {
@@ -51,8 +47,7 @@ const Wallet = ({userId}) => {
       }
 
       try {
-        const res = await discountService.getByTotalAmount({ totalAmount: cleanAmount },setDiscount);
-        // setDiscount(res);
+        const res = await discountService.getByTotalAmount({ totalAmount: cleanAmount }, setDiscount);
         console.log("Discount nhận được:", res);
       } catch (error) {
         console.error("Lỗi khi lấy giảm giá:", error);
@@ -65,11 +60,6 @@ const Wallet = ({userId}) => {
 
   const handleSendClick = () => {
     const numberAmount = parseInt(amount.replace(/\D/g, ""), 10);
-
-    // if (!wallet?.walletId) {
-    //   toast.error("Ví chưa được tải, vui lòng thử lại sau.");
-    //   return;
-    // }
 
     if (isNaN(numberAmount) || numberAmount < 200000) {
       toast.error("Vui lòng nhập số tiền hợp lệ (tối thiểu 200.000đ)");
@@ -87,18 +77,13 @@ const Wallet = ({userId}) => {
   const handleCreateTransaction = async () => {
     const numberAmount = parseInt(amount.replace(/\D/g, ""), 10);
 
-    // if (!wallet?.walletId) {
-    //   toast.error("Không thể tạo giao dịch vì ví chưa được tải.");
-    //   return;
-    // }
-
     if (!numberAmount || numberAmount < 200000) {
       toast.error("Số tiền không hợp lệ.");
       return;
     }
 
     const payload = {
-      totalAmount: numberAmount ,
+      totalAmount: numberAmount,
       walletId: wallet.walletId,
       discountId: discount?.discountId || null,
     };
@@ -110,6 +95,7 @@ const Wallet = ({userId}) => {
       toast.success("Tạo giao dịch thành công!");
       setDialogOpen(false);
       setAmount("");
+      setReloadTrigger(prev => prev + 1); // 🔄 Fetch lại danh sách giao dịch
     } catch (error) {
       console.error("Lỗi khi tạo giao dịch:", error);
       toast.error(error.message || "Có lỗi xảy ra khi tạo giao dịch");
@@ -136,7 +122,14 @@ const Wallet = ({userId}) => {
           Gửi
         </Button>
       </div>
-      {wallet?.walletId && <ListTransactionByWalletId walletId={wallet.walletId} />}
+
+      {wallet?.walletId && (
+        <ListTransactionByWalletId
+          walletId={wallet.walletId}
+          reloadTrigger={reloadTrigger} // 🔁 truyền để refetch khi trigger thay đổi
+        />
+      )}
+
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>

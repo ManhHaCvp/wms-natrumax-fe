@@ -39,7 +39,7 @@ import ImagePreviewModal from "../common/ImagePreviewModal";
 
 const columnHelper = createColumnHelper();
 
-export default function ListTransactionByWalletId({ walletId }) {
+export default function ListTransactionByWalletId({ walletId,reloadTrigger }) {
   const [data, setData] = useState([]);
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -49,7 +49,7 @@ export default function ListTransactionByWalletId({ walletId }) {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedTransactionId, setSelectedTransactionId] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-
+  
   const fetchData = useCallback(async () => {
     try {
       const response = await transactionService.getByWalletId(walletId);
@@ -57,7 +57,7 @@ export default function ListTransactionByWalletId({ walletId }) {
     } catch (error) {
       console.error("Lỗi khi fetch danh sách giao dịch:", error);
     }
-  }, [walletId]);
+  }, [walletId,reloadTrigger]);
 
   useEffect(() => {
     fetchData();

@@ -8,6 +8,8 @@ const transactionApi = {
     uploadTranferImage: (id, formData) =>
       apiClient.post(`${TRANSACTION_BASE}/transfer-image/${id}`, formData),
     
-  };
+    uploadRefundImage: (id, formData) =>
+      apiClient.post(`${TRANSACTION_BASE}/refund-image/${id}`, formData),
+    };
   
   export default transactionApi;

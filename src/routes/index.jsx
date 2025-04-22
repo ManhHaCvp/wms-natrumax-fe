@@ -57,7 +57,6 @@ const Routes = () => {
       { path: "/admin/user/:id", element: <ViewUserDetail /> },
       { path: "/admin/user/update/:id", element: <UpdateUser /> },
       { path: "/admin/user/change-password", element: <ChangePassword /> },
-      { path: "/user/:id", element: <UserProfile /> },
       { path: "/admin/check-bills", element: <CheckBill /> },
 
       //Role
@@ -96,7 +95,7 @@ const Routes = () => {
     element: <ProtectedRoute />,
     children: [
       { path: "/home", element: <HomePage /> },
-      { path: "/profile", element: <div>User Profile</div> },
+      { path: "/profile", element: <UserProfile /> },
       { path: "/401", element: <UnauthorizedPage /> },
     ],
   };
