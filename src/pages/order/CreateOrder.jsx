@@ -14,6 +14,7 @@ const CreateOrder = () => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
+  const [paymentMethod, setPaymentMethod] = useState("BANK_TRANSFER");
 
   const detail = user?.detail ? JSON.parse(user.detail) : null;
 
@@ -103,38 +104,37 @@ const CreateOrder = () => {
           </Link>
         </Button> */}
         <Button
-  onClick={async () => {
-    try {
-      const payload = {
-        userId: user.id,
-        createOrderInvoiceRequests: {
-          discountId: discount?.id || 0,
-          totalAmount: order.createOrderInvoiceRequests.totalAmount,
-          paymentMethod: "BANK_TRANSFER", // hoặc "CASH"
-        },
-        createOrderDetailRequests: order.createOrderDetailRequests.map((item) => ({
-          quantity: item.quantity,
-          isBonus: item.bonus,
-          price: item.price,
-          productId: item.id,
-        })),
-      };
+          onClick={async () => {
+            try {
+              const payload = {
+                userId: user.id,
+                createOrderInvoiceRequests: {
+                  discountId: discount?.discountId || 0,
+                  totalAmount: order.createOrderInvoiceRequests.totalAmount,
+                  paymentMethod: paymentMethod, // hoặc "CASH"
+                },
+                createOrderDetailRequests: order.createOrderDetailRequests.map((item) => ({
+                  quantity: item.quantity,
+                  isBonus: item.bonus,
+                  price: item.price,
+                  productId: item.id,
+                })),
+              };
 
-      const response = await orderService.create(payload);
-      console.log("Order created:", response);
+              const response = await orderService.create(payload);
+              console.log("Order created:", response);
 
-      // Chuyển trang hoặc hiển thị thành công tuỳ bạn
-      toast.success("Đơn hàng đã được tạo thành công!");
-    } catch (error) {
-      // console.error("Error creating order:", error);
-      toast.error("Tạo đơn hàng thất bại.");
-    }
-  }}
->
-  <Check className="mr-2" />
-  Đặt hàng
-</Button>
-
+              // Chuyển trang hoặc hiển thị thành công tuỳ bạn
+              toast.success("Đơn hàng đã được tạo thành công!");
+            } catch (error) {
+              // console.error("Error creating order:", error);
+              toast.error("Tạo đơn hàng thất bại.");
+            }
+          }}
+        >
+          <Check className="mr-2" />
+          Đặt hàng
+        </Button>
       </div>
       <div className="flex space-x-5">
         <div className="w-full flex flex-col space-y-5">
@@ -203,7 +203,9 @@ const CreateOrder = () => {
                       <TableCell className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableHead colSpan={2}>Giảm giá: {discount?.description} ({discount?.discountPercent}%) </TableHead>
+                      <TableHead colSpan={2}>
+                        Giảm giá: {discount?.description} ({discount?.discountPercent}%){" "}
+                      </TableHead>
                       <TableCell className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
                     </TableRow>
                   </TableBody>
@@ -211,6 +213,21 @@ const CreateOrder = () => {
                     <TableRow>
                       <TableCell colSpan={2}>Tổng số tiền</TableCell>
                       <TableCell className="text-right">{(totalPrice - discountAmount).toLocaleString()} VND</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell colSpan={2} className="font-medium">Phương thức thanh toán</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end space-x-5">
+                          <label className="flex items-center space-x-2">
+                            <input type="radio" value="BANK_TRANSFER" checked={paymentMethod === "BANK_TRANSFER"} onChange={(e) => setPaymentMethod(e.target.value)} />
+                            <span>Chuyển khoản</span>
+                          </label>
+                          <label className="flex items-center space-x-2">
+                            <input type="radio" value="WALLET" checked={paymentMethod === "WALLET"} onChange={(e) => setPaymentMethod(e.target.value)} />
+                            <span>Ví</span>
+                          </label>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   </TableFooter>
                 </Table>

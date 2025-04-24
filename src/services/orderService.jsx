@@ -2,10 +2,9 @@ import orderApi from "@/api/orderApi.jsx";
 import axios from "axios";
 
 const orderService = {
-  async getAll(setData) {
+  async getOrderList(setData) {
     try {
-      //const response = await orderApi.getOrderList();
-      const response = [];
+      const response = await orderApi.getOrderList();
 
       // Ensure data is an array
       const orders = Array.isArray(response.data) ? response.data : response.data?.orders || [];
@@ -14,7 +13,7 @@ const orderService = {
         orderId: order.orderId,
         orderDate: order.orderDate,
         accountName: order.user.accountName,
-        totalAmount: order.totalAmount,
+        totalAmount: order.invoices.totalAmount,
         status: order.status,
       }));
 
@@ -24,11 +23,14 @@ const orderService = {
     }
   },
 
-     async create (payload){
+  async create(payload) {
     const response = await axios.post("http://localhost:8080/api/v1/orders", payload);
     return response.data;
-  }
-
+  },
+  async getDetail(id) {
+    const response = await orderApi.getOrderList(id);
+    return response.data;
+  },
 };
 
 export default orderService;

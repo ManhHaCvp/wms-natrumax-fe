@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Accessibility, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -14,36 +14,58 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table.jsx";
+import axios from "axios";
+import formatDate from "@/utils/formatDate";
 
 const ViewOrderDetail = () => {
-  const [order, setOrder] = useState({
-    id: 1,
-    items: [
-      { id: 1, code: "112", name: "Tên hàng hóa", price: 800000, quantity: 20 },
-      { id: 2, code: "113", name: "Tên hàng hóa", price: 800000, quantity: 20 },
-      { id: 3, code: "114", name: "Tên hàng hóa", price: 800000, quantity: 20 },
-    ],
-    discount: 0.2,
-    paymentStatus: "Đã thanh toán",
-    orderStatus: "Đã giao",
-    activities: [
-      { id: 1, title: "Đã giao", dateTime: "02:00 PM 20/2/2025" },
-      { id: 2, title: "Đang giao", dateTime: "02:00 PM 20/2/2025" },
-      { id: 3, title: "Đã xác nhận", dateTime: "02:00 PM 20/2/2025" },
-    ],
-    customer: {
-      name: "Chi nhánh 107",
-      phone: "0123456789",
-      address: "Hải Dương",
-      saleOrderCode: "BH001",
-      warehouseCode: "XH001",
-    },
-  });
+  const { id } = useParams(); // assuming you pass orderId via route param
+  const [order, setOrder] = useState(null);
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8080/api/v1/orders/${id}`);
+        const data = res.data;
+        console.log(data);
+        // Parse JSON detail field safely
+        let detailParsed = {};
+        try {
+          detailParsed = JSON.parse(data.user.detail);
+        } catch (e) {
+          console.error("Error parsing user.detail", e);
+        }
+
+        setOrder({
+          id: data.orderId,
+          items: data.orderDetails, // update this when you have order item API
+          discount: data?.invoices?.discount?.discountPercent ?? 0, // or data.discount if available
+          paymentStatus: "Đã thanh toán", // convert from data.status if needed
+          orderStatus: data.status === "CONFIRMED" ? "Đã xác nhận" : data.status,
+          activities: [], // populate if available
+          customer: {
+            name: data.user.accountName,
+            phone: data.user.phoneNumber,
+            address: data.user.address,
+            saleOrderCode: data.saleCode,
+            warehouseCode: detailParsed.client_id || "N/A",
+          },
+          orderModifyHistories: data.orderModifyHistories
+        });
+      } catch (err) {
+        console.error("Error fetching order", err);
+      }
+    };
+
+    fetchOrder();
+  }, [id]);
+
+  if (!order) return <p className="m-5">Đang tải đơn hàng...</p>;
 
   const totalPrice = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discountAmount = totalPrice * order.discount;
-
-  return (
+  // const discountPercent = order?.invoices?.discount?.discountPercent ?? 0;
+  const discountAmount = totalPrice * (order.discount/100);
+  console.log( totalPrice * order.discount );
+    return (
     <div className="flex flex-col space-y-5 m-5">
       <div className="flex justify-between items-center">
         <h1 className="text-[#182F73] text-3xl font-bold">Thông tin đơn hàng</h1>
@@ -73,9 +95,9 @@ const ViewOrderDetail = () => {
                   </TableHeader>
                   <TableBody>
                     {order.items.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{item.code}</TableCell>
-                        <TableCell>{item.name}</TableCell>
+                      <TableRow key={item.product.productId}>
+                        <TableCell>{item.product.barcode}</TableCell>
+                        <TableCell>{item.product.name}</TableCell>
                         <TableCell>{item.price.toLocaleString()} VND</TableCell>
                         <TableCell>{item.quantity}</TableCell>
                         <TableCell
@@ -107,7 +129,7 @@ const ViewOrderDetail = () => {
                 <Table>
                   <TableBody>
                     <TableRow>
-                      <TableHead colSpan={2}>Mã hàng</TableHead>
+                      <TableHead colSpan={2}>Tổng số tiền</TableHead>
                       <TableCell className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
                     </TableRow>
                     <TableRow>
@@ -141,15 +163,15 @@ const ViewOrderDetail = () => {
                 <Separator orientation="vertical" className="absolute left-[5px] w-0.5 rounded" />
 
                 <ul className="space-y-5">
-                  {order.activities.map((activity, index) => (
+                  {order.orderModifyHistories.map((orderModifyHistory, index) => (
                     <li key={index} className="relative flex items-start">
                       {/* Circle indicator */}
                       <div className="absolute top-2 w-3 h-3 bg-[#182f73] rounded-full border-2 border-white"></div>
 
                       {/* Activity content */}
                       <div className="ml-7">
-                        <h3 className="font-semibold">{activity.title}</h3>
-                        <p className="text-sm text-gray-500">{activity.dateTime}</p>
+                        <h3 className="font-semibold">{orderModifyHistory.title}</h3>
+                        <p className="text-sm text-gray-500">{formatDate.formatJsonToDateTime(orderModifyHistory.createDate)}</p>
                       </div>
                     </li>
                   ))}
