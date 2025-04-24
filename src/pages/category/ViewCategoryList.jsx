@@ -17,9 +17,10 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
+
 const columnHelper = createColumnHelper();
 
-const columns = (setData) =>[
+const columns = (setData) => [
   columnHelper.display({
     id: "select",
     header: ({ table }) => (
@@ -84,20 +85,18 @@ const columns = (setData) =>[
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {/* <DropdownMenuItem
+            <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}
             >
               Sao chép
-            </DropdownMenuItem> */}
-            {/* <DropdownMenuSeparator /> */}
-            {/*<DropdownMenuItem asChild>*/}
-            {/*  <Link to={`/admin/category/${data.id}`}>Xem</Link>*/}
-            {/*</DropdownMenuItem>*/}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator/>
             {/* Nút "Xem chi tiết" */}
             <DropdownMenuItem asChild>
               <Sheet>
                 <SheetTrigger asChild>
-                  <button className="w-full pl-2 text-sm text-left">Xem chi tiết</button>
+                  <span
+                    className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">Xem</span>
                 </SheetTrigger>
                 <SheetContent>
                   <SheetHeader>
@@ -111,20 +110,20 @@ const columns = (setData) =>[
               </Sheet>
             </DropdownMenuItem>
             {/* Nút "Sửa" */}
-                        <DropdownMenuItem asChild>
-                          <Sheet>
-                            <SheetTrigger asChild>
-                              <button className="w-full pl-2 text-sm text-left">Sửa</button>
-                            </SheetTrigger>
-                            <SheetContent>
-                              <SheetHeader>
-                                <SheetTitle>Sửa nhóm hàng</SheetTitle>
-                                <SheetDescription>Chỉnh sửa thông tin nhóm hàng.</SheetDescription>
-                              </SheetHeader>
-                              <EditCategoryInline categoryId={data.categoryId} setData={setData} />
-                            </SheetContent>
-                          </Sheet>
-                        </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <span className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">Sửa</span>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Sửa nhóm hàng</SheetTitle>
+                    <SheetDescription>Chỉnh sửa thông tin nhóm hàng.</SheetDescription>
+                  </SheetHeader>
+                  <EditCategoryInline categoryId={data.categoryId} setData={setData} />
+                </SheetContent>
+              </Sheet>
+            </DropdownMenuItem>
             {/* <DropdownMenuItem asChild>
               <Link to={`/admin/category/update/${data.categoryId}`}>Sửa</Link>
             </DropdownMenuItem> */}
@@ -136,8 +135,8 @@ const columns = (setData) =>[
 ];
 
 const ViewCategoryList = () => {
-    const [openCreateSheet, setOpenCreateSheet] = useState(false);
-  
+  const [openCreateSheet, setOpenCreateSheet] = useState(false);
+
   const [data, setData] = useState([
     // { categoryId: 1, categoryName: "Nhóm hàng A", description: "Mô tả nhóm hàng A" },
     // { categoryId: 2, categoryName: "Nhóm hàng B", description: "Mô tả nhóm hàng B" },
@@ -168,19 +167,19 @@ const ViewCategoryList = () => {
       addButton={
         <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
           <SheetTrigger asChild>
-          <Button className="ms-3"><Plus /> Thêm mới</Button>
+            <Button className="ms-3"><Plus /> Thêm mới</Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
               <SheetTitle>Thêm nhóm hàng</SheetTitle>
               <SheetDescription>Nhập thông tin nhóm hàng mới</SheetDescription>
             </SheetHeader>
-            <CreateCategoryInline setData = {setData} onClose={() => setOpenCreateSheet(false)} />
+            <CreateCategoryInline setData={setData} onClose={() => setOpenCreateSheet(false)} />
           </SheetContent>
         </Sheet>}
     />
   );
-}
+};
 const ViewDetailRoleInline = ({ categoryId }) => {
   const { register, handleSubmit, reset } = useForm();
   const [category, setCategory] = useState(null); // Lưu dữ liệu chi tiết
@@ -236,10 +235,11 @@ const EditCategoryInline = ({ categoryId, setData }) => {
     try {
       await categoryService.update(categoryId, {
         name: formData.name,
-        description: formData.description,      });
+        description: formData.description,
+      });
       // toast.success("Cập nhật thành công!");
       // window.location.reload();
-      const data= await categoryService.getAll(setData);
+      const data = await categoryService.getAll(setData);
 
     } catch (error) {
       console.error("Lỗi cập nhật vai trò:", error);
@@ -247,20 +247,20 @@ const EditCategoryInline = ({ categoryId, setData }) => {
   };
 
   return (
-    <form  onSubmit={handleSubmit(onSubmit)}  className="mt-6 space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
       <div>
         <label className="block mb-1 text-sm font-medium">Tên nhóm hàng</label>
-        <Input {...register("name")}  />
+        <Input {...register("name")} />
       </div>
       <div>
         <label className="block mb-1 text-sm font-medium">Mô tả</label>
-        <Input {...register("description")}  />
+        <Input {...register("description")} />
       </div>
       <Button type="submit">Lưu thay đổi</Button>
     </form>
   );
 };
-const CreateCategoryInline = ({setData,onClose }) => {
+const CreateCategoryInline = ({ setData, onClose }) => {
   // console.log(roleId);
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -270,18 +270,18 @@ const CreateCategoryInline = ({setData,onClose }) => {
   });
   const onSubmit = async (formData) => {
     if (!formData.name?.trim()) {
-          toast.error("Tên nhóm hàng là bắt buộc");
-          return;
-        }
+      toast.error("Tên nhóm hàng là bắt buộc");
+      return;
+    }
     try {
       await categoryService.create({
         name: formData.name,
         description: formData.description,
       });
       // toast.success("Tạo vai trò thành công!");
-      const data= await categoryService.getAll(setData);
+      const data = await categoryService.getAll(setData);
       onClose?.(); // Gọi hàm đóng Sheet
-      reset(); 
+      reset();
     } catch (error) {
       console.error("Lỗi cập nhật vai trò:", error);
     }

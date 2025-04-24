@@ -22,39 +22,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog.jsx";
+import { formatCurrency } from "@/utils/formatCurrency.jsx";
+import formatDate from "@/utils/formatDate.jsx";
 
 // Khởi tạo column helper
 const columnHelper = createColumnHelper();
 
-// Định dạng tiền VND
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
-
-// Định dạng ngày tháng
-const formatDate = (isoDate) => {
-  const date = new Date(isoDate);
-  return date.toLocaleString("vi-VN");
-};
-
 // Tạo column cho bảng
-const columns = (
-  setPreviewUrl,
-  handleChangeTransactionStatus,
-  setSelectedTransactionId,
-  setUploadDialogOpen,
-  handleSendClick
-) => [
+const columns = (data) => [
   columnHelper.accessor("transactionsId", {
     header: "Mã giao dịch",
     cell: (info) => <div>#{info.getValue()}</div>,
   }),
   columnHelper.accessor("paymentDate", {
     header: "Ngày thanh toán",
-    cell: (info) => <div>{formatDate(info.getValue())}</div>,
+    cell: (info) => <div>{formatDate.formatJsonToDate(info.getValue())}</div>,
   }),
   columnHelper.accessor("totalAmount", {
     header: "Số tiền",
@@ -193,8 +175,7 @@ const ViewTransactionList = () => {
       alert("Upload thất bại.");
     }
   };
-  
-  ;
+
   const getBankCode = (bankName) => {
     const bankCodeMap = {
       "Ngân hàng Quân Đội Việt Nam": "mbbank",
@@ -215,8 +196,6 @@ const ViewTransactionList = () => {
   const handleSendClick = async (amount,bank) => {
   
     try {
-      
-  
       const numberAmount = parseInt(String(amount).replace(/\D/g, ""), 10);
       const bankCode = getBankCode(bank.bankName);
       const accountNumber = bank.accountNo;

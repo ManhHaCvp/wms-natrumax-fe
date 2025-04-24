@@ -64,11 +64,17 @@ const columns = (setData)=> [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}
+            >
+              Sao chép
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             {/* Nút "Xem chi tiết" */}
             <DropdownMenuItem asChild>
               <Sheet>
                 <SheetTrigger asChild>
-                  <button className="w-full pl-2 text-sm text-left">Xem chi tiết</button>
+                  <span className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">Xem</span>
                 </SheetTrigger>
                 <SheetContent>
                   <SheetHeader>
@@ -84,7 +90,7 @@ const columns = (setData)=> [
             <DropdownMenuItem asChild>
               <Sheet>
                 <SheetTrigger asChild>
-                  <button className="w-full pl-2 text-sm text-left">Sửa</button>
+                  <span className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">Sửa</span>
                 </SheetTrigger>
                 <SheetContent>
                   <SheetHeader>
