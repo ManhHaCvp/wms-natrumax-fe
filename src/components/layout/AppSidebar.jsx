@@ -53,8 +53,8 @@ const AppSidebar = () => {
             url: "/admin/roles",
           },
           {
-            title: "Duyệt đơn thanh toán",
-            url: "/admin/check-bills",
+            title: "Giao dịch",
+            url: "/admin/transactions",
           },
         ],
       },

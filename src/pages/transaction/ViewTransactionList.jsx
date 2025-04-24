@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ArrowUpDown, Eye } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge.jsx";
+import { Button } from "@/components/ui/button.jsx";
 import { createColumnHelper } from "@tanstack/react-table";
-import TableComponent from "@/components/common/DataTable";
+import TableComponent from "@/components/common/DataTable.jsx";
 import axios from "axios";
 import {
   Select,
@@ -11,17 +11,17 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import ImagePreviewModal from "@/components/common/ImagePreviewModal";
-import UploadProofDialog from "@/components/user/UploadProofDialog";
-import transactionService from "@/services/transactionService";
+} from "@/components/ui/select.jsx";
+import ImagePreviewModal from "@/components/common/ImagePreviewModal.jsx";
+import UploadProofDialog from "@/components/user/UploadProofDialog.jsx";
+import transactionService from "@/services/transactionService.jsx";
 import toast from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog.jsx";
 
 // Khởi tạo column helper
 const columnHelper = createColumnHelper();
@@ -146,7 +146,7 @@ const columns = (
 // Các trạng thái có thể lọc
 const statusOptions = ["PENDING", "SUCCESS", "CONFIRMED", "CANCELED", "REFUNDED"];
 
-const CheckBill = () => {
+const ViewTransactionList = () => {
   const [data, setData] = useState([]);
   const [statusFilter, setStatusFilter] = useState("SUCCESS");
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -240,8 +240,8 @@ const CheckBill = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Danh sách giao dịch - {statusFilter}</h2>
+      <div className="flex items-center justify-between m-5">
+        <h2 className="text-xl font-semibold"></h2>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Lọc theo trạng thái:</span>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -260,7 +260,7 @@ const CheckBill = () => {
       </div>
 
       <TableComponent
-        title=""
+        title= "Danh sách giao dịch"
         columns={columns(
           setPreviewUrl,
           handleChangeTransactionStatus,
@@ -295,4 +295,4 @@ const CheckBill = () => {
   );
 };
 
-export default CheckBill;
+export default ViewTransactionList;
