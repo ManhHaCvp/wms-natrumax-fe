@@ -23,7 +23,7 @@ const warehouseService = {
       const warehouses = Array.isArray(response.data)
         ? response.data
         : response.data?.warehouses || [];
-
+      console.log(warehouses);
       setData(warehouses.map(formatWarehouse));
       return response.data;
     } catch (error) {

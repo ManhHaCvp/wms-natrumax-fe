@@ -6,6 +6,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table.jsx";
 import QuantityInput from "@/components/common/QuantityInput.jsx";
 import discountService from "@/services/discountService";
+import orderService from "@/services/orderService";
+import toast from "react-hot-toast";
 
 const CreateOrder = () => {
   const [user, setUser] = useState(() => {
@@ -17,7 +19,7 @@ const CreateOrder = () => {
 
   const location = useLocation();
   const selectedProducts = location.state?.selectedProducts || [];
-
+  console.log(location.state);
   const [order, setOrder] = useState({
     userId: 1,
     createOrderDetailRequests: [],
@@ -94,12 +96,45 @@ const CreateOrder = () => {
     <div className="flex flex-col space-y-5 m-5">
       <div className="flex justify-between items-center">
         <h1 className="text-[#182F73] text-3xl font-bold">Tạo đơn hàng</h1>
-        <Button asChild>
+        {/* <Button asChild>
           <Link to={`/admin/order/update/${order.id}`}>
             <Check />
-            Đặt hàng
+            Đặt hàng  
           </Link>
-        </Button>
+        </Button> */}
+        <Button
+  onClick={async () => {
+    try {
+      const payload = {
+        userId: user.id,
+        createOrderInvoiceRequests: {
+          discountId: discount?.id || 0,
+          totalAmount: order.createOrderInvoiceRequests.totalAmount,
+          paymentMethod: "BANK_TRANSFER", // hoặc "CASH"
+        },
+        createOrderDetailRequests: order.createOrderDetailRequests.map((item) => ({
+          quantity: item.quantity,
+          isBonus: item.bonus,
+          price: item.price,
+          productId: item.id,
+        })),
+      };
+
+      const response = await orderService.create(payload);
+      console.log("Order created:", response);
+
+      // Chuyển trang hoặc hiển thị thành công tuỳ bạn
+      toast.success("Đơn hàng đã được tạo thành công!");
+    } catch (error) {
+      // console.error("Error creating order:", error);
+      toast.error("Tạo đơn hàng thất bại.");
+    }
+  }}
+>
+  <Check className="mr-2" />
+  Đặt hàng
+</Button>
+
       </div>
       <div className="flex space-x-5">
         <div className="w-full flex flex-col space-y-5">
@@ -168,7 +203,7 @@ const CreateOrder = () => {
                       <TableCell className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableHead colSpan={2}>Giảm giá: {discount.description} ({discount.discountPercent}%) </TableHead>
+                      <TableHead colSpan={2}>Giảm giá: {discount?.description} ({discount?.discountPercent}%) </TableHead>
                       <TableCell className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
                     </TableRow>
                   </TableBody>

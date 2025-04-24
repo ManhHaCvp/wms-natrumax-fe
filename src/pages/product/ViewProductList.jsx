@@ -6,42 +6,15 @@ import { Checkbox } from "@/components/ui/checkbox.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Badge } from "@/components/ui/badge.jsx";
 import { Card } from "@/components/ui/card.jsx";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.jsx";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table.jsx";
+import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table.jsx";
 import productService from "@/services/productService.jsx";
 import toast from "react-hot-toast";
 import warehouseService from "@/services/warehouseService.jsx";
 import { formatCurrency } from "@/utils/formatCurrency.jsx";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select.jsx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.jsx";
+import userService from "@/services/userService";
 
 const columnHelper = createColumnHelper();
 
@@ -50,31 +23,19 @@ const columns = [
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
     enableSorting: false,
     enableHiding: false,
   }),
   columnHelper.accessor("barcode", {
     name: "Mã vạch",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Mã vạch
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -84,10 +45,7 @@ const columns = [
   columnHelper.accessor("name", {
     name: "Tên hàng",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Tên hàng
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -97,10 +55,7 @@ const columns = [
   columnHelper.accessor("price", {
     name: "Giá bán",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Giá bán
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -110,10 +65,7 @@ const columns = [
   columnHelper.accessor("quantity", {
     name: "Số lượng",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Số lượng
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -123,13 +75,7 @@ const columns = [
   columnHelper.accessor("status", {
     name: "Trạng thái",
     header: "Trạng thái",
-    cell: (info) => (
-      info.getValue() ? (
-        <Badge>Hoạt động</Badge>
-      ) : (
-        <Badge variant="destructive">Bị khóa</Badge>
-      )
-    ),
+    cell: (info) => (info.getValue() ? <Badge>Hoạt động</Badge> : <Badge variant="destructive">Bị khóa</Badge>),
   }),
   columnHelper.display({
     id: "actions",
@@ -146,11 +92,7 @@ const columns = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(JSON.stringify(product))}
-            >
-              Sao chép
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(JSON.stringify(product))}>Sao chép</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to={`/admin/product/${product.productId}`}>Xem</Link>
@@ -170,9 +112,13 @@ const ViewProductList = () => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
+  // const id = user.id;
+
   const detail = user?.detail ? JSON.parse(user.detail) : null;
   const isAdmin = user?.roles?.includes("ROLE_ADMIN");
   const [warehouses, setWarehouses] = useState([]);
+  const [userDetail, setUserDetail] = useState([]);
+
   const [selectedWarehouseId, setSelectedWarehouseId] = useState(null);
   const [warehouse, setWarehouse] = useState({
     warehouseId: "",
@@ -188,17 +134,25 @@ const ViewProductList = () => {
       price: 25000,
       quantity: 100,
       quantityToGetPromotion: 0,
-      status: "Còn hàng"
+      status: "Còn hàng",
     },
   ]);
 
   const navigate = useNavigate();
 
+  // const handleCreateOrder = () => {
+  //   const selectedProducts = table.getSelectedRowModel().rows.map((row) => row.original);
+  //   console.log(selectedProducts);
+  //   navigate("/admin/order/create", { state: { selectedProducts } });
+  // };
   const handleCreateOrder = () => {
-    const selectedProducts = table.getSelectedRowModel().rows.map(row => row.original);
+    const selectedRows = table.getSelectedRowModel().rows;
+    console.log("Selected rows:", selectedRows);
+    const selectedProducts = selectedRows.map((row) => row.original);
+    console.log("Selected products:", selectedProducts);
     navigate("/admin/order/create", { state: { selectedProducts } });
   };
-
+  
   // useEffect(() => {
   //   const fetchUsers = async () => {
   //     try {
@@ -228,21 +182,27 @@ const ViewProductList = () => {
           const defaultWarehouseId = result[0]?.warehouseId;
           setSelectedWarehouseId(defaultWarehouseId); // Gọi 1 lần duy nhất ở đây
         } else {
-          await warehouseService.getById(detail.warehouse_id, setWarehouse);
-          await productService.getAllByWarehouseId(detail.warehouse_id, setData);
+          
+          const userResponse = await userService.getById(user.id,setUserDetail);
+          // Tìm warehouse có roleInWarehouse là "Member"
+          const memberWarehouse = userResponse.userWarehouses.find((uw) => uw.roleInWarehouse === "Member");
+          const warehouseId = memberWarehouse?.warehouse?.warehouseId;
+          console.log(warehouseId);
+          await warehouseService.getById(warehouseId, setWarehouse);
+          await productService.getAllByWarehouseId(warehouseId, setData);
         }
       } catch (error) {
         toast.error("Failed to fetch warehouses");
       }
     };
-  
+
     fetchWarehouses().catch(console.error);
   }, []); // chạy 1 lần đầu
-  
+
   // Mỗi khi selectedWarehouseId thay đổi thì fetch lại product
   useEffect(() => {
     if (!selectedWarehouseId) return;
-  
+
     const fetchProducts = async () => {
       try {
         await productService.getAllByWarehouseId(selectedWarehouseId, setData);
@@ -250,10 +210,10 @@ const ViewProductList = () => {
         toast.error("Failed to fetch products");
       }
     };
-  
+
     fetchProducts().catch(console.error);
   }, [selectedWarehouseId]);
-  
+
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState([]);
@@ -285,36 +245,38 @@ const ViewProductList = () => {
         <div className="flex items-center space-x-3">
           <h1 className="text-[#182F73] text-3xl font-bold">Danh sách hàng hóa</h1>
           {isAdmin ? (
-  <Select
-    value={selectedWarehouseId}
-    onValueChange={(value) => setSelectedWarehouseId(value)}
-  >
-    <SelectTrigger className="w-[240px] flex items-center gap-2">
-      <Warehouse className="h-4 w-4 text-muted-foreground" />
-      <SelectValue placeholder="Chọn kho" />
-    </SelectTrigger>
-    <SelectContent>
-      {warehouses.map((w) => (
-        <SelectItem key={w.warehouseId} value={w.warehouseId}>
-          {w.warehouseName}
-        </SelectItem>
-      ))}
-    </SelectContent>
-  </Select>
-) : (
-  <Button variant="outline">
-    <Warehouse className="mr-2 h-4 w-4" />
-    {warehouse.warehouseName}
-  </Button>
-)}
-
-
-
+            <Select value={selectedWarehouseId} onValueChange={(value) => setSelectedWarehouseId(value)}>
+              <SelectTrigger className="w-[240px] flex items-center gap-2">
+                <Warehouse className="h-4 w-4 text-muted-foreground" />
+                <SelectValue placeholder="Chọn kho" />
+              </SelectTrigger>
+              <SelectContent>
+                {warehouses.map((w) => (
+                  <SelectItem key={w.warehouseId} value={w.warehouseId}>
+                    {w.warehouseName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Button variant="outline">
+              <Warehouse className="mr-2 h-4 w-4" />
+              {warehouse.warehouseName}
+            </Button>
+          )}
         </div>
         <div className="space-x-3">
-          <Button variant="outline"><CloudDownload />Xuất file</Button>
-          <Button variant="default"><Plus />Thêm mới</Button>
-          <Button variant="default" onClick={handleCreateOrder}><ShoppingCart /> Tạo đơn hàng</Button>
+          <Button variant="outline">
+            <CloudDownload />
+            Xuất file
+          </Button>
+          <Button variant="default">
+            <Plus />
+            Thêm mới
+          </Button>
+          <Button variant="default" onClick={handleCreateOrder}>
+            <ShoppingCart /> Tạo đơn hàng
+          </Button>
         </div>
       </div>
       <div className="flex items-center space-x-3">
@@ -338,12 +300,7 @@ const ViewProductList = () => {
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
+                <DropdownMenuCheckboxItem key={column.id} className="capitalize" checked={column.getIsVisible()} onCheckedChange={(value) => column.toggleVisibility(!!value)}>
                   {column.columnDef.name}
                 </DropdownMenuCheckboxItem>
               ))}
@@ -356,14 +313,7 @@ const ViewProductList = () => {
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  </TableHead>
+                  <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
                 ))}
               </TableRow>
             ))}
@@ -371,17 +321,9 @@ const ViewProductList = () => {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
@@ -396,32 +338,23 @@ const ViewProductList = () => {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2">
-        <div className="flex-1 text-sm text-muted-foreground"> Đã chọn&nbsp;
-          {table.getFilteredSelectedRowModel().rows.length} trên{" "}
-          {table.getFilteredRowModel().rows.length} hàng.
+        <div className="flex-1 text-sm text-muted-foreground">
+          {" "}
+          Đã chọn&nbsp;
+          {table.getFilteredSelectedRowModel().rows.length} trên {table.getFilteredRowModel().rows.length} hàng.
         </div>
         <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
+          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
             Trước
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
+          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
             Sau
           </Button>
         </div>
       </div>
     </Card>
   );
-}
+};
 const CreateProductInline = () => {
   const { register, handleSubmit } = useForm({
     defaultValues: {

@@ -1,4 +1,5 @@
 import orderApi from "@/api/orderApi.jsx";
+import axios from "axios";
 
 const orderService = {
   async getAll(setData) {
@@ -22,6 +23,12 @@ const orderService = {
       console.error("API error:", error.response?.data || error.message);
     }
   },
+
+     async create (payload){
+    const response = await axios.post("http://localhost:8080/api/v1/orders", payload);
+    return response.data;
+  }
+
 };
 
 export default orderService;

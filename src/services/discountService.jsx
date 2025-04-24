@@ -56,7 +56,7 @@ const discountService = {
       const formatted = formatDiscount(raw, now);
       setData(formatted);
     } catch (error) {
-      handleApiError(error);
+      // handleApiError(error);
     }
   },
   async create(payload) {

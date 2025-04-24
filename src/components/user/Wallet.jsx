@@ -21,6 +21,7 @@ const Wallet = ({ userId }) => {
   const [wallet, setWallet] = useState(null);
   const [discount, setDiscount] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     const fetchWalletData = async () => {
@@ -43,11 +44,13 @@ const Wallet = ({ userId }) => {
 
       if (!cleanAmount || cleanAmount < 200000) {
         setDiscount(null);
+        setChecked(false);
         return;
       }
 
       try {
         const res = await discountService.getByTotalAmount({ totalAmount: cleanAmount }, setDiscount);
+        setChecked(true);
         console.log("Discount nhận được:", res);
       } catch (error) {
         console.error("Lỗi khi lấy giảm giá:", error);
@@ -57,22 +60,59 @@ const Wallet = ({ userId }) => {
 
     fetchDiscount();
   }, [amount]);
-
-  const handleSendClick = () => {
+  const fetchBankInfo = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/warehouses/owner-by-member/6");
+      if (!response.ok) throw new Error("Không thể lấy thông tin tài khoản ngân hàng");
+  
+      const data = await response.json();
+      return data.bank;
+    } catch (error) {
+      toast.error("Lỗi khi lấy thông tin tài khoản ngân hàng");
+      console.error(error);
+      return null;
+    }
+  };
+  const getBankCode = (bankName) => {
+    const bankCodeMap = {
+      "Ngân hàng Quân Đội Việt Nam": "mbbank",
+      "Ngân hàng TMCP Ngoại thương Việt Nam": "vcb",
+      "Ngân hàng TMCP Công Thương Việt Nam": "vietinbank",
+      "Ngân hàng TMCP Đầu tư và Phát triển Việt Nam": "bidv",
+      "Ngân hàng TMCP Á Châu": "acb",
+      "Ngân hàng TMCP Kỹ thương Việt Nam": "techcombank",
+      "Ngân hàng TMCP Việt Nam Thịnh Vượng": "vpbank",
+      "Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam": "agribank",
+      "Ngân hàng TMCP Tiên Phong": "tpbank",
+      "Ngân hàng TMCP Hàng Hải Việt Nam": "msb",
+      // Thêm các ngân hàng khác nếu cần...
+    };
+  
+    return bankCodeMap[bankName] || "mbbank"; // fallback mặc định nếu không tìm thấy
+  };
+  
+  const handleSendClick = async () => {
     const numberAmount = parseInt(amount.replace(/\D/g, ""), 10);
-
+  
     if (isNaN(numberAmount) || numberAmount < 200000) {
       toast.error("Vui lòng nhập số tiền hợp lệ (tối thiểu 200.000đ)");
       return;
     }
-
+  
+    const bank = await fetchBankInfo();
+    if (!bank) return;
+  
+    const bankCode = getBankCode(bank.bankName); // ánh xạ tên sang mã
+    const accountNo = bank.accountNo;
+    const accountName = encodeURIComponent(bank.accountName);
     const encodedInfo = encodeURIComponent("dong qop quy vac xin");
-    const encodedName = encodeURIComponent("Quy Vac Xin Covid");
-    const url = `https://img.vietqr.io/image/mbbank-25250520039999-compact2.jpg?amount=${numberAmount}&addInfo=${encodedInfo}&accountName=${encodedName}`;
-
+  
+    const url = `https://img.vietqr.io/image/${bankCode}-${accountNo}-compact2.jpg?amount=${numberAmount}&addInfo=${encodedInfo}&accountName=${accountName}`;
+  
     setQrUrl(url);
     setDialogOpen(true);
   };
+  
 
   const handleCreateTransaction = async () => {
     const numberAmount = parseInt(amount.replace(/\D/g, ""), 10);
@@ -81,9 +121,11 @@ const Wallet = ({ userId }) => {
       toast.error("Số tiền không hợp lệ.");
       return;
     }
+    const bonusAmount = discount ? Math.round(numberAmount * (discount.discountPercent / 100)) : 0;
+    const totalAmountWithDiscount = numberAmount + bonusAmount;
 
     const payload = {
-      totalAmount: numberAmount,
+      totalAmount: totalAmountWithDiscount,
       walletId: wallet.walletId,
       discountId: discount?.discountId || null,
     };
@@ -122,6 +164,35 @@ const Wallet = ({ userId }) => {
           Gửi
         </Button>
       </div>
+      {(() => {
+  const cleanAmount = parseInt(amount.replace(/\D/g, ""), 10);
+
+  if (!cleanAmount || cleanAmount < 200000) return null;
+
+  // if (discount) {
+  //   return (
+  //     <div className="text-green-600 font-medium">
+  //       ✅ Bạn được khuyến mãi thêm {discount.discountPercent}%
+  //     </div>
+  //   );
+  // }
+
+  // if (checked) {
+  //   return (
+  //     <div className="text-red-600 font-medium">
+  //       ❌ Bạn không có khuyến mãi nào phù hợp
+  //     </div>
+  //   );
+  // }
+
+  return null;
+})()}
+
+{discount && (
+  <div className="text-green-600 font-medium">
+    ✅ Bạn được khuyến mãi thêm {discount.discountPercent}%
+  </div>
+)}
 
       {wallet?.walletId && (
         <ListTransactionByWalletId

@@ -105,10 +105,10 @@ export default function ListTransactionByWalletId({ walletId,reloadTrigger }) {
         );
       },
     }),
-    columnHelper.accessor("transaction_type", {
-      header: "Loại giao dịch",
-      cell: (info) => <div>{info.getValue()}</div>,
-    }),
+    // columnHelper.accessor("transaction_type", {
+    //   header: "Loại giao dịch",
+    //   cell: (info) => <div>{info.getValue()}</div>,
+    // }),
     columnHelper.accessor("discount.discountPercent", {
       header: "Chiết khấu (%)",
       cell: (info) => <div>{info.getValue() ?? 0}%</div>,
@@ -127,6 +127,23 @@ export default function ListTransactionByWalletId({ walletId,reloadTrigger }) {
           />
         ) : (
           <span className="text-sm text-muted-foreground">Chưa có</span>
+        );
+      },
+    }),
+    columnHelper.accessor("refundImage", {
+      header: "Ảnh hoàn tiền",
+      cell: (info) => {
+        const url = info.getValue();
+        return url ? (
+          <img
+            src={url}
+            alt="Proof"
+            className="w-16 h-16 object-cover rounded border"
+            onClick={() => setPreviewUrl(url)}
+
+          />
+        ) : (
+          <span className="text-sm text-muted-foreground">Không có</span>
         );
       },
     }),

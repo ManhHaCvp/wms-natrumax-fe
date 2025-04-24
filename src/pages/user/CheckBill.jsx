@@ -1,31 +1,53 @@
 import React, { useEffect, useState } from "react";
-import { ArrowUpDown } from "lucide-react";
-import { Badge } from "@/components/ui/badge.jsx";
-import { Button } from "@/components/ui/button.jsx";
+import { ArrowUpDown, Eye } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { createColumnHelper } from "@tanstack/react-table";
-import TableComponent from "@/components/common/DataTable.jsx";
+import TableComponent from "@/components/common/DataTable";
 import axios from "axios";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import ImagePreviewModal from "@/components/common/ImagePreviewModal";
 import UploadProofDialog from "@/components/user/UploadProofDialog";
 import transactionService from "@/services/transactionService";
+import toast from "react-hot-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-// Khởi tạo column helper cho react-table
+// Khởi tạo column helper
 const columnHelper = createColumnHelper();
 
-// Hàm định dạng tiền tệ
+// Định dạng tiền VND
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
 };
 
-// Hàm định dạng ngày tháng
+// Định dạng ngày tháng
 const formatDate = (isoDate) => {
   const date = new Date(isoDate);
   return date.toLocaleString("vi-VN");
 };
 
-// Cột cho bảng
-const columns = (setPreviewUrl, handleChangeTransactionStatus,setSelectedTransactionId,setUploadDialogOpen) => [
+// Tạo column cho bảng
+const columns = (
+  setPreviewUrl,
+  handleChangeTransactionStatus,
+  setSelectedTransactionId,
+  setUploadDialogOpen,
+  handleSendClick
+) => [
   columnHelper.accessor("transactionsId", {
     header: "Mã giao dịch",
     cell: (info) => <div>#{info.getValue()}</div>,
@@ -42,23 +64,17 @@ const columns = (setPreviewUrl, handleChangeTransactionStatus,setSelectedTransac
     header: "Khuyến mãi",
     cell: (info) => {
       const discount = info.getValue();
-      if (!discount) return <span>Không có</span>;
-      return (
-        <div>
-          <div>{discount.discountPercent}%</div>
-        </div>
-      );
+      return discount ? <div>{discount.discountPercent}%</div> : <span>Không có</span>;
     },
   }),
   columnHelper.accessor("status", {
     header: "Trạng thái",
-    cell: (info) => (
+    cell: (info) =>
       info.getValue() === "SUCCESS" ? (
         <Badge variant="success">Thành công</Badge>
       ) : (
         <Badge variant="destructive">{info.getValue()}</Badge>
-      )
-    ),
+      ),
   }),
   columnHelper.accessor("transferImage", {
     header: "Ảnh minh chứng",
@@ -68,7 +84,7 @@ const columns = (setPreviewUrl, handleChangeTransactionStatus,setSelectedTransac
         <img
           src={url}
           alt="Proof"
-          className="w-16 h-16 object-cover rounded border"
+          className="w-16 h-16 object-cover rounded border cursor-pointer"
           onClick={() => setPreviewUrl(url)}
         />
       ) : (
@@ -81,6 +97,7 @@ const columns = (setPreviewUrl, handleChangeTransactionStatus,setSelectedTransac
     header: "Hành động",
     cell: (info) => {
       const row = info.row.original;
+      const amount = row.totalAmount;
       if (row.status === "SUCCESS") {
         return (
           <div className="flex gap-2">
@@ -100,10 +117,9 @@ const columns = (setPreviewUrl, handleChangeTransactionStatus,setSelectedTransac
             </Button>
           </div>
         );
-      }
-      else if (row.status === "CANCELED") {
+      } else if (row.status === "CANCELED") {
         return (
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Button
               variant="outline"
               size="sm"
@@ -114,7 +130,11 @@ const columns = (setPreviewUrl, handleChangeTransactionStatus,setSelectedTransac
             >
               Thêm ảnh
             </Button>
-            
+            <Eye
+              className="w-5 h-5 cursor-pointer text-blue-500 hover:opacity-75"
+              onClick={() => handleSendClick(amount,row.bank)}
+              title="Hiển thị mã QR"
+            />
           </div>
         );
       }
@@ -123,25 +143,48 @@ const columns = (setPreviewUrl, handleChangeTransactionStatus,setSelectedTransac
   }),
 ];
 
-// Các trạng thái để lọc giao dịch
+// Các trạng thái có thể lọc
 const statusOptions = ["PENDING", "SUCCESS", "CONFIRMED", "CANCELED", "REFUNDED"];
 
 const CheckBill = () => {
-  const [data, setData] = useState([]); // Dữ liệu giao dịch
-  const [statusFilter, setStatusFilter] = useState("SUCCESS"); // Trạng thái lọc
-  const [previewUrl, setPreviewUrl] = useState(null); // URL ảnh minh chứng
-  const [selectedFile, setSelectedFile] = useState(null); // File ảnh đã chọn cho "CANCELED" status
+  const [data, setData] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("SUCCESS");
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+  const [qrUrl, setQrUrl] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const fetchTransactions = async (status) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/transactions/status/${status}`
+      );
+      setData(response.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy giao dịch:", error);
+    }
+  };
+
+  const handleChangeTransactionStatus = async (transactionId, newStatus) => {
+    try {
+      await axios.put(
+        `http://localhost:8080/api/v1/transactions/${transactionId}/change-status`,
+        {},
+        { params: { status: newStatus } }
+      );
+      fetchTransactions(statusFilter);
+    } catch (error) {
+      console.error("Đổi trạng thái thất bại:", error);
+    }
+  };
+
   const handleUpload = async (file) => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      await transactionService.uploadRefundImage(
-        selectedTransactionId,
-        formData
-      );
-      await fetchData();
+      await transactionService.uploadRefundImage(selectedTransactionId, formData);
+      await fetchTransactions("CANCELED");
       toast.success("Tải ảnh lên thành công!");
       setUploadDialogOpen(false);
       setSelectedTransactionId(null);
@@ -150,38 +193,47 @@ const CheckBill = () => {
       alert("Upload thất bại.");
     }
   };
-  // Hàm lấy dữ liệu giao dịch
-  const fetchTransactions = async (status) => {
+  
+  ;
+  const getBankCode = (bankName) => {
+    const bankCodeMap = {
+      "Ngân hàng Quân Đội Việt Nam": "mbbank",
+      "Ngân hàng TMCP Ngoại thương Việt Nam": "vcb",
+      "Ngân hàng TMCP Công Thương Việt Nam": "vietinbank",
+      "Ngân hàng TMCP Đầu tư và Phát triển Việt Nam": "bidv",
+      "Ngân hàng TMCP Á Châu": "acb",
+      "Ngân hàng TMCP Kỹ thương Việt Nam": "techcombank",
+      "Ngân hàng TMCP Việt Nam Thịnh Vượng": "vpbank",
+      "Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam": "agribank",
+      "Ngân hàng TMCP Tiên Phong": "tpbank",
+      "Ngân hàng TMCP Hàng Hải Việt Nam": "msb",
+      // Thêm các ngân hàng khác nếu cần...
+    };
+  
+    return bankCodeMap[bankName] || "mbbank"; // fallback mặc định nếu không tìm thấy
+  };
+  const handleSendClick = async (amount,bank) => {
+  
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/transactions/status/${status}`);
-      setData(response.data);
+      
+  
+      const numberAmount = parseInt(String(amount).replace(/\D/g, ""), 10);
+      const bankCode = getBankCode(bank.bankName);
+      const accountNumber = bank.accountNo;
+      const encodedInfo = encodeURIComponent("Hoàn tiền giao dịch");
+      const encodedName = encodeURIComponent("");
+      console.log(encodedName);
+      const url = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact2.jpg?amount=${numberAmount}&addInfo=${encodedInfo}&accountName=${encodedName}`;
+  
+      setQrUrl(url);
+      setDialogOpen(true);
     } catch (error) {
-      console.error("Failed to fetch transactions:", error);
+      toast.error("Không thể tạo mã QR");
+      console.error("QR Error:", error);
     }
   };
+  
 
-  // Hàm thay đổi trạng thái giao dịch
-  const handleChangeTransactionStatus = async (transactionId, newStatus) => {
-    try {
-      // Cập nhật trạng thái giao dịch
-      await axios.put(
-        `http://localhost:8080/api/v1/transactions/${transactionId}/change-status`,
-        {},
-        {
-          params: {
-            status: newStatus,
-          },
-        }
-      );
-
-      // Reload lại danh sách giao dịch sau khi thay đổi trạng thái
-      fetchTransactions(statusFilter);
-    } catch (error) {
-      console.error("Đổi trạng thái giao dịch thất bại:", error);
-    }
-  };
-
-  // Fetch dữ liệu khi trạng thái lọc thay đổi
   useEffect(() => {
     fetchTransactions(statusFilter);
   }, [statusFilter]);
@@ -206,24 +258,39 @@ const CheckBill = () => {
           </Select>
         </div>
       </div>
-      
-   
 
       <TableComponent
         title=""
-        columns={columns(setPreviewUrl, handleChangeTransactionStatus,setSelectedTransactionId,setUploadDialogOpen)} // Truyền hàm vào cột
+        columns={columns(
+          setPreviewUrl,
+          handleChangeTransactionStatus,
+          setSelectedTransactionId,
+          setUploadDialogOpen,
+          handleSendClick
+        )}
         data={data}
       />
+
       <UploadProofDialog
-              open={uploadDialogOpen}
-              onOpenChange={setUploadDialogOpen}
-              onUpload={handleUpload}
-            />
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        onUpload={handleUpload}
+      />
+
       <ImagePreviewModal
         open={!!previewUrl}
         imageUrl={previewUrl}
         onOpenChange={() => setPreviewUrl(null)}
       />
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mã QR thanh toán</DialogTitle>
+          </DialogHeader>
+          {qrUrl && <img src={qrUrl} alt="QR Payment" className="w-full h-auto" />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
