@@ -4,13 +4,7 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { createColumnHelper } from "@tanstack/react-table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.jsx";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import categoryService from "@/services/categoryService.jsx";
 
@@ -21,31 +15,19 @@ const columns = [
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
     enableSorting: false,
     enableHiding: false,
   }),
   columnHelper.accessor("name", {
     name: "Tên nhóm hàng",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Tên nhóm hàng
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -55,10 +37,7 @@ const columns = [
   columnHelper.accessor("description", {
     name: "Mô tả",
     header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
+      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
         Mô tả
         <ArrowUpDown size={16} className="ml-2" />
       </div>
@@ -80,11 +59,7 @@ const columns = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}
-            >
-              Sao chép
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}>Sao chép</DropdownMenuItem>
             <DropdownMenuSeparator />
             {/*<DropdownMenuItem asChild>*/}
             {/*  <Link to={`/admin/category/${data.id}`}>Xem</Link>*/}
@@ -121,14 +96,7 @@ const ViewCategoryList = () => {
     fetchUsers().catch(console.error); // Handles the promise properly
   }, []);
 
-  return (
-    <DataTable
-      title="Danh sách nhóm hàng"
-      columns={columns}
-      data={data}
-      addLink="/admin/category/create"
-    />
-  );
-}
+  return <DataTable title="Danh sách nhóm hàng" columns={columns} data={data} addLink="/admin/category/create" />;
+};
 
 export default ViewCategoryList;
