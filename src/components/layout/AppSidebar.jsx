@@ -95,21 +95,7 @@ const AppSidebar = () => {
       {
         icon: Banknote,
         title: "Hoa hồng",
-        url: "#",
-        items: [
-          {
-            title: "Danh sách",
-            url: "#",
-          },
-          {
-            title: "Chính sách",
-            url: "#",
-          },
-          {
-            title: "Lịch sử",
-            url: "#",
-          },
-        ],
+        url: "/admin/commissions"
       },
       {
         icon: CalendarCheck,
