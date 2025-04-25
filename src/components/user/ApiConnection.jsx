@@ -3,37 +3,37 @@ import { Eye, EyeOff, Copy } from "lucide-react";
 import toast from 'react-hot-toast';
 import { Button } from "@/components/ui/button";
 
-const ApiConnection = ({retailer, clientId, clientSecret}) => {
+const ApiConnection = ({detail}) => {
+  const [apiConnection] = useState(JSON.parse(detail));
   const [isSecretVisible, setIsSecretVisible] = useState(false);
-  console.log(retailer, clientId, clientSecret);
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
 
   return (
-      <div className="text-base font-semibold m-5">
-        <div className="flex items-center text-muted-foreground mb-3">
-          <p className="w-32">Retailer</p>
-          <p className="font-medium">{retailer}</p>
+      <div className="text-base font-semibold m-5 space-y-3">
+        <div className="flex items-center">
+          <p className="w-32 text-muted-foreground">Retailer</p>
+          <p className="font-medium">{apiConnection.retailer}</p>
           <Button
             variant="ghost"
             size="sm"
             className="ml-2"
-            onClick={() => copyToClipboard(retailer)}
+            onClick={() => copyToClipboard(apiConnection.retailer)}
           >
             <Copy size={16} />
           </Button>
         </div>
-        <div className="flex items-center mb-3">
+        <div className="flex items-center">
           <p className="w-32 text-muted-foreground">Client ID</p>
-          <p className="font-medium">{clientId}</p>
+          <p className="font-medium">{apiConnection.client_id}</p>
           <Button
             variant="ghost"
             size="sm"
             className="ml-2"
             onClick={() =>
-              copyToClipboard(clientSecret)
+              copyToClipboard(apiConnection.client_secret)
             }
           >
             <Copy size={16} />
@@ -43,7 +43,7 @@ const ApiConnection = ({retailer, clientId, clientSecret}) => {
           <p className="w-32 text-muted-foreground">Client Secret</p>
           <p className="font-medium">
             {isSecretVisible
-              ? clientSecret
+              ? apiConnection.client_secret
               : "••••••••••••••••••••••••••••••••••••••••••••••••••••••"}
           </p>
           <Button
@@ -59,7 +59,7 @@ const ApiConnection = ({retailer, clientId, clientSecret}) => {
             size="sm"
             className="ml-2"
             onClick={() =>
-              copyToClipboard(clientSecret)
+              copyToClipboard(apiConnection.client_secret)
             }
           >
             <Copy size={16} />

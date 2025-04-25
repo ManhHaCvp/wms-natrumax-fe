@@ -9,7 +9,7 @@ const userApi = {
   create: (payload) => apiClient.post(USER_BASE, payload),
   update: (payload) => apiClient.put(`${USER_BASE}/${payload.userId}`, payload),
   changePassword: (payload) => apiClient.put(`${USER_BASE}/${payload.id}/change-password`, payload),
-  changeStatus: (id) => apiClient.put(`${USER_BASE}/${id}/toggle-status`),
+  changeStatus: (id) => apiClient.put(`${USER_BASE}/${id}/change-status`),
 };
 
 export default userApi;

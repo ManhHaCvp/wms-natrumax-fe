@@ -1,57 +1,27 @@
-// const Promotion = ({ promotion }) => {
-//   console.log(promotion);
-//   return (
-//     <div className="m-5">
-//       <div>
-//         <div>
-//           <p className="text-muted-foreground">Số lượng để được khuyến mãi</p>
-//           <p>{promotion?.quantityToGetPromotion || "Không có dữ liệu"}</p>
-//         </div>
-//       </div>
-//       <div>
-//         <p className="text-muted-foreground">Khuyến mãi</p>
-//         <p>{promotion?.bonusQuantity || "Không có dữ liệu"}</p>
-//       </div>
-      
-//     </div>
-//   )
-// }
-
-// export default Promotion;
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Gift, ShoppingCart } from "lucide-react";
+import {Card, CardContent} from "@/components/ui/card";
+import {Copy, Gift, ShoppingCart} from "lucide-react";
+import {Button} from "@/components/ui/button.jsx";
 
-const PromotionScreen = () => {
-  const purchasedProducts = [
-    {
-      productName: "Sữa Natrumax Gold 900g",
-      quantity: 6,
-      promotion: "Mua 5 tặng 1",
-    }
-  ];
-
-  return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-xl font-bold text-[#182F73] mb-6">Khuyến mãi theo sản phẩm</h1>
-
-      {purchasedProducts.map((item, index) => (
-        <Card key={index} className="mb-4 border rounded-xl shadow-sm hover:shadow-md transition">
-          <CardContent className="p-5 space-y-2">
-
-            <div className="text-sm text-gray-700">
-              <span className="font-medium">Số lượng đã mua:</span> {item.quantity}
+const Promotion = ({promotion}) => {
+    return (
+        <div>
+            <div className="text-base font-semibold m-5 space-y-3">
+                <div className="flex items-center">
+                    <p className="w-32 text-muted-foreground">Số lượng cần</p>
+                    <p className="font-medium">{promotion.quantityToGetPromotion}</p>
+                </div>
+                <div className="flex items-center">
+                    <p className="w-32 text-muted-foreground">Số lượng thêm</p>
+                    <p className="font-medium">{promotion.bonusQuantity}</p>
+                </div>
+                <div className="flex items-center">
+                    <p className="w-32 text-muted-foreground">Tính chất</p>
+                    <p className="font-medium">{promotion.sameProduct ? "Cùng loại" : "Khác loại"}</p>
+                </div>
             </div>
-
-            <div className="text-sm text-gray-700 flex items-center gap-2">
-              <Gift size={16} className="text-pink-600" />
-              <span className="font-medium">Khuyến mãi:</span> {item.promotion}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
+        </div>
+    );
 };
 
-export default PromotionScreen;
+export default Promotion;

@@ -106,7 +106,7 @@ const columns = [
     header: "Trạng thái",
     cell: (info) => (
       info.getValue() ? (
-        <Badge>Hoạt động</Badge>
+        <Badge className="w-[5.1rem]">Hoạt động</Badge>
       ) : (
         <Badge variant="destructive">Bị khóa</Badge>
       )
