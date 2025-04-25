@@ -66,7 +66,7 @@ const Routes = () => {
 
       //Product
       { path: "/admin/products", element: <ViewProductList /> },
-      { path: "/admin/product/:id", element: <ViewProductDetail /> },
+      { path: "/admin/product/:productId", element: <ViewProductDetail /> },
       { path: "/admin/product/update/:id", element: <UpdateProduct /> },
 
       //Category

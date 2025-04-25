@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import toast from "react-hot-toast";
-import userService from "@/services/userService";
+import walletService from "@/services/walletService";
 import transactionService from "@/services/transactionService";
 import discountService from "@/services/discountService";
 import ListTransactionByWalletId from "./ListTransactionByWalletId";
@@ -26,7 +26,7 @@ const Wallet = ({ userId }) => {
   useEffect(() => {
     const fetchWalletData = async () => {
       try {
-        const data = await userService.getWalletByUserId(userId);
+        const data = await walletService.getWalletByUserId(userId);
         setWallet(data.data);
         console.log("Ví nạp được:", data);
       } catch (error) {

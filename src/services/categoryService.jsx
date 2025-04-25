@@ -25,7 +25,6 @@ const categoryService = {
   async getById(id, setData) {
     try {
       const response = await categoryApi.getById(id);
-      console.log(id);
       const category = response.data;
 
       // Nếu API trả về object thay vì array

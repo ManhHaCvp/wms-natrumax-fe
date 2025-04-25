@@ -1,5 +1,6 @@
 import orderApi from "@/api/orderApi.jsx";
 import axios from "axios";
+import handleApiError from "@/utils/HandleApiError.jsx";
 
 const orderService = {
   async getOrderList(setData) {
@@ -19,7 +20,7 @@ const orderService = {
 
       setData(data);
     } catch (error) {
-      console.error("API error:", error.response?.data || error.message);
+      handleApiError(error);
     }
   },
 

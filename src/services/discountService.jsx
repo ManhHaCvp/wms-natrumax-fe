@@ -7,7 +7,7 @@ const formatDiscount = (discount, now) => {
   const expiryDate = new Date(discount.expiryDate);
 
   // const status = now < activeDate ? "-1" : now < expiryDate ? "0" : "1";
-  console.log(discount)
+
   return {
     discountId: discount.discountId,
     minimumAmount: discount.minimumAmount,
@@ -50,7 +50,6 @@ const discountService = {
   async getByTotalAmount(payload,setData) {
     try {
       const response = await discountApi.getByTotalAmount(payload);
-      console.log(response);
       const raw = response.data;
       const now = new Date();
       const formatted = formatDiscount(raw, now);

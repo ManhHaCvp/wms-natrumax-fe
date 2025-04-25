@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Plus } from "lucide-react";
+import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Badge } from "@/components/ui/badge.jsx";
-import { createColumnHelper } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,13 +12,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.jsx";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import DataTable from "@/components/common/DataTable.jsx";
 import userService from "@/services/userService.jsx";
-import TableComponent from "@/components/common/DataTable.jsx";
-import warehouseService from "@/services/warehouseService";
-import roleService from "@/services/roleService";
+import CreateNewUser from "@/components/user/CreateNewUser.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -143,148 +147,38 @@ const columns = [
 ];
 
 const ViewUserList = () => {
-  const [data, setData] = useState([
-    // {
-    //   id: 1,
-    //   accountName: "admin",
-    //   phoneNumber: "0812497838",
-    //   address: "Admin Street, City",
-    //   status: true,
-    //   role: "ROLE_ADMIN",
-    // },
-    // {
-    //   id: 2,
-    //   accountName: "accountant",
-    //   phoneNumber: "0812497838",
-    //   address: "User Street, City",
-    //   status: true,
-    //   role: "ROLE_ACCOUNTANT",
-    // },
-  ]);
+  const [userList, setUserList] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        await userService.getAll(setData);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-
-    fetchUsers().catch(console.error); // Handles the promise properly
+    userService.getAll(setUserList).catch((err) =>
+      console.error("Failed to fetch user list:", err)
+    );
   }, []);
 
   return (
-    <TableComponent
+    <DataTable
       title="Danh sách người dùng"
       columns={columns}
-      data={data}
-      // addLink="/admin/user/create"
+      data={userList}
       addButton={
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button>+ Thêm mới</Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Thêm vai trò</SheetTitle>
-                <SheetDescription>Nhập thông tin vai trò mới</SheetDescription>
-              </SheetHeader>
-              <CreateUserInline />
-            </SheetContent>
-          </Sheet>}
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button>
+              <Plus /> Thêm mới
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Thêm người dùng</SheetTitle>
+              <SheetDescription>Nhập thông tin người dùng mới</SheetDescription>
+            </SheetHeader>
+            <CreateNewUser setUserList={setUserList} setIsOpen={setIsOpen} />
+          </SheetContent>
+        </Sheet>
+      }
     />
   );
-}
-const CreateUserInline = () => {
-  const { register, handleSubmit, setValue } = useForm({
-    defaultValues: {
-      misaCode: "",
-      warehouseId: "",
-      roleId: "",
-    },
-  });
-
-  const [roles, setRoles] = useState([]);
-  const [warehouses, setWarehouses] = useState([]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data1 = await roleService.getAll(setRoles);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-
-    fetchUsers().catch(console.error); // Handles the promise properly
-  }, []);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data2 = await warehouseService.getAll(setWarehouses);
-        console.log(data2);
-
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-
-    fetchUsers().catch(console.error); // Handles the promise properly
-  }, []);
-
-
-
-  const onSubmit = async (formData) => {
-    try {
-      await userService.create({
-        misaCode: formData.misaCode,
-        warehouseId: Number(formData.warehouseId),
-        roleId: Number(formData.roleId),
-      });
-      toast.success("Tạo người dùng thành công!");
-      window.location.reload();
-    } catch (error) {
-      console.error("Lỗi tạo người dùng:", error);
-      toast.error("Lỗi khi tạo người dùng!");
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
-      <div>
-        <label className="block mb-1 text-sm font-medium">Mã MISA</label>
-        <Input {...register("misaCode")} placeholder="Nhập mã MISA" />
-      </div>
-
-      <div>
-        <label className="block mb-1 text-sm font-medium">Vai trò</label>
-        <select {...register("roleId")} className="w-full p-2 border rounded">
-  <option value="">-- Chọn vai trò --</option>
-  {roles.map((role) => (
-    <option key={role.roleId} value={String(role.roleId)}>
-      {role.roleName}
-    </option>
-  ))}
-</select>
-
-      </div>
-
-      <div>
-        <label className="block mb-1 text-sm font-medium">Kho</label>
-        <select {...register("warehouseId")} className="w-full p-2 border rounded">
-  <option value="">-- Chọn kho --</option>
-  {warehouses.map((wh) => (
-    <option key={wh.warehouseId} value={String(wh.warehouseId)}>
-      {wh.warehouseName}
-    </option>
-  ))}
-</select>
-      </div>
-
-      <Button type="submit">Tạo mới</Button>
-    </form>
-  );
 };
+
 export default ViewUserList;

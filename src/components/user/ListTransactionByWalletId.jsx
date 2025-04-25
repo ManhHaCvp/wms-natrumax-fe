@@ -203,7 +203,7 @@ export default function ListTransactionByWalletId({ walletId,reloadTrigger }) {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      await transactionService.uploadTranferImage(
+      await transactionService.uploadTransferImage(
         selectedTransactionId,
         formData
       );

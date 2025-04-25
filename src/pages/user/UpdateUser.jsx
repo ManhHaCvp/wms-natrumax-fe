@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import InputField from "@/components/common/InputField.jsx";
 import userService from "@/services/userService.jsx";
-import warehouseService from "@/services/warehouseService";
+import provinceService from "@/services/provinceService";
 
 const UpdateUser = () => {
   const [user, setUser] = useState({
@@ -45,7 +45,7 @@ const UpdateUser = () => {
   useEffect(() => {
     const fetchData = async () => {
       // Lấy danh sách tỉnh từ API
-      const fetchedProvinces = await warehouseService.getAllProvinces();
+      const fetchedProvinces = await provinceService.getAll();
       setProvinces(fetchedProvinces);
     };
 

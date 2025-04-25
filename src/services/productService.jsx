@@ -34,21 +34,6 @@ const productService = {
     }
   },
 
-  async getAllByWarehouseId(id, setData) {
-    try {
-      const response = await warehouseApi.getAllByWarehouseId(id);
-      const products = Array.isArray(response.data)
-        ? response.data
-        : response.data?.products || [];
-
-      console.log(products);
-
-      setData(products.map(formatProduct));
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
-
   async getPaging(setData, page, size) {
     try {
       const response = await productApi.getPaging(page, size);
@@ -67,13 +52,9 @@ const productService = {
       const response = await productApi.getById(id);
       const product = response.data;
 
-      console.log(product);
-
       const data = Array.isArray(product)
         ? product.map(formatProduct)
         : formatProduct(product);
-
-      console.log(data);
 
       setData(data);
     } catch (error) {
@@ -81,18 +62,27 @@ const productService = {
     }
   },
 
-  async getByProductIdAndWarehouseId(productId, warehouseId, setData) {
+  async getByWarehouseId(id, setData) {
     try {
-      const response = await productApi.getByProductIdAndWarehouseId(productId, warehouseId);
-      const product = response.data;
+      const response = await productApi.getByWarehouseId(id);
+      const products = Array.isArray(response.data)
+          ? response.data
+          : response.data?.products || [];
 
-      console.log(product);
+      setData(products.map(formatProduct));
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async getByWarehouseIdAndProductId(warehouseId, productId, setData) {
+    try {
+      const response = await productApi.getByWarehouseIdAndProductId(warehouseId, productId);
+      const product = response.data;
 
       const data = Array.isArray(product)
         ? product.map(formatProduct)
         : formatProduct(product);
-
-      console.log(data);
 
       setData(data);
     } catch (error) {

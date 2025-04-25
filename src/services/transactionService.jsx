@@ -1,33 +1,34 @@
 import transactionApi from "@/api/transactionApi.jsx";
 import handleApiError from "@/utils/HandleApiError.jsx";
+
 const transactionService = {
     async create(payload) {
-      try {
-        await transactionApi.create(payload);
-      } catch (error) {
-        handleApiError(error);
-      }
+        try {
+            await transactionApi.create(payload);
+        } catch (error) {
+            handleApiError(error);
+        }
     },
     async getByWalletId(walletId) {
-      try {
-        return await transactionApi.getByWalletId(walletId);
-      } catch (error) {
-        handleApiError(error);
-      }
+        try {
+            return await transactionApi.getByWalletId(walletId);
+        } catch (error) {
+            handleApiError(error);
+        }
     },
-    async uploadTranferImage(id,formdata) {
-      try {
-        return await transactionApi.uploadTranferImage(id,formdata);
-      } catch (error) {
-        handleApiError(error);
-      }
+    async uploadTransferImage(id, formData) {
+        try {
+            return await transactionApi.uploadTransferImage(id, formData);
+        } catch (error) {
+            handleApiError(error);
+        }
     },
-    async uploadRefundImage(id,formdata) {
-      try {
-        return await transactionApi.uploadRefundImage(id,formdata);
-      } catch (error) {
-        handleApiError(error);
-      }
+    async uploadRefundImage(id, formData) {
+        try {
+            return await transactionApi.uploadRefundImage(id, formData);
+        } catch (error) {
+            handleApiError(error);
+        }
     },
-  };
+};
 export default transactionService;

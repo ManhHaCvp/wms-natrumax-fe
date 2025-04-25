@@ -7,7 +7,7 @@ const categoryApi = {
   getAll: () => apiClient.get(CATEGORY_BASE),
   getById: (id) => apiClient.get(`${CATEGORY_BASE}/${id}`),
   create: (payload) => apiClient.post(CATEGORY_BASE, payload),
-  update: (categoryId,payload) => apiClient.put(`${CATEGORY_BASE}/${categoryId}`, payload),
+  update: (id, payload) => apiClient.put(`${CATEGORY_BASE}/${id}`, payload),
 };
 
 export default categoryApi;

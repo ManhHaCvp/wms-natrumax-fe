@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import warehouseService from "@/services/warehouseService.jsx";
+import provinceService from "@/services/provinceService.jsx";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -323,7 +324,7 @@ const CreateWarehouseInline = ({ setData, onClose }) => {
   useEffect(() => {
     const fetchData = async () => {
       // Lấy danh sách tỉnh
-      const fetchedProvinces = await warehouseService.getAllProvinces();
+      const fetchedProvinces = await provinceService.getAll();
       setProvinces(fetchedProvinces);
       console.log("Fetched provinces:", fetchedProvinces);
     };
