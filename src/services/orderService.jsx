@@ -1,4 +1,5 @@
 import orderApi from "@/api/orderApi.jsx";
+import handleApiError from "@/utils/HandleApiError";
 import axios from "axios";
 
 const orderService = {
@@ -30,6 +31,20 @@ const orderService = {
   async getDetail(id) {
     const response = await orderApi.getOrderList(id);
     return response.data;
+  },
+  async uploadTranferImage(id,formdata) {
+    try {
+      return await orderApi.uploadTranferImage(id,formdata);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+  async uploadRefundImage(id,formdata) {
+    try {
+      return await orderApi.uploadRefundImage(id,formdata);
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 };
 

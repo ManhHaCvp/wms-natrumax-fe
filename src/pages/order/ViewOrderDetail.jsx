@@ -8,11 +8,16 @@ import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table.jsx";
 import axios from "axios";
 import formatDate from "@/utils/formatDate";
+import UploadProofDialog from "@/components/user/UploadProofDialog";
+import transactionService from "@/services/transactionService";
+import orderService from "@/services/orderService";
+import toast from "react-hot-toast";
 
 const ViewOrderDetail = () => {
   const { id } = useParams(); // assuming you pass orderId via route param
   const [order, setOrder] = useState(null);
-
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedTransactionId, setSelectedTransactionId] = useState(null);
   useEffect(() => {
     const fetchOrder = async () => {
       try {
@@ -42,6 +47,9 @@ const ViewOrderDetail = () => {
             warehouseCode: detailParsed.client_id || "N/A",
           },
           orderModifyHistories: data.orderModifyHistories,
+          urlTranferImage: data.invoices.transferImage,
+          urlRefundImage: data.invoices.refundImage,
+
         });
       } catch (err) {
         console.error("Error fetching order", err);
@@ -50,7 +58,23 @@ const ViewOrderDetail = () => {
 
     fetchOrder();
   }, [id]);
-
+  const handleUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      await orderService.uploadTranferImage(
+        selectedTransactionId,
+        formData
+      );
+      // await fetchData();
+      toast.success("Tải ảnh lên thành công!");
+      setUploadDialogOpen(false);
+      setSelectedTransactionId(null);
+    } catch (err) {
+      console.error(err);
+      alert("Upload thất bại.");
+    }
+  };
   if (!order) return <p className="m-5">Đang tải đơn hàng...</p>;
   const nextStatusMap = {
     PENDING: "Đã xác nhận",
@@ -180,7 +204,7 @@ const ViewOrderDetail = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <span className="me-3">Hoạt động</span>
-                <Badge>{statusViMap[order.orderStatus] }</Badge>
+                <Badge>{statusViMap[order.orderStatus]}</Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -233,9 +257,53 @@ const ViewOrderDetail = () => {
               <p className="text-muted-foreground">Phiếu xuất kho</p>
               {order.customer.warehouseCode}
             </div>
+            <Button
+              onClick={() => {
+                setSelectedTransactionId(order.id);
+                setUploadDialogOpen(true);
+              }}
+            >
+              Thêm ảnh chuyển khoản
+            </Button>
+            {order.urlTranferImage ? (
+          <img
+            src={order.urlRefundImage}
+            alt="Proof"
+            className="w-16 h-16 object-cover rounded border"
+            // onClick={() => setPreviewUrl(url)}
+
+          />
+        ) : (
+          <span className="text-sm text-muted-foreground">Chưa có</span>
+        )}
+
+<Button
+              onClick={() => {
+                setSelectedTransactionId(order.id);
+                setUploadDialogOpen(true);
+              }}
+            >
+              Thêm ảnh hoàn tiền
+            </Button>
+            {order.urlTranferImage ? (
+          <img
+            src={order.urlTranferImage}
+            alt="Proof"
+            className="w-16 h-16 object-cover rounded border"
+            // onClick={() => setPreviewUrl(url)}
+
+          />
+        ) : (
+          <span className="text-sm text-muted-foreground">Chưa có</span>
+        )}
           </CardContent>
         </Card>
       </div>
+       <UploadProofDialog
+              open={uploadDialogOpen}
+              onOpenChange={setUploadDialogOpen}
+              onUpload={handleUpload}
+            />
     </div>
   );
 };
