@@ -5,15 +5,7 @@ import { Button } from "@/components/ui/button.jsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
 import { Link, useParams } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table.jsx";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table.jsx";
 import axios from "axios";
 import formatDate from "@/utils/formatDate";
 
@@ -40,7 +32,7 @@ const ViewOrderDetail = () => {
           items: data.orderDetails, // update this when you have order item API
           discount: data?.invoices?.discount?.discountPercent ?? 0, // or data.discount if available
           paymentStatus: "Đã thanh toán", // convert from data.status if needed
-          orderStatus: data.status === "CONFIRMED" ? "Đã xác nhận" : data.status,
+          orderStatus: data.status,
           activities: [], // populate if available
           customer: {
             name: data.user.accountName,
@@ -49,7 +41,7 @@ const ViewOrderDetail = () => {
             saleOrderCode: data.saleCode,
             warehouseCode: detailParsed.client_id || "N/A",
           },
-          orderModifyHistories: data.orderModifyHistories
+          orderModifyHistories: data.orderModifyHistories,
         });
       } catch (err) {
         console.error("Error fetching order", err);
@@ -60,18 +52,54 @@ const ViewOrderDetail = () => {
   }, [id]);
 
   if (!order) return <p className="m-5">Đang tải đơn hàng...</p>;
-
+  const nextStatusMap = {
+    PENDING: "Đã xác nhận",
+    CONFIRMED: "Đã đóng gói",
+    PACKED: "Đang được giao",
+    SHIPPED: "Đã được giao",
+    DELIVERED: "Đã nhận",
+  };
+  const statusViMap = {
+    PENDING: "Đang chờ xác nhận",
+    CONFIRMED: "Đã xác nhận",
+    PACKED: "Đã đóng gói",
+    SHIPPED: "Đang giao",
+    DELIVERED: "Đã giao",
+    CANCELLED: "Đã hủy",
+  };
+  const currentStatus = order.orderStatus;
+  const nextStatus = nextStatusMap[currentStatus];
+  console.log(nextStatus);
   const totalPrice = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   // const discountPercent = order?.invoices?.discount?.discountPercent ?? 0;
-  const discountAmount = totalPrice * (order.discount/100);
-  console.log( totalPrice * order.discount );
-    return (
+  const discountAmount = totalPrice * (order.discount / 100);
+  return (
     <div className="flex flex-col space-y-5 m-5">
       <div className="flex justify-between items-center">
         <h1 className="text-[#182F73] text-3xl font-bold">Thông tin đơn hàng</h1>
         <div className="space-x-3">
-          <Button variant="outline"><Accessibility />Đổi trạng thái</Button>
-          <Button asChild><Link to={`/admin/order/update/${order.id}`}><Pencil />Sửa</Link></Button>
+          {nextStatus && (
+            <Button
+              variant="default"
+              onClick={async () => {
+                try {
+                  await axios.put(`http://localhost:8080/api/v1/orders/update-status/${order.id}`);
+                  window.location.reload();
+                } catch (err) {
+                  console.error("Lỗi khi cập nhật trạng thái:", err);
+                }
+              }}
+            >
+              <Accessibility className="mr-2 h-4 w-4" />
+              {nextStatus}
+            </Button>
+          )}
+          <Button asChild>
+            <Link to={`/admin/order/update/${order.id}`}>
+              <Pencil />
+              Sửa
+            </Link>
+          </Button>
         </div>
       </div>
       <div className="flex space-x-5">
@@ -100,8 +128,7 @@ const ViewOrderDetail = () => {
                         <TableCell>{item.product.name}</TableCell>
                         <TableCell>{item.price.toLocaleString()} VND</TableCell>
                         <TableCell>{item.quantity}</TableCell>
-                        <TableCell
-                          className="text-right">{(item.price * item.quantity).toLocaleString()} VND</TableCell>
+                        <TableCell className="text-right">{(item.price * item.quantity).toLocaleString()} VND</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -134,8 +161,7 @@ const ViewOrderDetail = () => {
                     </TableRow>
                     <TableRow>
                       <TableHead colSpan={2}>Giảm giá</TableHead>
-                      <TableCell
-                        className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
+                      <TableCell className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
                     </TableRow>
                   </TableBody>
                   <TableFooter>
@@ -154,7 +180,7 @@ const ViewOrderDetail = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <span className="me-3">Hoạt động</span>
-                <Badge>{order.orderStatus}</Badge>
+                <Badge>{statusViMap[order.orderStatus] }</Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -188,19 +214,24 @@ const ViewOrderDetail = () => {
           </CardHeader>
           <CardContent className="font-semibold space-y-5">
             <div>
-              <p className="text-muted-foreground">Tên</p>{order.customer.name}
+              <p className="text-muted-foreground">Tên</p>
+              {order.customer.name}
             </div>
             <div>
-              <p className="text-muted-foreground">Liên lạc</p>{order.customer.phone}
+              <p className="text-muted-foreground">Liên lạc</p>
+              {order.customer.phone}
             </div>
             <div>
-              <p className="text-muted-foreground">Địa chỉ</p>{order.customer.address}
+              <p className="text-muted-foreground">Địa chỉ</p>
+              {order.customer.address}
             </div>
             <div>
-              <p className="text-muted-foreground">Phiếu bán hàng</p>{order.customer.saleOrderCode}
+              <p className="text-muted-foreground">Phiếu bán hàng</p>
+              {order.customer.saleOrderCode}
             </div>
             <div>
-              <p className="text-muted-foreground">Phiếu xuất kho</p>{order.customer.warehouseCode}
+              <p className="text-muted-foreground">Phiếu xuất kho</p>
+              {order.customer.warehouseCode}
             </div>
           </CardContent>
         </Card>
