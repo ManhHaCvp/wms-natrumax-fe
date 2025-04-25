@@ -65,16 +65,39 @@ export default function TransactionList({walletId, reloadTrigger}) {
 
     const columns = [
         columnHelper.accessor("transactionsId", {
-            header: "Mã GD",
+            name: "Mã giao dịch",
+            header: ({column}) => (
+                <div
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="flex items-center cursor-pointer"
+                >
+                    Mã giao dịch
+                    <ArrowUpDown size={16} className="ml-2"/>
+                </div>
+            ),
             cell: (info) => <div>{info.getValue()}</div>,
         }),
         columnHelper.accessor("paymentDate", {
-            header: "Ngày thanh toán",
+            name: "Ngày tạo",
+            header: ({column}) => (
+                <div
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="flex items-center cursor-pointer"
+                >
+                    Ngày tạo
+                    <ArrowUpDown size={16} className="ml-2"/>
+                </div>
+            ),
             cell: (info) => (
                 <div>{new Date(info.getValue()).toLocaleString("vi-VN")}</div>
             ),
         }),
         columnHelper.accessor("totalAmount", {
+            name: "Số tiền",
             header: ({column}) => (
                 <div
                     onClick={() =>
@@ -95,7 +118,18 @@ export default function TransactionList({walletId, reloadTrigger}) {
             },
         }),
         columnHelper.accessor("status", {
-            header: "Trạng thái",
+            name: "Trạng thái",
+            header: ({column}) => (
+                <div
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="flex items-center cursor-pointer"
+                >
+                    Trạng thái
+                    <ArrowUpDown size={16} className="ml-2"/>
+                </div>
+            ),
             cell: (info) => {
                 const status = info.getValue();
                 return (
@@ -112,16 +146,34 @@ export default function TransactionList({walletId, reloadTrigger}) {
                 );
             },
         }),
-        // columnHelper.accessor("transaction_type", {
-        //   header: "Loại giao dịch",
-        //   cell: (info) => <div>{info.getValue()}</div>,
-        // }),
         columnHelper.accessor("discount.discountPercent", {
-            header: "Chiết khấu (%)",
+            name: "Chiết khấu",
+            header: ({column}) => (
+                <div
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="flex items-center cursor-pointer"
+                >
+                    Chiết khấu (%)
+                    <ArrowUpDown size={16} className="ml-2"/>
+                </div>
+            ),
             cell: (info) => <div>{info.getValue() ?? 0}%</div>,
         }),
         columnHelper.accessor("transferImage", {
-            header: "Ảnh minh chứng",
+            name: "Bill chuyển tiền",
+            header: ({column}) => (
+                <div
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="flex items-center cursor-pointer"
+                >
+                    Bill chuyển tiền
+                    <ArrowUpDown size={16} className="ml-2"/>
+                </div>
+            ),
             cell: (info) => {
                 const url = info.getValue();
                 return url ? (
@@ -138,7 +190,18 @@ export default function TransactionList({walletId, reloadTrigger}) {
             },
         }),
         columnHelper.accessor("refundImage", {
-            header: "Ảnh hoàn tiền",
+            name: "Bill hoàn tiền",
+            header: ({column}) => (
+                <div
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="flex items-center cursor-pointer"
+                >
+                    Bill hoàn tiền
+                    <ArrowUpDown size={16} className="ml-2"/>
+                </div>
+            ),
             cell: (info) => {
                 const url = info.getValue();
                 return url ? (
@@ -147,7 +210,6 @@ export default function TransactionList({walletId, reloadTrigger}) {
                         alt="Proof"
                         className="w-16 h-16 object-cover rounded border"
                         onClick={() => setPreviewUrl(url)}
-
                     />
                 ) : (
                     <span className="text-sm text-muted-foreground">Không có</span>
@@ -157,6 +219,7 @@ export default function TransactionList({walletId, reloadTrigger}) {
         columnHelper.display({
             id: "actions",
             header: "Thao tác",
+            enableHiding: false,
             cell: ({row}) => {
                 const transaction = row.original;
                 return (
@@ -175,7 +238,6 @@ export default function TransactionList({walletId, reloadTrigger}) {
                             >
                                 Thêm ảnh
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator/>
                             <DropdownMenuItem onClick={() => alert("Xem chi tiết")}>
                                 Xem
                             </DropdownMenuItem>
@@ -254,7 +316,7 @@ export default function TransactionList({walletId, reloadTrigger}) {
                                         column.toggleVisibility(!!value)
                                     }
                                 >
-                                    {column.columnDef.header}
+                                    {column.columnDef.name}
                                 </DropdownMenuCheckboxItem>
                             ))}
                     </DropdownMenuContent>
