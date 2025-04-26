@@ -72,7 +72,7 @@ const ViewOrderDetail = () => {
   useEffect(() => {
     fetchOrder();
   }, [id]);
-  const handleUpload = async (file) => {
+  const handleUploadTranferImage = async (file) => {
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -389,8 +389,7 @@ const ViewOrderDetail = () => {
           </CardContent>
         </Card>
       </div>
-      <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} onUpload={handleUpload} />
-
+      <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} onUpload={handleUploadTranferImage} />
       <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} onUpload={handleUploadRefundImage} />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
