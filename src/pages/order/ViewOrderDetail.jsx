@@ -56,8 +56,10 @@ const ViewOrderDetail = () => {
           phone: data.user.phoneNumber,
           address: data.user.address,
           saleOrderCode: data.saleCode,
+          inventoryOutCode: data.inventoryOutCode,
           warehouseCode: detailParsed.client_id || "N/A",
         },
+
         orderModifyHistories: data.orderModifyHistories,
         urlTranferImage: data.invoices.transferImage,
         urlRefundImage: data.invoices.refundImage,
@@ -125,10 +127,10 @@ const ViewOrderDetail = () => {
           `http://localhost:8080/api/v1/warehouses/owner-by-member/${user.id}`
         );
         const numberAmount = parseInt(String(totalPrice - discountAmount).replace(/\D/g, ""), 10);
-        const bankCode = getBankCode(res.data.bank.bankName);
+        const bankCode = res.data.bank.bankCode;
         const accountNumber = res.data.bank.accountNo;
         const encodedInfo = encodeURIComponent("Hoàn tiền giao dịch");
-        const encodedName = encodeURIComponent("");
+        const encodedName = encodeURIComponent(res.data.bank.accountName);
         // setQrData(res.data);
         const url = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact2.jpg?amount=${numberAmount}&addInfo=${encodedInfo}&accountName=${encodedName}`;
 
@@ -139,10 +141,10 @@ const ViewOrderDetail = () => {
       }
     } else {
       const numberAmount = parseInt(String(totalPrice - discountAmount).replace(/\D/g, ""), 10);
-      const bankCode = getBankCode(order.bank.bankName);
+      const bankCode = order.bank.bankCode;
       const accountNumber = order.bank.accountNo
       const encodedInfo = encodeURIComponent("Hoàn tiền giao dịch");
-      const encodedName = encodeURIComponent("");
+      const encodedName = encodeURIComponent(order.bank.accountName);
       // setQrData(res.data);
       const url = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact2.jpg?amount=${numberAmount}&addInfo=${encodedInfo}&accountName=${encodedName}`;
 
@@ -341,7 +343,7 @@ const ViewOrderDetail = () => {
             </div>
             <div>
               <p className="text-muted-foreground">Phiếu xuất kho</p>
-              {order.customer.warehouseCode}
+              {order.customer.inventoryOutCode?order.customer.inventoryOutCode:'Không có'}
             </div>
             {checkUserRoleById(user, order.customer) && (
               <Button
