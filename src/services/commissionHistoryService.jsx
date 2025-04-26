@@ -24,10 +24,12 @@ const commissionHistoryService = {
 
     async getByReferrerIdAndTime(id, month, year, setData) {
         try {
+            await commissionService.createReport(month, year).catch(handleApiError);
+            await commissionService.createHistory(month, year).catch(handleApiError);
             const response = await commissionHistoryApi.getByReferrerIdAndTime(id, month, year);
             setData(response.data);
         } catch (error) {
-            await commissionService.createHistory(month, year).catch(handleApiError);
+            handleApiError(error);
         }
     }
 }

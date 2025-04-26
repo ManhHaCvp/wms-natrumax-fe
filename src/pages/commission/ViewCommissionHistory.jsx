@@ -10,6 +10,10 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import commissionService from "@/services/commissionService.jsx";
 import commissionHistoryService from "@/services/commissionHistoryService.jsx";
 import {formatCurrency} from "@/utils/formatCurrency.jsx";
+import toast from "react-hot-toast";
+import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
+import {DialogHeader} from "@/components/ui/dialog.jsx";
+import userService from "@/services/userService.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -67,6 +71,26 @@ const ViewCommissionHistory = () => {
         0
     ) || 0;
 
+    const [qrUrl, setQrUrl] = useState("");
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [user, setUser] = useState({});
+
+    const handleSendClick = async () => {
+        try {
+            const data = await userService.getById(selectedCommissionHistory?.referrer?.userId, setUser);
+            setUser(data);
+
+            const accountNameEncoded = encodeURIComponent(user.bank.accountName);
+            const info = encodeURIComponent(`${user.bank.accountNo} gui tien`);
+            const qrLink = `https://img.vietqr.io/image/${user.bank.bankCode}-${user.bank.accountNo}-compact2.jpg?amount=${totalPayment}&addInfo=${info}&accountName=${accountNameEncoded}`;
+
+            setQrUrl(qrLink);
+            setDialogOpen(true);
+        } catch (error) {
+            console.error("Failed to fetch user:", error);
+        }
+    };
+
     return (
         <div className="p-5 space-y-5">
             <h1 className="text-[#182F73] text-3xl font-bold">Lịch sử hoa hồng</h1>
@@ -114,7 +138,7 @@ const ViewCommissionHistory = () => {
                             <div className="text-xl font-bold text-[#182F73]">
                                 Tổng thanh toán: {formatCurrency(totalPayment)}
                             </div>
-                            <Button>Thanh toán</Button>
+                            <Button asChild><span onClick={handleSendClick}>Thanh toán</span></Button>
                         </div>
                     </div>
 
@@ -164,6 +188,21 @@ const ViewCommissionHistory = () => {
                     </div>
                 </div>
             )}
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Quét mã QR để thanh toán</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="flex justify-center mb-4">
+                        {qrUrl && <img src={qrUrl} alt="QR Code" className="max-w-full max-h-[400px]"/>}
+                    </div>
+
+                    <div className="flex justify-end gap-3">
+                        <Button variant="outline" onClick={() => setDialogOpen(false)}>Hủy</Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
