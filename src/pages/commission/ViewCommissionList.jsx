@@ -5,7 +5,8 @@ import { Checkbox } from "@/components/ui/checkbox.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { createColumnHelper } from "@tanstack/react-table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu.jsx";
-import TableComponent from "@/components/common/DataTable.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
+import commissionService from "@/services/commissionService.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -53,7 +54,7 @@ const columns = [
     ),
     cell: (info) => <div>{info.getValue()}</div>,
   }),
-  columnHelper.accessor("region", {
+  columnHelper.accessor("province", {
     name: "Khu vực",
     header: ({ column }) => (
       <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
@@ -93,41 +94,12 @@ const columns = [
 ];
 
 const ViewCommissionList = () => {
-  const [data, setData] = useState([
-    {
-      id: 1,
-      accountName: "Ha Gia Manh",
-      phoneNumber: "0812345678",
-      address: "Hà Nội",
-      region: "Miền Bắc",
-    },
-    {
-      id: 2,
-      accountName: "Nguyen Van B",
-      phoneNumber: "0823456789",
-      address: "Đà Nẵng",
-      region: "Miền Trung",
-    },
-    {
-      id: 3,
-      accountName: "Tran Thi C",
-      phoneNumber: "0834567890",
-      address: "TP. Hồ Chí Minh",
-      region: "Miền Nam",
-    },
-    {
-      id: 4,
-      accountName: "Le Van D",
-      phoneNumber: "0845678901",
-      address: "Hải Dương",
-      region: "Miền Bắc",
-    },
-  ]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchCommissionData = async () => {
       try {
-        await commissionService.getCommissionList(setData);
+        await commissionService.getAllReferrer(setData);
       } catch (error) {
         console.error("Failed to fetch commission data:", error);
       }
@@ -136,7 +108,7 @@ const ViewCommissionList = () => {
     fetchCommissionData().catch(console.error);
   }, []);
 
-  return <TableComponent title="Danh sách hoa hồng" columns={columns} data={data} />;
+  return <DataTable title="Danh sách hoa hồng" columns={columns} data={data} />;
 };
 
 export default ViewCommissionList;

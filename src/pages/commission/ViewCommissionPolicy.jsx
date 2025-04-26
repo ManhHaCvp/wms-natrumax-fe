@@ -123,12 +123,12 @@
 
 // export default CommissionPolicy;
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Card, CardContent} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Plus, Pencil, Save} from "lucide-react";
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {
     Sheet,
     SheetContent,
@@ -139,8 +139,11 @@ import {
     SheetDescription, SheetFooter
 } from "@/components/ui/sheet";
 import {Label} from "@/components/ui/label";
+import commissionService from "@/services/commissionService.jsx";
 
 const ViewCommissionPolicy = () => {
+    const {id} = useParams();
+
     const [policies, setPolicies] = useState({
         referrer: {
             userId: 6,
@@ -229,6 +232,18 @@ const ViewCommissionPolicy = () => {
             },
         ],
     });
+
+    useEffect(() => {
+        const fetchCommissionPolicyData = async () => {
+            try {
+                await commissionService.getPolicyByReferrerId(id, setPolicies);
+            } catch (error) {
+                console.error("Failed to fetch commission data:", error);
+            }
+        };
+
+        fetchCommissionPolicyData().catch(console.error);
+    }, []);
 
     return (
         <div className="p-5 space-y-5">

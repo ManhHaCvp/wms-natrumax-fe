@@ -1,0 +1,35 @@
+import handleApiError from "@/utils/HandleApiError.jsx";
+import commissionHistoryApi from "@/api/commissionHistory.jsx";
+import commissionService from "@/services/commissionService.jsx";
+
+const formatCommissionHistory = (commissionHistory) => ({
+    commissionHistoriesId: commissionHistory.commissionHistoriesId,
+    totalAmount: commissionHistory.totalAmount,
+    month: commissionHistory.month,
+    year: commissionHistory.year,
+})
+
+const commissionHistoryService = {
+    async getByReferrerId(id, setData) {
+        try {
+            const response = await commissionHistoryApi.getByReferrerId(id);
+            const commissionHistories = Array.isArray(response.data)
+                ? response.data : [];
+
+            setData(commissionHistories.map(formatCommissionHistory));
+        } catch (error) {
+            handleApiError(error);
+        }
+    },
+
+    async getByReferrerIdAndTime(id, month, year, setData) {
+        try {
+            const response = await commissionHistoryApi.getByReferrerIdAndTime(id, month, year);
+            setData(response.data);
+        } catch (error) {
+            await commissionService.createHistory(month, year).catch(handleApiError);
+        }
+    }
+}
+
+export default commissionHistoryService;

@@ -31,7 +31,7 @@ import ViewTransactionList from "@/pages/transaction/ViewTransactionList";
 import ViewCommissionList from "@/pages/commission/ViewCommissionList.jsx";
 import CreateCommissionPolicy from "@/pages/commission/CreateCommissionPolicy.jsx";
 import ViewCommissionPolicy from "@/pages/commission/ViewCommissionPolicy.jsx";
-import CommissionHistory from "@/pages/commission/ViewCommissionHistory.jsx";
+import ViewCommissionHistory from "@/pages/commission/ViewCommissionHistory.jsx";
 
 const Routes = () => {
   const { token, user } = useAuth();
@@ -97,7 +97,7 @@ const Routes = () => {
       { path: "/admin/commissions", element: <ViewCommissionList /> },
       { path: "/admin/commissions/create", element: <CreateCommissionPolicy /> },
       { path: "/admin/commissions/policy/:id", element: <ViewCommissionPolicy /> },
-      { path: "/admin/commissions/history/:id", element: <CommissionHistory /> },
+      { path: "/admin/commissions/history/:id", element: <ViewCommissionHistory /> },
     ],
   };
 
