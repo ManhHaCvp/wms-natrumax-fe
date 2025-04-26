@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Accessibility, Pencil } from "lucide-react";
+import { Accessibility, Eye, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
@@ -12,67 +12,142 @@ import UploadProofDialog from "@/components/user/UploadProofDialog";
 import transactionService from "@/services/transactionService";
 import orderService from "@/services/orderService";
 import toast from "react-hot-toast";
+import { checkUserRoleById } from "@/utils/checkUserRole";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog.jsx";
 
 const ViewOrderDetail = () => {
   const { id } = useParams(); // assuming you pass orderId via route param
   const [order, setOrder] = useState(null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedTransactionId, setSelectedTransactionId] = useState(null);
-  useEffect(() => {
-    const fetchOrder = async () => {
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+   const [qrUrl, setQrUrl] = useState("");
+    const [dialogOpen, setDialogOpen] = useState(false);
+  const fetchOrder = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8080/api/v1/orders/${id}`);
+      const data = res.data;
+      // Parse JSON detail field safely
+      let detailParsed = {};
       try {
-        const res = await axios.get(`http://localhost:8080/api/v1/orders/${id}`);
-        const data = res.data;
-        console.log(data);
-        // Parse JSON detail field safely
-        let detailParsed = {};
-        try {
-          detailParsed = JSON.parse(data.user.detail);
-        } catch (e) {
-          console.error("Error parsing user.detail", e);
-        }
-
-        setOrder({
-          id: data.orderId,
-          items: data.orderDetails, // update this when you have order item API
-          discount: data?.invoices?.discount?.discountPercent ?? 0, // or data.discount if available
-          paymentStatus: "Đã thanh toán", // convert from data.status if needed
-          orderStatus: data.status,
-          activities: [], // populate if available
-          customer: {
-            name: data.user.accountName,
-            phone: data.user.phoneNumber,
-            address: data.user.address,
-            saleOrderCode: data.saleCode,
-            warehouseCode: detailParsed.client_id || "N/A",
-          },
-          orderModifyHistories: data.orderModifyHistories,
-          urlTranferImage: data.invoices.transferImage,
-          urlRefundImage: data.invoices.refundImage,
-
-        });
-      } catch (err) {
-        console.error("Error fetching order", err);
+        detailParsed = JSON.parse(data.user.detail);
+      } catch (e) {
+        console.error("Error parsing user.detail", e);
       }
-    };
 
+      setOrder({
+        id: data.orderId,
+        items: data.orderDetails, // update this when you have order item API
+        discount: data?.invoices?.discount?.discountPercent ?? 0, // or data.discount if available
+        paymentStatus: "Đã thanh toán", // convert from data.status if needed
+        orderStatus: data.status,
+        activities: [], // populate if available
+        customer: {
+          id: data.user.id,
+          name: data.user.accountName,
+          phone: data.user.phoneNumber,
+          address: data.user.address,
+          saleOrderCode: data.saleCode,
+          warehouseCode: detailParsed.client_id || "N/A",
+        },
+        orderModifyHistories: data.orderModifyHistories,
+        urlTranferImage: data.invoices.transferImage,
+        urlRefundImage: data.invoices.refundImage,
+        bank: data.user.bank
+      });
+    } catch (err) {
+      console.error("Error fetching order", err);
+    }
+  };
+  useEffect(() => {
     fetchOrder();
   }, [id]);
   const handleUpload = async (file) => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      await orderService.uploadTranferImage(
-        selectedTransactionId,
-        formData
-      );
+      await orderService.uploadTranferImage(selectedTransactionId, formData);
       // await fetchData();
       toast.success("Tải ảnh lên thành công!");
+      fetchOrder();
       setUploadDialogOpen(false);
       setSelectedTransactionId(null);
     } catch (err) {
       console.error(err);
       alert("Upload thất bại.");
+    }
+  };
+  const handleUploadRefundImage = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      await orderService.uploadRefundImage(selectedTransactionId, formData);
+      // await fetchData();
+      toast.success("Tải ảnh lên thành công!");
+      setUploadDialogOpen(false);
+      setSelectedTransactionId(null);
+      fetchOrder();
+    } catch (err) {
+      console.error(err);
+      alert("Upload thất bại.");
+    }
+  };
+  const getBankCode = (bankName) => {
+    const bankCodeMap = {
+      "Ngân hàng Quân Đội Việt Nam": "mbbank",
+      "Ngân hàng TMCP Ngoại thương Việt Nam": "vcb",
+      "Ngân hàng TMCP Công Thương Việt Nam": "vietinbank",
+      "Ngân hàng TMCP Đầu tư và Phát triển Việt Nam": "bidv",
+      "Ngân hàng TMCP Á Châu": "acb",
+      "Ngân hàng TMCP Kỹ thương Việt Nam": "techcombank",
+      "Ngân hàng TMCP Việt Nam Thịnh Vượng": "vpbank",
+      "Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam": "agribank",
+      "Ngân hàng TMCP Tiên Phong": "tpbank",
+      "Ngân hàng TMCP Hàng Hải Việt Nam": "msb",
+      // Thêm các ngân hàng khác nếu cần...
+    };
+  
+    return bankCodeMap[bankName] || "mbbank"; // fallback mặc định nếu không tìm thấy
+  };
+  const handleShowQR = async () => {
+    const isMember =  checkUserRoleById(user, order.customer);
+    if (isMember) {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/v1/warehouses/owner-by-member/${user.id}`
+        );
+        const numberAmount = parseInt(String(totalPrice - discountAmount).replace(/\D/g, ""), 10);
+        const bankCode = getBankCode(res.data.bank.bankName);
+        const accountNumber = res.data.bank.accountNo;
+        const encodedInfo = encodeURIComponent("Hoàn tiền giao dịch");
+        const encodedName = encodeURIComponent("");
+        // setQrData(res.data);
+        const url = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact2.jpg?amount=${numberAmount}&addInfo=${encodedInfo}&accountName=${encodedName}`;
+
+      setQrUrl(url);
+      setDialogOpen(true);
+      } catch (err) {
+        console.error("Lỗi khi lấy dữ liệu QR:", err);
+      }
+    } else {
+      const numberAmount = parseInt(String(totalPrice - discountAmount).replace(/\D/g, ""), 10);
+      const bankCode = getBankCode(order.bank.bankName);
+      const accountNumber = order.bank.accountNo
+      const encodedInfo = encodeURIComponent("Hoàn tiền giao dịch");
+      const encodedName = encodeURIComponent("");
+      // setQrData(res.data);
+      const url = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact2.jpg?amount=${numberAmount}&addInfo=${encodedInfo}&accountName=${encodedName}`;
+
+    setQrUrl(url);
+    setDialogOpen(true);
     }
   };
   if (!order) return <p className="m-5">Đang tải đơn hàng...</p>;
@@ -93,10 +168,20 @@ const ViewOrderDetail = () => {
   };
   const currentStatus = order.orderStatus;
   const nextStatus = nextStatusMap[currentStatus];
-  console.log(nextStatus);
   const totalPrice = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   // const discountPercent = order?.invoices?.discount?.discountPercent ?? 0;
   const discountAmount = totalPrice * (order.discount / 100);
+  const cancelOrder = async () => {
+    try {
+      const res = await axios.put(`http://localhost:8080/api/v1/orders/cancel-order/${order.id}`);
+      toast.success("Đã hủy đơn hàng thành công!");
+      // Có thể reload lại data hoặc điều hướng
+    } catch (error) {
+      console.error("Lỗi khi hủy đơn hàng:", error);
+      toast.error("Hủy đơn hàng thất bại!");
+    }
+  };
+  
   return (
     <div className="flex flex-col space-y-5 m-5">
       <div className="flex justify-between items-center">
@@ -108,7 +193,7 @@ const ViewOrderDetail = () => {
               onClick={async () => {
                 try {
                   await axios.put(`http://localhost:8080/api/v1/orders/update-status/${order.id}`);
-                  window.location.reload();
+                  fetchOrder();
                 } catch (err) {
                   console.error("Lỗi khi cập nhật trạng thái:", err);
                 }
@@ -118,11 +203,12 @@ const ViewOrderDetail = () => {
               {nextStatus}
             </Button>
           )}
-          <Button asChild>
-            <Link to={`/admin/order/update/${order.id}`}>
-              <Pencil />
-              Sửa
-            </Link>
+          <Button  onClick={handleShowQR}>
+              <Eye />
+              Hiện mã QR
+          </Button>
+          <Button  onClick={cancelOrder}>
+             Hủy đơn hàng
           </Button>
         </div>
       </div>
@@ -131,7 +217,7 @@ const ViewOrderDetail = () => {
           {/* Thong tin don hang */}
           <Card>
             <CardHeader>
-              <CardTitle>Hàng đặt</CardTitle>
+              <CardTitle>Người hàng đặt</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="rounded border">
@@ -257,27 +343,28 @@ const ViewOrderDetail = () => {
               <p className="text-muted-foreground">Phiếu xuất kho</p>
               {order.customer.warehouseCode}
             </div>
-            <Button
-              onClick={() => {
-                setSelectedTransactionId(order.id);
-                setUploadDialogOpen(true);
-              }}
-            >
-              Thêm ảnh chuyển khoản
-            </Button>
+            {checkUserRoleById(user, order.customer) && (
+              <Button
+                onClick={() => {
+                  setSelectedTransactionId(order.id);
+                  setUploadDialogOpen(true);
+                }}
+              >
+                Thêm ảnh chuyển khoản
+              </Button>
+            )}
             {order.urlTranferImage ? (
-          <img
-            src={order.urlRefundImage}
-            alt="Proof"
-            className="w-16 h-16 object-cover rounded border"
-            // onClick={() => setPreviewUrl(url)}
-
-          />
-        ) : (
-          <span className="text-sm text-muted-foreground">Chưa có</span>
-        )}
-
-<Button
+              <img
+                src={order.urlTranferImage}
+                alt="Proof"
+                className="w-32 h-32 object-cover rounded border"
+                // onClick={() => setPreviewUrl(url)}
+              />
+            ) : (
+              <span className="text-sm text-muted-foreground"></span>
+            )}
+             {!checkUserRoleById(user, order.customer) && (
+              <Button
               onClick={() => {
                 setSelectedTransactionId(order.id);
                 setUploadDialogOpen(true);
@@ -285,25 +372,32 @@ const ViewOrderDetail = () => {
             >
               Thêm ảnh hoàn tiền
             </Button>
-            {order.urlTranferImage ? (
-          <img
-            src={order.urlTranferImage}
-            alt="Proof"
-            className="w-16 h-16 object-cover rounded border"
-            // onClick={() => setPreviewUrl(url)}
-
-          />
-        ) : (
-          <span className="text-sm text-muted-foreground">Chưa có</span>
-        )}
+            )}
+            
+            {order.urlRefundImage ? (
+              <img
+                src={order.urlRefundImage}
+                alt="Proof"
+                className="w-32 h-32 object-cover rounded border"
+                // onClick={() => setPreviewUrl(url)}
+              />
+            ) : (
+              <span className="text-sm text-muted-foreground"></span>
+            )}
           </CardContent>
         </Card>
       </div>
-       <UploadProofDialog
-              open={uploadDialogOpen}
-              onOpenChange={setUploadDialogOpen}
-              onUpload={handleUpload}
-            />
+      <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} onUpload={handleUpload} />
+
+      <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} onUpload={handleUploadRefundImage} />
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mã QR thanh toán</DialogTitle>
+          </DialogHeader>
+          {qrUrl && <img src={qrUrl} alt="QR Payment" className="w-full h-auto" />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

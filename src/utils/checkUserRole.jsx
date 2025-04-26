@@ -11,4 +11,7 @@ export const checkUserRole = (...requiredRoles) => {
 export const checkUserRoleByUser = (user, ...requiredRoles) => {
     console.log(user);
     return user?.role?.name && requiredRoles.includes(user.role.name);
-  };
+};
+export const checkUserRoleById = (userLogin,userOrder)=>{
+    return userLogin.id == userOrder.id;
+}
