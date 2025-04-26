@@ -28,6 +28,10 @@ import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "@/pages
 import ComingSoonPage from "@/pages/error/ComingSoonPage";
 import UserProfile from "@/pages/user/UserProfile";
 import ViewTransactionList from "@/pages/transaction/ViewTransactionList";
+import ViewCommissionList from "@/pages/commission/ViewCommissionList.jsx";
+import CreateCommissionPolicy from "@/pages/commission/CreateCommissionPolicy.jsx";
+import ViewCommissionPolicy from "@/pages/commission/ViewCommissionPolicy.jsx";
+import ViewCommissionHistory from "@/pages/commission/ViewCommissionHistory.jsx";
 
 const Routes = () => {
   const { token, user } = useAuth();
@@ -66,7 +70,7 @@ const Routes = () => {
 
       //Product
       { path: "/admin/products", element: <ViewProductList /> },
-      { path: "/admin/product/:id", element: <ViewProductDetail /> },
+      { path: "/admin/product/:productId", element: <ViewProductDetail /> },
       { path: "/admin/product/update/:id", element: <UpdateProduct /> },
 
       //Category
@@ -88,6 +92,12 @@ const Routes = () => {
       //  { path: "/admin/rewards", element: <ViewRewardList /> },
       //Warehouse
       { path: "/admin/warehouses", element: <ViewWarehouseList /> },
+
+      //Commission
+      { path: "/admin/commissions", element: <ViewCommissionList /> },
+      { path: "/admin/commissions/create", element: <CreateCommissionPolicy /> },
+      { path: "/admin/commissions/policy/:id", element: <ViewCommissionPolicy /> },
+      { path: "/admin/commissions/history/:id", element: <ViewCommissionHistory /> },
     ],
   };
 

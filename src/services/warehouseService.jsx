@@ -9,12 +9,6 @@ const formatWarehouse = (warehouse) => ({
   accessCode: warehouse.accessCode
 });
 
-const formatProvince = (province) => ({
-  provinceId: province.provinceId,
-  provinceName: province.name,
-
-});
-
 const warehouseService = {
   async getAll(setData) {
     try {
@@ -23,26 +17,14 @@ const warehouseService = {
       const warehouses = Array.isArray(response.data)
         ? response.data
         : response.data?.warehouses || [];
-      console.log(warehouses);
+
       setData(warehouses.map(formatWarehouse));
       return response.data;
     } catch (error) {
       handleApiError(error);
     }
   },
-  async getAllProvinces() {
-    try {
-      const response = await warehouseApi.getAllProvinces();
-      
-      const provinces = Array.isArray(response.data)
-        ? response.data
-        : response.data?.provinces || [];
 
-        return provinces.map(formatProvince);
-      } catch (error) {
-      handleApiError(error);
-    }
-  },
   async getById(id, setData) {
     try {
       const response = await warehouseApi.getById(id);
@@ -60,9 +42,7 @@ const warehouseService = {
 
   async create(payload) {
     try {
-      const res = await warehouseApi.create(payload);
-      console.log(res);
-      return res; // nếu cần trả kết quả
+      return await warehouseApi.create(payload)
     } catch (error) {
       handleApiError(error);
       throw error; // QUAN TRỌNG: ném lỗi ra ngoài để component catch được

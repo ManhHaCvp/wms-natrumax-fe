@@ -28,7 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table.jsx";
 
-const DataTable = ({ title, columns, data, addLink,addButton }) => {
+const DataTable = ({ title, columns, data, addLink, addButton, className }) => {
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -56,13 +56,13 @@ const DataTable = ({ title, columns, data, addLink,addButton }) => {
   });
 
   return (
-    <Card className="space-y-3 m-5 p-5">
+    <Card className={`space-y-3 m-5 p-5 ${className}`}>
       <div className="flex justify-between items-center">
         <h1 className="text-[#182F73] text-3xl font-bold">{title}</h1>
-        <div>
+        <div className="space-x-3">
           <Button variant="outline"><CloudDownload /> Xuất file</Button>
           {addLink && (
-            <Button variant="default" className="ms-3">
+            <Button variant="default">
               <Plus /> <Link to={addLink}>Thêm mới</Link>
             </Button>
           )}

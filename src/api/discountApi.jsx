@@ -8,7 +8,7 @@ const discountApi = {
   getById: (id) => apiClient.get(`${DISCOUNT_BASE}/${id}`),
   getByTotalAmount: (payload) => apiClient.post(`${DISCOUNT_BASE}/get-by-total-amount`,payload),
   create: (payload) => apiClient.post(DISCOUNT_BASE, payload),
-  update: (discountId,payload) => apiClient.put(`${DISCOUNT_BASE}/${discountId}`, payload),
+  update: (id, payload) => apiClient.put(`${DISCOUNT_BASE}/${id}`, payload),
   changeStatus: (id) => apiClient.put(`${DISCOUNT_BASE}/${id}/change-status`),
 };
 

@@ -189,7 +189,7 @@ const ViewProductList = () => {
           const warehouseId = memberWarehouse?.warehouse?.warehouseId;
           console.log(warehouseId);
           await warehouseService.getById(warehouseId, setWarehouse);
-          await productService.getAllByWarehouseId(warehouseId, setData);
+          await productService.getByWarehouseId(warehouseId, setData);
         }
       } catch (error) {
         toast.error("Failed to fetch warehouses");
@@ -205,7 +205,7 @@ const ViewProductList = () => {
 
     const fetchProducts = async () => {
       try {
-        await productService.getAllByWarehouseId(selectedWarehouseId, setData);
+        await productService.getByWarehouseId(selectedWarehouseId, setData);
       } catch (error) {
         toast.error("Failed to fetch products");
       }

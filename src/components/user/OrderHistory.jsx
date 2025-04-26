@@ -125,7 +125,7 @@ const columns = [
   }),
 ];
 
-export default function ViewUserList() {
+export default function OrderHistory() {
   const [data, setData] = useState([
     { id: 1, name: "Nguyen Van A", phoneNumber: "0123456789", status: "Đã thanh toán", amount: "500000", color: "green", },
     { id: 2, name: "Nguyen Van B", phoneNumber: "0123456789", status: "Chờ xác nhận", amount: "100000", color: "orange", },

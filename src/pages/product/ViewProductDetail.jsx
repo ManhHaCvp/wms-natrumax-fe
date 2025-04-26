@@ -9,7 +9,8 @@ import productService from "@/services/productService.jsx";
 import { formatCurrency } from "@/utils/formatCurrency.jsx";
 
 const ViewProductDetail = () => {
-  const { id } = useParams();
+  const { productId } = useParams();
+  const { warehouse, getWarehouse } = useParams();
 
   const [data, setData] = useState({
     productId: 1,
@@ -30,9 +31,9 @@ const ViewProductDetail = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        await productService.getByProductIdAndWarehouseId(id, 1, setData);
+        await productService.getByWarehouseIdAndProductId(1, productId, setData);
       } catch (error) {
-        toast.error("Failed to fetch category:", error);
+        toast.error("Failed to fetch product:", error);
       }
     };
 
