@@ -6,7 +6,8 @@ const ORDER_INVOICES_BASE = `${BASE_URL}/v1/order-invoices`;
 
 const orderApi = {
   create: (payload) => apiClient.post(`${ORDER_BASE}/create`, payload),
-  getOrderList: () => apiClient.get(`${ORDER_BASE}`),
+  getOrderList: () => apiClient.get(`${ORDER_BASE}/invoice-status/SUCCESS`),
+  getOrderListById: (id) => apiClient.get(`${ORDER_BASE}/user/${id}`),
   getDetail: (id) => apiClient.get(`${ORDER_BASE}/${id}`),
   updateCodes: (payload) =>
     apiClient.put(`${ORDER_BASE}/update-codes/${payload.id}`, payload),
