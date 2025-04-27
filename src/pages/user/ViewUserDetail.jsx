@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import {Card, CardDescription} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import PaymentHistory from "@/components/user/OrderHistory";
+import OrderHistory from "@/components/user/OrderHistory";
 import Wallet from "@/components/user/Wallet";
 import Commission from "@/components/user/Commission";
 import Promotion from "@/components/user/Promotion";
@@ -97,7 +97,7 @@ const ViewUserDetail = () => {
                             <>
                                 <TabsTrigger value="order-history">Lịch sử đặt hàng</TabsTrigger>
                                 <TabsTrigger value="wallet">Ví</TabsTrigger>
-                                <TabsTrigger value="promotion">Khuyến mại</TabsTrigger>
+                                {/*<TabsTrigger value="promotion">Khuyến mại</TabsTrigger>*/}
                             </>
                         )}
                         <TabsTrigger value="commission">Hoa hồng</TabsTrigger>
@@ -107,7 +107,7 @@ const ViewUserDetail = () => {
                         )}
                     </TabsList>
                     <TabsContent value="order-history">
-                        <PaymentHistory userId={user.id}/>
+                        <OrderHistory userId={user.id}/>
                     </TabsContent>
                     <TabsContent value="wallet">
                         <Card>

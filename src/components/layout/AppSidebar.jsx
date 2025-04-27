@@ -211,7 +211,7 @@ const AppSidebar = () => {
                 <SidebarMenuButton asChild>
                   <Link to="">
                     <BookText />
-                    <span>Chính sách bải mật</span>
+                    <span>Chính sách bảo mật</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

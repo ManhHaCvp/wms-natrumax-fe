@@ -71,13 +71,12 @@ const Wallet = ({userId, bank}) => {
             }
 
             try {
-                const res = await discountService.getByTotalAmount({totalAmount: numberAmount});
-                setDiscount(res);
+                await discountService.getByTotalAmount({totalAmount: numberAmount}, setDiscount);
                 setCheckedDiscount(true);
             } catch (error) {
                 setDiscount(null);
                 setCheckedDiscount(true);
-                console.error("Lỗi khi lấy giảm giá:", error);
+                console.error("Lỗi khi lấy giảm giá: ", error);
             }
         };
 

@@ -120,7 +120,7 @@ const ViewCommissionHistory = () => {
         <div className="p-5 space-y-5">
             <div className="flex justify-between items-center">
                 <h1 className="text-[#182F73] text-3xl font-bold">Lịch sử hoa hồng</h1>
-                <h2 className="text-[#182F73] text-3xl font-bold">{selectedCommissionHistory?.referrer?.accountName}</h2>
+                <h2 className="text-[#182F73] text-2xl font-bold">{selectedCommissionHistory?.referrer?.accountName}</h2>
             </div>
 
             <form className="flex space-x-3 items-center" onSubmit={handleFilter}>
@@ -193,7 +193,7 @@ const ViewCommissionHistory = () => {
                             {/* Header: Tổng thanh toán + trạng thái */}
                             <div className="flex justify-between items-center">
                                 <div className="space-y-2">
-                                    <h3 className="text-xl font-semibold text-[#182F73]">
+                                    <h3 className="text-[#182F73] text-xl font-bold">
                                         Chi tiết hoa hồng - {selectedMonth}/{selectedYear}
                                     </h3>
                                     <p className="text-md font-medium space-x-2">

@@ -76,7 +76,7 @@ const ViewOrderDetail = () => {
         try {
             const formData = new FormData();
             formData.append("file", file);
-            await orderService.uploadTranferImage(selectedTransactionId, formData);
+            await orderService.uploadTransferImage(selectedTransactionId, formData);
             // await fetchData();
             toast.success("Tải ảnh lên thành công!");
             fetchOrder();
