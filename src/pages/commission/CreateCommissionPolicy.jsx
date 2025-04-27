@@ -5,64 +5,83 @@ import {Button} from "@/components/ui/button.jsx";
 import {Card, CardContent} from "@/components/ui/card.jsx";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.jsx";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {Link} from "react-router-dom";
-
-const fetchUsers = async () => {
-    return [
-        {id: 1, name: "Nguyễn Văn A"},
-        {id: 2, name: "Trần Thị B"},
-        {id: 3, name: "Lê Hoàng C"},
-    ];
-};
-
-const fetchCategories = async () => {
-    return [
-        {id: 1, categoryName: "Sản phẩm cũ + ngũ cốc 200gr", discount: 0},
-        {id: 2, categoryName: "Sản phẩm nhóm B, sữa hạt, ngũ cốc 800gr", discount: 0},
-        {id: 3, categoryName: "SP Genomil", discount: 0},
-        {id: 4, categoryName: "Bột ăn dặm", discount: 0},
-    ];
-};
+import {Link, useNavigate, useParams} from "react-router-dom";
+import userService from "@/services/userService.jsx";
+import categoryService from "@/services/categoryService.jsx";
+import commissionService from "@/services/commissionService.jsx";
+import toast from "react-hot-toast";
+import NumberInput from "@/components/common/NumberInput.jsx";
 
 const CreateCommissionPolicy = () => {
     const [users, setUsers] = useState([]);
     const [categories, setCategories] = useState([]);
     const [selectedUser, setSelectedUser] = useState("");
 
+    const {referrerId} = useParams();
+
     useEffect(() => {
         const loadData = async () => {
-            const usersData = await fetchUsers();
-            const categoriesData = await fetchCategories();
-            setUsers(usersData);
-            setCategories(categoriesData);
+            await userService.getAll(setUsers).catch((err) =>
+                console.error("Failed to fetch user list:", err)
+            );
+            await categoryService.getAll(setCategories).catch((err) =>
+                console.error("Failed to fetch category list:", err)
+            )
         };
         loadData();
     }, []);
 
-    const handleDiscountChange = (id, newDiscount) => {
-        setCategories((prev) => prev.map((cat) => (cat.id === id ? {...cat, discount: newDiscount} : cat)));
+    const handlePercentageChange = (id, newPercentage) => {
+        setCategories((prev) => prev.map((cat) => (cat.categoryId === id ? {...cat, percentage: newPercentage} : cat)));
+    };
+
+    const navigate = useNavigate();
+
+    const handleSave = async () => {
+        if (!selectedUser) {
+            toast.error("Vui lòng chọn người được giới thiệu.");
+            return;
+        }
+
+        const policies = categories.map((category) => ({
+            categoryId: category.categoryId,
+            percentage: Number(category.percentage) || 0,
+        }));
+
+        const payload = {
+            referralId: selectedUser,   // Người được phân phối
+            referrerId: Number(referrerId),  // Người giới thiệu (từ URL param)
+            policies,
+        };
+
+        try {
+            await commissionService.createPolicy(payload);
+            navigate(`/admin/commissions/policy/${Number(referrerId)}`);
+        } catch (error) {
+            console.error("Error when creating policy:", error);
+        }
     };
 
     return (
         <div className="p-5 space-y-5">
             <div className="flex justify-between items-center">
-                <h1 className="text-[#182F73] text-3xl font-bold">Thêm Hoa Hồng</h1>
-                <Button><Save size={16}/> Lưu</Button>
+                <h1 className="text-[#182F73] text-3xl font-bold">Thêm chính sách hoa hồng</h1>
+                <Button asChild><span onClick={handleSave}><Save size={16}/> Lưu</span></Button>
             </div>
 
             <Card className="p-5">
                 <div className="space-y-5">
                     {/* Người được phân phối */}
                     <div className="space-y-3">
-                        <label className="block mb-1 font-medium">Chi nhánh được phân phối</label>
+                        <label className="block mb-1 font-medium">Người được giới thiệu</label>
                         <Select onValueChange={setSelectedUser}>
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Chọn người được phân phối"/>
+                                <SelectValue placeholder="Chọn người được giới thiệu"/>
                             </SelectTrigger>
                             <SelectContent>
                                 {users.map((user) => (
-                                    <SelectItem key={user.id} value={user.id.toString()}>
-                                        {user.name}
+                                    <SelectItem key={user.id} value={user.id}>
+                                        {user.accountName}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -71,7 +90,7 @@ const CreateCommissionPolicy = () => {
 
                     {/* CategoryCategory */}
                     <div className="space-y-3">
-                        <label className="block mb-1 font-medium">Danh sách nhóm hàng</label>
+                        <label className="block font-medium">Danh sách nhóm hàng</label>
                         <div className="rounded border">
                             <Table>
                             <TableHeader>
@@ -82,12 +101,15 @@ const CreateCommissionPolicy = () => {
                             </TableHeader>
                             <TableBody>
                                 {categories.map((category) => (
-                                    <TableRow key={category.id}>
+                                    <TableRow key={category.categoryId}>
                                         <TableCell>{category.categoryName}</TableCell>
                                         <TableCell>
-                                            <Input type="number" min="0" max="220" value={category.discount}
-                                                   onChange={(e) => handleDiscountChange(category.id, e.target.value)}
-                                                   className="w-20 text-center mx-auto block"/>
+                                            <NumberInput
+                                                value={category.percentage || 0}
+                                                min={0}
+                                                max={15}
+                                                onChange={(newValue) => handlePercentageChange(category.categoryId, newValue)}
+                                            />
                                         </TableCell>
                                     </TableRow>
                                 ))}

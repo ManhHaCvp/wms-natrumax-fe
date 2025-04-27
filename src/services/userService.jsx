@@ -28,15 +28,10 @@ const userService = {
     }
   },
 
-  async getById(id, setData) {
+  async getById(id) {
     try {
       const response = await userApi.getById(id);
-      const user = response.data;
-      const data = Array.isArray(user)
-        ? user.map(formatUser)
-        : formatUser(user);
-      setData(user);
-      return user;
+      return response.data;
     } catch (error) {
       handleApiError(error);
     }

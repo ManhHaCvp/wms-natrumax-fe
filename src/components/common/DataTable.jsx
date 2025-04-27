@@ -60,7 +60,7 @@ const DataTable = ({ title, columns, data, addLink, addButton, className }) => {
       <div className="flex justify-between items-center">
         <h1 className="text-[#182F73] text-3xl font-bold">{title}</h1>
         <div className="space-x-3">
-          <Button variant="outline"><CloudDownload /> Xuất file</Button>
+          {/*<Button variant="outline"><CloudDownload /> Xuất file</Button>*/}
           {addLink && (
             <Button variant="default">
               <Plus /> <Link to={addLink}>Thêm mới</Link>

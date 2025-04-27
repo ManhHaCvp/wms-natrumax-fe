@@ -112,9 +112,7 @@ const ViewProductList = () => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  // const id = user.id;
 
-  const detail = user?.detail ? JSON.parse(user.detail) : null;
   const isAdmin = user?.roles?.includes("ROLE_ADMIN");
   const [warehouses, setWarehouses] = useState([]);
   const [userDetail, setUserDetail] = useState([]);
@@ -140,40 +138,12 @@ const ViewProductList = () => {
 
   const navigate = useNavigate();
 
-  // const handleCreateOrder = () => {
-  //   const selectedProducts = table.getSelectedRowModel().rows.map((row) => row.original);
-  //   console.log(selectedProducts);
-  //   navigate("/admin/order/create", { state: { selectedProducts } });
-  // };
   const handleCreateOrder = () => {
     const selectedRows = table.getSelectedRowModel().rows;
-    console.log("Selected rows:", selectedRows);
     const selectedProducts = selectedRows.map((row) => row.original);
-    console.log("Selected products:", selectedProducts);
     navigate("/admin/order/create", { state: { selectedProducts } });
   };
-  
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     try {
-  //       if (isAdmin) {
-  //         const result = await warehouseService.getAll(setWarehouses);
-  //         // setSelectedWarehouseId(result);
-  //         console.log(result);
-  //         const defaultWarehouseId = 1;
-  //         setSelectedWarehouseId(selectedWarehouseId ? selectedWarehouseId : defaultWarehouseId);
-  //         await productService.getAllByWarehouseId(selectedWarehouseId, setData);
-  //       } else {
-  //         await warehouseService.getById(detail.warehouse_id, setWarehouse);
-  //         await productService.getAllByWarehouseId(detail.warehouse_id, setData);
-  //       }
-  //     } catch (error) {
-  //       toast.error("Failed to fetch users:", error);
-  //     }
-  //   };
 
-  //   fetchUsers().catch(console.error); // Handles the promise properly
-  // }, [selectedWarehouseId]);
   useEffect(() => {
     const fetchWarehouses = async () => {
       try {
@@ -182,14 +152,15 @@ const ViewProductList = () => {
           const defaultWarehouseId = result[0]?.warehouseId;
           setSelectedWarehouseId(defaultWarehouseId); // Gọi 1 lần duy nhất ở đây
         } else {
-          
-          const userResponse = await userService.getById(user.id,setUserDetail);
-          // Tìm warehouse có roleInWarehouse là "Member"
-          const memberWarehouse = userResponse.userWarehouses.find((uw) => uw.roleInWarehouse === "Member");
-          const warehouseId = memberWarehouse?.warehouse?.warehouseId;
-          console.log(warehouseId);
-          await warehouseService.getById(warehouseId, setWarehouse);
-          await productService.getByWarehouseId(warehouseId, setData);
+          await (async () => {
+            const result = await userService.getById(user.id);
+            setUserDetail(result);
+
+            const memberWarehouse = result.userWarehouses.find((uw) => uw.roleInWarehouse === "Member");
+            const warehouseId = memberWarehouse?.warehouse?.warehouseId;
+            setWarehouse(memberWarehouse?.warehouse);
+            await productService.getByWarehouseId(warehouseId, setData);
+          })().catch(console.error);
         }
       } catch (error) {
         toast.error("Failed to fetch warehouses");
@@ -197,7 +168,7 @@ const ViewProductList = () => {
     };
 
     fetchWarehouses().catch(console.error);
-  }, []); // chạy 1 lần đầu
+  }, []);
 
   // Mỗi khi selectedWarehouseId thay đổi thì fetch lại product
   useEffect(() => {

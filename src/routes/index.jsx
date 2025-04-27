@@ -95,7 +95,7 @@ const Routes = () => {
 
       //Commission
       { path: "/admin/commissions", element: <ViewCommissionList /> },
-      { path: "/admin/commissions/create", element: <CreateCommissionPolicy /> },
+      { path: "/admin/commissions/create/:referrerId", element: <CreateCommissionPolicy /> },
       { path: "/admin/commissions/policy/:id", element: <ViewCommissionPolicy /> },
       { path: "/admin/commissions/history/:id", element: <ViewCommissionHistory /> },
     ],

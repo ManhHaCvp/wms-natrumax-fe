@@ -14,148 +14,133 @@ import Warehouse from "@/components/user/Warehouse";
 import ApiConnection from "@/components/user/ApiConnection";
 import userService from "@/services/userService";
 import { checkUserRoleByUser } from "@/utils/checkUserRole";
+import toast from "react-hot-toast";
+import ChangeStatusButton from "@/components/common/ChangeStatusButton.jsx";
 
 const UserProfile = () => {
-  const [user, setUser] = useState({
-    // id: 1,
-    // accountName: "admin",
-    // phoneNumber: "0812497838",
-    // email: "admin@example.com",
-    // address: "Admin Street, City",
-    // province: "Hai Duong",
-    // status: true,
-    // role: "ROLE_ADMIN",
-    // retailer: "haiyenhd",
-    // clientId: "ba477a2c4a9f-4be8-9996-f7cdf2b46119",
-    // clientSecret: "7FFDE6E9FD05CAEB74660BC170B2C6C9F0808119"
-  });
-  // const [warehouse, setWarehouse] = ({});
+  const [user, setUser] = useState({});
   const userLocalStorage = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
   const id = userLocalStorage[0].id;
-  const [warehouse,setWarehouse] = useState({});
-  const [result,setResult] = useState({});
 
-  useEffect(() => { 
-    const fetchUserData = async () => {
-      try {
-        const data = await userService.getById(id, setUser);
-        setWarehouse(JSON.parse(data.detail));
-        setResult(data);
-        // console.log(result);
-
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-
-    fetchUserData().catch(console.error);
-  }, []);
-
-  const navigate = useNavigate();
-
-  const handleNavigate = (url) => {
-    navigate(url);
+  const fetchUserData = async () => {
+    try {
+      const data = await userService.getById(id);
+      setUser(data);
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+    }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
+  useEffect(() => {
+    fetchUserData().catch(console.error);
+  }, [id]);
+
+  const handleChangeStatus = async () => {
+    try {
+      await userService.changeStatus(user.id);
+      toast.success("Cập nhật thành công!");
+      fetchUserData();
+    } catch (error) {
+      console.error("Failed to update user", error);
+      toast.error("Cập nhật thất bại. Vui lòng thử lại.");
+    }
   };
 
   return (
-    <div className="flex flex-col m-5">
-      <div className="flex justify-between items-center mb-5">
-        <h1 className="text-[#182F73] text-3xl font-bold">Thông tin người dùng</h1>
-        <div>
-          <Button asChild><Link to={`/admin/user/update/${user.id}`}><Pencil />Sửa</Link></Button>
-          <Button variant="destructive" className="ms-3"><Ban />Vô hiệu hóa</Button>
-        </div>
-      </div>
-      <div className="flex">
-        <Card className="w-2/6 h-fit p-5">
-          <div className="flex justify-between items-center">
-            <div>
-              <div className="text-3xl font-semibold">{user.accountName}</div>
-              <CardDescription>{user.role?.name}</CardDescription>
-              </div>
-            <Button variant="outline" asChild><Link to={`/admin/user/update/${user.id}`}><Pencil /></Link></Button>
+      <div className="flex flex-col m-5">
+        <div className="flex justify-between items-center mb-5">
+          <h1 className="text-[#182F73] text-3xl font-bold">Thông tin người dùng</h1>
+          <div>
+            <Button asChild><Link to={`/admin/user/update/${user.id}`}><Pencil/>Sửa</Link></Button>
+            <ChangeStatusButton user={user} handleChangeStatus={handleChangeStatus}/>
           </div>
-          <div className="font-semibold grid grid-cols-1 gap-5 mt-7">
-            <div>
-              <p className="text-muted-foreground">Số điện thoại</p>{user.phoneNumber}
-            </div>
-            <div>
-              <p className="text-muted-foreground">Email</p>{user.email}
-            </div>
-            <div>
-              <p className="text-muted-foreground">Địa chỉ</p>{user.address}
-            </div>
+        </div>
+        <div className="flex">
+          <Card className="w-2/6 h-fit p-5">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-muted-foreground">Mật khẩu</p>*******
+                <div className="text-3xl font-semibold">{user.accountName}</div>
+                <CardDescription>{user.role?.name}</CardDescription>
               </div>
-              <Link to="/admin/user/change-password" className="text-[#182F73] hover:text-[#12245C]">Thay đổi</Link>
+              <Button variant="outline" asChild><Link
+                  to={`/admin/user/update/${user.id}`}><Pencil/></Link></Button>
             </div>
-            <div>
-              <p className="text-muted-foreground">Trạng thái</p>
-              {user.status ? (
-                <Badge>Hoạt động</Badge>
-              ) : (
-                <Badge variant="destructive">Bị khóa</Badge>
+            <div className="font-semibold grid grid-cols-1 gap-5 mt-7">
+              <div>
+                <p className="text-muted-foreground">Số điện thoại</p>{user.phoneNumber}
+              </div>
+              <div>
+                <p className="text-muted-foreground">Email</p>{user.email}
+              </div>
+              <div>
+                <p className="text-muted-foreground">Địa chỉ</p>{user.address}
+              </div>
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-muted-foreground">Mật khẩu</p>*******
+                </div>
+                <Link to="/admin/user/change-password" className="text-[#182F73] hover:text-[#12245C]">Thay
+                  đổi</Link>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Trạng thái</p>
+                {user.status ? (
+                    <Badge>Hoạt động</Badge>
+                ) : (
+                    <Badge variant="destructive">Bị khóa</Badge>
+                )}
+              </div>
+            </div>
+          </Card>
+          <Tabs defaultValue="order-history" className="w-full ms-5">
+            <TabsList className="grid w-full grid-cols-6 ">
+              {checkUserRoleByUser(user, "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER") && (
+                  <>
+                    <TabsTrigger value="order-history">Lịch sử đặt hàng</TabsTrigger>
+                    <TabsTrigger value="wallet">Ví</TabsTrigger>
+                    <TabsTrigger value="promotion">Khuyến mại</TabsTrigger>
+                  </>
               )}
-            </div>
-          </div>
-        </Card>
-        <Tabs defaultValue="order-history" className="w-full ms-5">
-          <TabsList className="grid w-full grid-cols-6 ">
-            <TabsTrigger value="order-history">Lịch sử đặt hàng</TabsTrigger>
-            <TabsTrigger value="wallet">Ví</TabsTrigger>
-            <TabsTrigger value="commission">Hoa hồng</TabsTrigger>
-            <TabsTrigger value="promotion">Khuyến mại</TabsTrigger>
-             {checkUserRoleByUser(user,"ROLE_BRANCH_OWNER") && (
-                        <TabsTrigger value="warehouse">Kho</TabsTrigger>
-                        )}
-            <TabsTrigger value="api-connection">Kết nối API</TabsTrigger>
-          </TabsList>
-          <TabsContent value="order-history">
-            <Card>
-              <PaymentHistory />
-            </Card>
-          </TabsContent>
-          <TabsContent value="wallet">
-            <Card>
-              <Wallet  userId={id}  />
-            </Card>
-          </TabsContent>
-          <TabsContent value="commission">
-            <Card>
-              <Commission />
-            </Card>
-          </TabsContent>
-          <TabsContent value="promotion" >
-            <Card>
-              <Promotion promotion = {result.promotion} />
-            </Card>
-          </TabsContent>
-          <TabsContent value="api-connection">
-            <Card>
-              <ApiConnection retailer={warehouse.retailer} clientId={warehouse.client_id} clientSecret={warehouse.client_secret} />
-            </Card>
-          </TabsContent>
-          <TabsContent value="warehouse">
-            <Card>
-              <Warehouse warehouse = {warehouse} />
-            </Card>
-          </TabsContent>
-        </Tabs>
+              <TabsTrigger value="commission">Hoa hồng</TabsTrigger>
+              <TabsTrigger value="warehouse">Kho</TabsTrigger>
+              {checkUserRoleByUser(user, "ROLE_BRANCH_OWNER") && (
+                  <TabsTrigger value="api-connection">Kết nối API</TabsTrigger>
+              )}
+            </TabsList>
+            <TabsContent value="order-history">
+              <PaymentHistory userId={user.id}/>
+            </TabsContent>
+            <TabsContent value="wallet">
+              <Card>
+                <Wallet userId={user.id} bank={user.bank}/>
+              </Card>
+
+            </TabsContent>
+            <TabsContent value="commission">
+              <Card className="p-5">
+                <Commission userId={user.id}/>
+              </Card>
+            </TabsContent>
+            <TabsContent value="promotion">
+              <Card>
+                <Promotion promotion={user.promotion}/>
+              </Card>
+            </TabsContent>
+            <TabsContent value="api-connection">
+              <Card>
+                <ApiConnection detail={user.detail}/>
+              </Card>
+            </TabsContent>
+            <TabsContent value="warehouse">
+              <Warehouse warehouses={user.userWarehouses}/>
+            </TabsContent>
+
+          </Tabs>
+        </div>
       </div>
-    </div>
   );
 }
 

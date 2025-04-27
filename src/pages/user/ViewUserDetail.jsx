@@ -23,7 +23,7 @@ const ViewUserDetail = () => {
 
     const fetchUserData = async () => {
         try {
-            const data = await userService.getById(id, setUser);
+            const data = await userService.getById(id);
             setUser(data);
         } catch (error) {
             console.error("Failed to fetch user:", error);
@@ -107,18 +107,15 @@ const ViewUserDetail = () => {
                         )}
                     </TabsList>
                     <TabsContent value="order-history">
-                        <Card>
-                            <PaymentHistory userId={user.id}/>
-                        </Card>
+                        <PaymentHistory userId={user.id}/>
                     </TabsContent>
                     <TabsContent value="wallet">
                         <Card>
                             <Wallet userId={user.id} bank={user.bank}/>
                         </Card>
-
                     </TabsContent>
                     <TabsContent value="commission">
-                        <Card>
+                        <Card className="p-5">
                             <Commission userId={user.id}/>
                         </Card>
                     </TabsContent>

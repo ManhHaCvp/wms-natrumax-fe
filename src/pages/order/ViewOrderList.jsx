@@ -194,7 +194,6 @@ const ViewOrderList = () => {
       title="Danh sách đơn hàng"
       columns={columns}
       data={data}
-      addLink="/admin/order/create"
     />
   );
 }

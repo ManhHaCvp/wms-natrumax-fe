@@ -54,7 +54,7 @@ const commissionService = {
     async createReport(month, year) {
         try {
             await commissionApi.createReport(month, year);
-            toast.success("Tạo mới báo cáo thành công");
+            //toast.success("Tạo mới báo cáo thành công");
         } catch (error) {
             handleApiError(error);
         }
@@ -63,7 +63,7 @@ const commissionService = {
     async createHistory(month, year) {
         try {
             await commissionApi.createHistory(month, year);
-            toast.success("Tạo mới lịch sử hoa hồng thành công");
+            toast.success("Lấy dữ liệu lịch sử hoa hồng thành công");
         } catch (error) {
             handleApiError(error);
         }

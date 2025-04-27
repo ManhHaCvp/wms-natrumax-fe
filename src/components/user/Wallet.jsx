@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Plus, Info, Save } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import React, {useEffect, useState} from "react";
+import {Plus, Info, Save} from "lucide-react";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -13,7 +13,7 @@ import walletService from "@/services/walletService";
 import transactionService from "@/services/transactionService";
 import discountService from "@/services/discountService";
 import TransactionList from "./TransactionList.jsx";
-import { formatCurrency } from "@/utils/formatCurrency.jsx";
+import {formatCurrency} from "@/utils/formatCurrency.jsx";
 import {
     Sheet,
     SheetClose,
@@ -23,9 +23,11 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet.jsx";
-import { Label } from "@/components/ui/label.jsx";
+import {Label} from "@/components/ui/label.jsx";
+import {Skeleton} from "@/components/ui/skeleton.jsx";
 
-const Wallet = ({ userId, bank }) => {
+const Wallet = ({userId, bank}) => {
+    const [loading, setLoading] = useState(false);
     const [amountInput, setAmountInput] = useState("");
     const [wallet, setWallet] = useState(null);
     const [discount, setDiscount] = useState(null);
@@ -46,11 +48,14 @@ const Wallet = ({ userId, bank }) => {
     useEffect(() => {
         const fetchWallet = async () => {
             try {
-                const { data } = await walletService.getWalletByUserId(userId);
+                setLoading(true);
+                const {data} = await walletService.getWalletByUserId(userId);
                 setWallet(data);
             } catch (error) {
                 toast.error("Không thể tải ví.");
                 console.error("Lỗi khi lấy ví:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -66,7 +71,7 @@ const Wallet = ({ userId, bank }) => {
             }
 
             try {
-                const res = await discountService.getByTotalAmount({ totalAmount: numberAmount });
+                const res = await discountService.getByTotalAmount({totalAmount: numberAmount});
                 setDiscount(res);
                 setCheckedDiscount(true);
             } catch (error) {
@@ -94,8 +99,8 @@ const Wallet = ({ userId, bank }) => {
     const handleAmountChange = (e) => setAmountInput(e.target.value);
 
     const handleBankInputChange = (e) => {
-        const { id, value } = e.target;
-        setBankInfo((prev) => ({ ...prev, [id]: value }));
+        const {id, value} = e.target;
+        setBankInfo((prev) => ({...prev, [id]: value}));
     };
 
     const handleSaveBankInfo = () => {
@@ -112,10 +117,7 @@ const Wallet = ({ userId, bank }) => {
         const latestBank = await fetchBankFromAPI();
         if (!latestBank) return;
 
-        const accountNameEncoded = encodeURIComponent(latestBank.accountName);
-        const info = encodeURIComponent(`${latestBank.accountNo} gui tien`);
-
-        const qrLink = `https://img.vietqr.io/image/${latestBank.bankCode}-${latestBank.accountNo}-compact2.jpg?amount=${numberAmount}&addInfo=${info}&accountName=${accountNameEncoded}`;
+        const qrLink = `https://img.vietqr.io/image/${latestBank.bankCode}-${latestBank.accountNo}-compact2.jpg?amount=${numberAmount}&addInfo=${bankInfo.accountName} gui tien&accountName=${latestBank.accountName}`;
         setQrUrl(qrLink);
         setDialogOpen(true);
     };
@@ -147,59 +149,86 @@ const Wallet = ({ userId, bank }) => {
         }
     };
 
-    const BankInput = ({ label, id, value }) => (
+    const BankInput = ({label, id, value}) => (
         <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor={id} className="text-right">{label}</Label>
-            <Input id={id} value={value} onChange={handleBankInputChange} className="col-span-3" />
+            <Input id={id} value={value} onChange={handleBankInputChange} className="col-span-3"/>
         </div>
     );
 
     return (
         <div className="m-5 space-y-5">
-            <div className="flex justify-between items-center">
-                <p className="text-base font-semibold space-x-7">
-                    <span className="text-muted-foreground">Số dư hiện tại</span>
-                    <span>{formatCurrency(wallet?.balance)}</span>
-                </p>
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button><Info />Ngân hàng</Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Thông tin ngân hàng</SheetTitle>
-                        </SheetHeader>
-                        <div className="grid gap-4 py-4">
-                            <BankInput label="Tên ngân hàng" id="bankName" value={bankInfo.bankName} />
-                            <BankInput label="Tên tài khoản" id="accountName" value={bankInfo.accountName} />
-                            <BankInput label="Số tài khoản" id="accountNo" value={bankInfo.accountNo} />
-                            <BankInput label="Mã ngân hàng" id="bankCode" value={bankInfo.bankCode} />
-                            <img
-                                alt="QR Code"
-                                src={`https://img.vietqr.io/image/${bankInfo.bankCode}-${bankInfo.accountNo}-compact2.jpg?&accountName=${encodeURIComponent(bankInfo.accountName)}`}
-                            />
+            {/* Loading skeleton */}
+            {loading ? (
+                <div className="space-y-5">
+                    {/* Skeleton for current balance and bank info button */}
+                    <div className="flex justify-between items-center">
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-40" /> {/* Balance label */}
+                            <Skeleton className="h-6 w-32" /> {/* Balance value */}
                         </div>
-                        <SheetFooter>
-                            <SheetClose asChild>
-                                <Button onClick={handleSaveBankInfo}><Save />Lưu</Button>
-                            </SheetClose>
-                        </SheetFooter>
-                    </SheetContent>
-                </Sheet>
-            </div>
+                        <Skeleton className="h-10 w-32 rounded-md" /> {/* Ngân hàng button */}
+                    </div>
 
-            <div className="flex justify-between items-center">
-                <p className="text-muted-foreground text-base font-semibold w-20 me-3">Số tiền</p>
-                <Input
-                    placeholder="Tối thiểu 200.000đ"
-                    className="w-full me-3"
-                    value={amountInput}
-                    onChange={handleAmountChange}
-                />
-                <Button variant="outline" onClick={handleSendClick} disabled={!wallet}>
-                    <Plus className="mr-1" />Gửi
-                </Button>
-            </div>
+                    {/* Skeleton for bank information sheet (optional, only shows when clicking, so skip now) */}
+
+                    {/* Skeleton for transfer input + button */}
+                    <div className="flex justify-between items-center">
+                        <Skeleton className="h-6 w-20" /> {/* "Số tiền" label */}
+                        <Skeleton className="h-10 w-full mx-3" /> {/* Input */}
+                        <Skeleton className="h-10 w-24 rounded-md" /> {/* Gửi button */}
+                    </div>
+
+                    <Skeleton className="h-80 w-full rounded-md" />
+                </div>
+            ) : (
+                <>
+                    <div className="flex justify-between items-center">
+                        <p className="text-base font-semibold space-x-7">
+                            <span className="text-muted-foreground">Số dư hiện tại</span>
+                            <span>{formatCurrency(wallet?.balance)}</span>
+                        </p>
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button><Info/>Ngân hàng</Button>
+                            </SheetTrigger>
+                            <SheetContent>
+                                <SheetHeader>
+                                    <SheetTitle>Thông tin ngân hàng</SheetTitle>
+                                </SheetHeader>
+                                <div className="grid gap-4 py-4">
+                                    <BankInput label="Tên ngân hàng" id="bankName" value={bankInfo.bankName}/>
+                                    <BankInput label="Tên tài khoản" id="accountName" value={bankInfo.accountName}/>
+                                    <BankInput label="Số tài khoản" id="accountNo" value={bankInfo.accountNo}/>
+                                    <BankInput label="Mã ngân hàng" id="bankCode" value={bankInfo.bankCode}/>
+                                    <img
+                                        alt="QR Code"
+                                        src={`https://img.vietqr.io/image/${bankInfo.bankCode}-${bankInfo.accountNo}-compact2.jpg?&accountName=${encodeURIComponent(bankInfo.accountName)}`}
+                                    />
+                                </div>
+                                <SheetFooter>
+                                    <SheetClose asChild>
+                                        <Button onClick={handleSaveBankInfo}><Save/>Lưu</Button>
+                                    </SheetClose>
+                                </SheetFooter>
+                            </SheetContent>
+                        </Sheet>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        <p className="text-muted-foreground text-base font-semibold w-20 me-3">Số tiền</p>
+                        <Input
+                            placeholder="Tối thiểu 200.000đ"
+                            className="w-full me-3"
+                            value={amountInput}
+                            onChange={handleAmountChange}
+                        />
+                        <Button variant="outline" onClick={handleSendClick} disabled={!wallet}>
+                            <Plus className="mr-1"/>Gửi
+                        </Button>
+                    </div>
+                </>
+            )}
 
             {discount && (
                 <div className="text-green-600 font-medium">
@@ -221,7 +250,7 @@ const Wallet = ({ userId, bank }) => {
                     </DialogHeader>
 
                     <div className="flex justify-center mb-4">
-                        {qrUrl && <img src={qrUrl} alt="QR Code" className="max-w-full max-h-[400px]" />}
+                        {qrUrl && <img src={qrUrl} alt="QR Code" className="max-w-full max-h-[400px]"/>}
                     </div>
 
                     <div className="flex justify-end gap-3">

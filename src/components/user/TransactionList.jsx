@@ -36,6 +36,8 @@ import transactionService from "@/services/transactionService";
 import UploadProofDialog from "./UploadProofDialog";
 import toast from "react-hot-toast";
 import ImagePreviewModal from "../common/ImagePreviewModal";
+import formatDate from "@/utils/formatDate.jsx";
+import {formatCurrency} from "@/utils/formatCurrency.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -47,8 +49,9 @@ export default function TransactionList({walletId, reloadTrigger}) {
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-    const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+    const [imageDialogOpen, setImageDialogOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [selectedTransactionId, setSelectedTransactionId] = useState(null);
 
     const fetchData = useCallback(async () => {
         try {
@@ -93,7 +96,7 @@ export default function TransactionList({walletId, reloadTrigger}) {
                 </div>
             ),
             cell: (info) => (
-                <div>{new Date(info.getValue()).toLocaleString("vi-VN")}</div>
+                <div>{formatDate.formatJsonToDateTime(info.getValue())}</div>
             ),
         }),
         columnHelper.accessor("totalAmount", {
@@ -111,11 +114,23 @@ export default function TransactionList({walletId, reloadTrigger}) {
             ),
             cell: (info) => {
                 const amount = parseFloat(info.getValue());
-                return new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                }).format(amount);
+                return (<div>{formatCurrency(amount)}</div>)
             },
+        }),
+        columnHelper.accessor("discount.discountPercent", {
+            name: "Chiết khấu",
+            header: ({column}) => (
+                <div
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="flex items-center cursor-pointer"
+                >
+                    Chiết khấu (%)
+                    <ArrowUpDown size={16} className="ml-2"/>
+                </div>
+            ),
+            cell: (info) => <div>{info.getValue() ?? 0}%</div>,
         }),
         columnHelper.accessor("status", {
             name: "Trạng thái",
@@ -146,76 +161,6 @@ export default function TransactionList({walletId, reloadTrigger}) {
                 );
             },
         }),
-        columnHelper.accessor("discount.discountPercent", {
-            name: "Chiết khấu",
-            header: ({column}) => (
-                <div
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                    className="flex items-center cursor-pointer"
-                >
-                    Chiết khấu (%)
-                    <ArrowUpDown size={16} className="ml-2"/>
-                </div>
-            ),
-            cell: (info) => <div>{info.getValue() ?? 0}%</div>,
-        }),
-        columnHelper.accessor("transferImage", {
-            name: "Bill chuyển tiền",
-            header: ({column}) => (
-                <div
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                    className="flex items-center cursor-pointer"
-                >
-                    Bill chuyển tiền
-                    <ArrowUpDown size={16} className="ml-2"/>
-                </div>
-            ),
-            cell: (info) => {
-                const url = info.getValue();
-                return url ? (
-                    <img
-                        src={url}
-                        alt="Proof"
-                        className="w-16 h-16 object-cover rounded border"
-                        onClick={() => setPreviewUrl(url)}
-
-                    />
-                ) : (
-                    <span className="text-sm text-muted-foreground">Chưa có</span>
-                );
-            },
-        }),
-        columnHelper.accessor("refundImage", {
-            name: "Bill hoàn tiền",
-            header: ({column}) => (
-                <div
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                    className="flex items-center cursor-pointer"
-                >
-                    Bill hoàn tiền
-                    <ArrowUpDown size={16} className="ml-2"/>
-                </div>
-            ),
-            cell: (info) => {
-                const url = info.getValue();
-                return url ? (
-                    <img
-                        src={url}
-                        alt="Proof"
-                        className="w-16 h-16 object-cover rounded border"
-                        onClick={() => setPreviewUrl(url)}
-                    />
-                ) : (
-                    <span className="text-sm text-muted-foreground">Không có</span>
-                );
-            },
-        }),
         columnHelper.display({
             id: "actions",
             header: "Thao tác",
@@ -238,9 +183,24 @@ export default function TransactionList({walletId, reloadTrigger}) {
                             >
                                 Thêm ảnh
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => alert("Xem chi tiết")}>
-                                Xem
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    setPreviewUrl(transaction.transferImage);
+                                    setImageDialogOpen(true);
+                                }}
+                            >
+                                Bill chuyển khoản
                             </DropdownMenuItem>
+                            {transaction.refundImage ? (
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        setPreviewUrl(transaction.refundImage);
+                                        setImageDialogOpen(true);
+                                    }}
+                                >
+                                    Bill hoàn tiền
+                                </DropdownMenuItem>
+                            ) : null}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
@@ -393,9 +353,9 @@ export default function TransactionList({walletId, reloadTrigger}) {
                 onUpload={handleUpload}
             />
             <ImagePreviewModal
-                open={!!previewUrl}
+                open={imageDialogOpen}
+                onOpenChange={setImageDialogOpen}
                 imageUrl={previewUrl}
-                onOpenChange={() => setPreviewUrl(null)}
             />
         </div>
     );

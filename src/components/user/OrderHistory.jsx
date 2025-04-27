@@ -165,18 +165,7 @@ const columns = [
 ];
 
 const OrderHistory = () => {
-  const [data, setData] = useState([
-    { id: 1, orderDate: "19/03/2025", accountName: "Chi nhánh 107", totalAmount: 20000000, status: "Đã thanh toán" },
-    { id: 2, orderDate: "19/03/2025", accountName: "Chi nhánh 108", totalAmount: 15000000, status: "Chưa thanh toán" },
-    { id: 3, orderDate: "19/03/2025", accountName: "Chi nhánh 109", totalAmount: 18000000, status: "Đã thanh toán" },
-    { id: 4, orderDate: "19/03/2025", accountName: "Chi nhánh 110", totalAmount: 22000000, status: "Chưa thanh toán" },
-    { id: 5, orderDate: "19/03/2025", accountName: "Chi nhánh 111", totalAmount: 25000000, status: "Đã thanh toán" },
-    { id: 6, orderDate: "19/03/2025", accountName: "Chi nhánh 112", totalAmount: 12000000, status: "Chưa thanh toán" },
-    { id: 7, orderDate: "19/03/2025", accountName: "Chi nhánh 113", totalAmount: 30000000, status: "Đã thanh toán" },
-    { id: 8, orderDate: "19/03/2025", accountName: "Chi nhánh 114", totalAmount: 27000000, status: "Chưa thanh toán" },
-    { id: 9, orderDate: "19/03/2025", accountName: "Chi nhánh 115", totalAmount: 19000000, status: "Đã thanh toán" },
-    { id: 10, orderDate: "19/03/2025", accountName: "Chi nhánh 116", totalAmount: 23000000, status: "Chưa thanh toán" },
-  ]);
+  const [data, setData] = useState([]);
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -200,6 +189,7 @@ const OrderHistory = () => {
       columns={columns}
       data={data}
       addLink="/admin/order/create"
+      className="m-0"
     />
   );
 }

@@ -1,5 +1,5 @@
 import handleApiError from "@/utils/HandleApiError.jsx";
-import commissionHistoryApi from "@/api/commissionHistory.jsx";
+import commissionHistoryApi from "@/api/commissionHistoryApi.jsx";
 import commissionService from "@/services/commissionService.jsx";
 
 const formatCommissionHistory = (commissionHistory) => ({
