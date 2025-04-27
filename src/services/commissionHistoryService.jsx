@@ -31,6 +31,15 @@ const commissionHistoryService = {
         } catch (error) {
             handleApiError(error);
         }
+    },
+    async updateTransaction(referrerId, month, year, transactionId) {
+        try {
+            console.log(referrerId, month, year, transactionId);
+            await commissionHistoryApi.updateTransaction(referrerId, month, year, transactionId);
+            
+        } catch (error) {
+            handleApiError(error);
+        }
     }
 }
 
