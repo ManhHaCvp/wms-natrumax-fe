@@ -1,7 +1,7 @@
-import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
-import { useAuth } from "@/providers/authProvider";
-import { ProtectedRoute } from "./ProtectedRoute";
-import { RoleProtectedRoute } from "./RoleProtectedRoute";
+import {RouterProvider, createBrowserRouter, Navigate} from "react-router-dom";
+import {useAuth} from "@/providers/authProvider";
+import {ProtectedRoute} from "./ProtectedRoute";
+import {RoleProtectedRoute} from "./RoleProtectedRoute";
 import Layout from "@/components/layout/Layout";
 import AuthPage from "@/pages/auth/AuthPage";
 import Dashboard from "@/pages/main/Dashboard";
@@ -24,7 +24,7 @@ import ViewDiscountList from "@/pages/discount/ViewDiscountList";
 import CreateDiscount from "@/pages/discount/CreateDiscount";
 import UpdateDiscount from "@/pages/discount/UpdateDiscount";
 import ViewWarehouseList from "@/pages/warehouse/ViewWarehouseList";
-import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "@/pages/error/ErrorPage";
+import {NotFoundPage, InternalServerErrorPage, UnauthorizedPage} from "@/pages/error/ErrorPage";
 import ComingSoonPage from "@/pages/error/ComingSoonPage";
 import UserProfile from "@/pages/user/UserProfile";
 import ViewTransactionList from "@/pages/transaction/ViewTransactionList";
@@ -32,111 +32,115 @@ import ViewCommissionList from "@/pages/commission/ViewCommissionList.jsx";
 import CreateCommissionPolicy from "@/pages/commission/CreateCommissionPolicy.jsx";
 import ViewCommissionPolicy from "@/pages/commission/ViewCommissionPolicy.jsx";
 import ViewCommissionHistory from "@/pages/commission/ViewCommissionHistory.jsx";
+import ViewSaleList from "@/pages/mock-api/ViewSaleList.jsx";
 
 const Routes = () => {
-  const { token, user } = useAuth();
+    const {token, user} = useAuth();
 
-  const startupRoute = () => {
-    if (!token) return <Navigate to="/login" />;
-    if (user.roles.includes("ROLE_ADMIN")) return <Navigate to="/admin" />;
-    return <Navigate to="/dashboard" />;
-  };
+    const startupRoute = () => {
+        if (!token) return <Navigate to="/login"/>;
+        if (user.roles.includes("ROLE_ADMIN")) return <Navigate to="/admin"/>;
+        return <Navigate to="/dashboard"/>;
+    };
 
-  // Public routes wrapped inside Layout
-  const routesForPublic = {
-    path: "/",
-    element: <Layout />,
-    children: [
-      { path: "/", element: startupRoute() },
-      { path: "/dashboard", element: <Dashboard /> },
-      { path: "*", element: <NotFoundPage /> },
-      { path: "/404", element: <NotFoundPage /> },
-      { path: "/500", element: <InternalServerErrorPage /> },
-      { path: "/coming-soon", element: <ComingSoonPage /> },
-      { path: "/service", element: <div>Service Page</div> },
-      { path: "/about-us", element: <div>About Us</div> },
+    // Public routes wrapped inside Layout
+    const routesForPublic = {
+        path: "/",
+        element: <Layout/>,
+        children: [
+            {path: "/", element: startupRoute()},
+            {path: "/dashboard", element: <Dashboard/>},
+            {path: "*", element: <NotFoundPage/>},
+            {path: "/404", element: <NotFoundPage/>},
+            {path: "/500", element: <InternalServerErrorPage/>},
+            {path: "/coming-soon", element: <ComingSoonPage/>},
+            {path: "/service", element: <div>Service Page</div>},
+            {path: "/about-us", element: <div>About Us</div>},
 
-      //User
-      { path: "/admin/users", element: <ViewUserList /> },
-      { path: "/admin/user/:id", element: <ViewUserDetail /> },
-      { path: "/admin/user/update/:id", element: <UpdateUser /> },
-      { path: "/admin/user/change-password", element: <ChangePassword /> },
+            //User
+            {path: "/admin/users", element: <ViewUserList/>},
+            {path: "/admin/user/:id", element: <ViewUserDetail/>},
+            {path: "/admin/user/update/:id", element: <UpdateUser/>},
+            {path: "/admin/user/change-password", element: <ChangePassword/>},
 
-      //Transaction
-      { path: "/admin/transactions", element: <ViewTransactionList /> },
+            //Transaction
+            {path: "/admin/transactions", element: <ViewTransactionList/>},
 
-      //Role
-      { path: "/admin/roles", element: <ViewRoleList /> },
+            //Role
+            {path: "/admin/roles", element: <ViewRoleList/>},
 
-      //Product
-      { path: "/admin/products", element: <ViewProductList /> },
-      { path: "/admin/product/:productId", element: <ViewProductDetail /> },
-      { path: "/admin/product/update/:id", element: <UpdateProduct /> },
+            //Product
+            {path: "/admin/products", element: <ViewProductList/>},
+            {path: "/admin/product/:productId", element: <ViewProductDetail/>},
+            {path: "/admin/product/update/:id", element: <UpdateProduct/>},
 
-      //Category
-      { path: "/admin/categories", element: <ViewCategoryList /> },
-      { path: "/admin/category/create", element: <CreateCategory /> },
-      { path: "/admin/category/update/:id", element: <UpdateCategory /> },
+            //Category
+            {path: "/admin/categories", element: <ViewCategoryList/>},
+            {path: "/admin/category/create", element: <CreateCategory/>},
+            {path: "/admin/category/update/:id", element: <UpdateCategory/>},
 
-      //Orders
-      { path: "/admin/orders", element: <ViewOrderList /> },
-      { path: "/admin/order/:id", element: <ViewOrderDetail /> },
-      { path: "/admin/order/create", element: <CreateOrder /> },
+            //Orders
+            {path: "/admin/orders", element: <ViewOrderList/>},
+            {path: "/admin/order/:id", element: <ViewOrderDetail/>},
+            {path: "/admin/order/create", element: <CreateOrder/>},
 
-      //Discounts
-      { path: "/admin/discounts", element: <ViewDiscountList /> },
-      { path: "/admin/discount/create", element: <CreateDiscount /> },
-      { path: "/admin/discount/update/:id", element: <UpdateDiscount /> },
+            //Discounts
+            {path: "/admin/discounts", element: <ViewDiscountList/>},
+            {path: "/admin/discount/create", element: <CreateDiscount/>},
+            {path: "/admin/discount/update/:id", element: <UpdateDiscount/>},
 
-       //Rewards
-      //  { path: "/admin/rewards", element: <ViewRewardList /> },
-      //Warehouse
-      { path: "/admin/warehouses", element: <ViewWarehouseList /> },
+            //Rewards
+            //  { path: "/admin/rewards", element: <ViewRewardList /> },
+            //Warehouse
+            {path: "/admin/warehouses", element: <ViewWarehouseList/>},
 
-      //Commission
-      { path: "/admin/commissions", element: <ViewCommissionList /> },
-      { path: "/admin/commissions/create/:referrerId", element: <CreateCommissionPolicy /> },
-      { path: "/admin/commissions/policy/:id", element: <ViewCommissionPolicy /> },
-      { path: "/admin/commissions/history/:id", element: <ViewCommissionHistory /> },
-    ],
-  };
+            //Commission
+            {path: "/admin/commissions", element: <ViewCommissionList/>},
+            {path: "/admin/commissions/create/:referrerId", element: <CreateCommissionPolicy/>},
+            {path: "/admin/commissions/policy/:id", element: <ViewCommissionPolicy/>},
+            {path: "/admin/commissions/history/:id", element: <ViewCommissionHistory/>},
 
-  // Protected routes for authenticated users
-  const routesForAuthenticatedOnly = {
-    path: "/",
-    element: <ProtectedRoute />,
-    children: [
-      { path: "/home", element: <HomePage /> },
-      { path: "/profile", element: <UserProfile /> },
-      { path: "/401", element: <UnauthorizedPage /> },
-    ],
-  };
+            //Mock API
+            {path: "/admin/misa/sales", element: <ViewSaleList/>},
+        ],
+    };
 
-  // Admin-only routes
-  const routesForAdminOnly = {
-    path: "/admin",
-    element: <RoleProtectedRoute allowedRoles={["ROLE_ADMIN"]} />,
-    children: [
-      { path: "/admin", element: <div>Admin Dashboard</div> },
-      { path: "/admin/users", element: <div>Manage Users</div> },
-    ],
-  };
+    // Protected routes for authenticated users
+    const routesForAuthenticatedOnly = {
+        path: "/",
+        element: <ProtectedRoute/>,
+        children: [
+            {path: "/home", element: <HomePage/>},
+            {path: "/profile", element: <UserProfile/>},
+            {path: "/401", element: <UnauthorizedPage/>},
+        ],
+    };
 
-  // Routes for non-authenticated users
-  const routesForNotAuthenticatedOnly = {
-    path: "/",
-    element: <AuthPage />,
-    children: [{ path: "/login", element: <AuthPage /> }],
-  };
+    // Admin-only routes
+    const routesForAdminOnly = {
+        path: "/admin",
+        element: <RoleProtectedRoute allowedRoles={["ROLE_ADMIN"]}/>,
+        children: [
+            {path: "/admin", element: <div>Admin Dashboard</div>},
+            {path: "/admin/users", element: <div>Manage Users</div>},
+        ],
+    };
 
-  const router = createBrowserRouter([
-    routesForPublic, // Wrap inside an array-friendly structure
-    ...(!token ? [routesForNotAuthenticatedOnly] : []),
-    routesForAuthenticatedOnly,
-    routesForAdminOnly,
-  ]);
+    // Routes for non-authenticated users
+    const routesForNotAuthenticatedOnly = {
+        path: "/",
+        element: <AuthPage/>,
+        children: [{path: "/login", element: <AuthPage/>}],
+    };
 
-  return <RouterProvider router={router} />;
+    const router = createBrowserRouter([
+        routesForPublic, // Wrap inside an array-friendly structure
+        ...(!token ? [routesForNotAuthenticatedOnly] : []),
+        routesForAuthenticatedOnly,
+        routesForAdminOnly,
+    ]);
+
+    return <RouterProvider router={router}/>;
 };
 
 export default Routes;

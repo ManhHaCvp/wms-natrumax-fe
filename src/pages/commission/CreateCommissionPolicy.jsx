@@ -21,7 +21,7 @@ const CreateCommissionPolicy = () => {
 
     useEffect(() => {
         const loadData = async () => {
-            await userService.getAll(setUsers).catch((err) =>
+            await userService.getReferralListByReferrerId(setUsers).catch((err) =>
                 console.error("Failed to fetch user list:", err)
             );
             await categoryService.getAll(setCategories).catch((err) =>

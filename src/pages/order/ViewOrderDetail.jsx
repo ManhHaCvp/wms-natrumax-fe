@@ -69,9 +69,11 @@ const ViewOrderDetail = () => {
             console.error("Error fetching order", err);
         }
     };
+
     useEffect(() => {
         fetchOrder();
     }, [id]);
+
     const handleUpload = async (file) => {
         try {
             const formData = new FormData();
@@ -339,7 +341,7 @@ const ViewOrderDetail = () => {
                             <p className="text-muted-foreground">Phiếu xuất kho</p>
                             {order.customer.inventoryOutCode ? order.customer.inventoryOutCode : 'Không có'}
                         </div>
-                        {checkUserRoleById(user, order.customer) && !order.paymentMethod === "WALLET" && (
+                        {checkUserRoleById(user, order.customer) && order.paymentMethod === "BANK_TRANSFER" && (
                             <Button
                                 onClick={() => {
                                     setSelectedTransactionId(order.id);

@@ -50,6 +50,20 @@ const userService = {
     }
   },
 
+  async getReferralListByReferrerId(setData) {
+    try {
+      const response = await userApi.getReferralListByReferrerId();
+
+      const users = Array.isArray(response.data)
+          ? response.data
+          : response.data?.users || [];
+
+      setData(users.map(formatUser));
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
   async create(payload) {
     try {
       await userApi.create(payload);

@@ -136,14 +136,7 @@ const columns = (setData) => [
 const ViewCategoryList = () => {
   const [openCreateSheet, setOpenCreateSheet] = useState(false);
 
-  const [data, setData] = useState([
-    // { categoryId: 1, categoryName: "Nhóm hàng A", description: "Mô tả nhóm hàng A" },
-    // { categoryId: 2, categoryName: "Nhóm hàng B", description: "Mô tả nhóm hàng B" },
-    // { categoryId: 3, categoryName: "Nhóm hàng C", description: "Mô tả nhóm hàng A" },
-    // { categoryId: 4, categoryName: "Nhóm hàng D", description: "Mô tả nhóm hàng B" },
-    // { categoryId: 5, categoryName: "Nhóm hàng E", description: "Mô tả nhóm hàng A" },
-    // { categoryId: 6, categoryName: "Nhóm hàng F", description: "Mô tả nhóm hàng B" },
-  ]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
