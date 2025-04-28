@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
+import DisableDialog from "@/components/common/DisableDialog.jsx";
 const columnHelper = createColumnHelper();
 
 const columns = (setData) => [
@@ -278,6 +279,7 @@ const ViewDetailDiscountInline = ({ discountId }) => {
         <label className="block mb-1 text-sm font-medium">Trạng thái</label>
         <Input {...register("status")} disabled />
       </div>
+      <DisableDialog item="sự kiện giảm giá"/>
     </form>
   );
 };

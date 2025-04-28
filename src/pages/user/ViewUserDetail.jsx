@@ -97,7 +97,7 @@ const ViewUserDetail = () => {
                             <>
                                 <TabsTrigger value="order-history">Lịch sử đặt hàng</TabsTrigger>
                                 <TabsTrigger value="wallet">Ví</TabsTrigger>
-                                {/*<TabsTrigger value="promotion">Khuyến mại</TabsTrigger>*/}
+                                <TabsTrigger value="promotion">Khuyến mại</TabsTrigger>
                             </>
                         )}
                         <TabsTrigger value="commission">Hoa hồng</TabsTrigger>
