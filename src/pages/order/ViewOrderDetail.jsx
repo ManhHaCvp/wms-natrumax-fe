@@ -47,7 +47,7 @@ const ViewOrderDetail = () => {
                 id: data.orderId,
                 items: data.orderDetails, // update this when you have order item API
                 discount: data?.invoices?.discount?.discountPercent ?? 0, // or data.discount if available
-                paymentStatus: "Đã thanh toán", // convert from data.status if needed
+                paymentStatus: data.invoices.status, // convert from data.status if needed
                 orderStatus: data.status,
                 activities: [], // populate if available
                 customer: {
@@ -145,6 +145,7 @@ const ViewOrderDetail = () => {
         PACKED: "Đang được giao",
         SHIPPED: "Đã được giao",
         DELIVERED: "Đã nhận",
+        CANCELLED: "Đã hủy",
     };
     const statusViMap = {
         PENDING: "Đang chờ xác nhận",
@@ -167,6 +168,8 @@ const ViewOrderDetail = () => {
         } catch (error) {
             console.error("Lỗi khi hủy đơn hàng:", error);
             toast.error("Hủy đơn hàng thất bại!");
+        } finally {
+            await fetchOrder();
         }
     };
 
@@ -283,7 +286,7 @@ const ViewOrderDetail = () => {
                         <CardHeader>
                             <CardTitle className="flex items-center">
                                 <span className="me-3">Hoạt động</span>
-                                <Badge>{statusViMap[order.orderStatus]}</Badge>
+                                <Badge>{order.orderStatus}</Badge>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>

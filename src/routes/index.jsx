@@ -33,6 +33,10 @@ import CreateCommissionPolicy from "@/pages/commission/CreateCommissionPolicy.js
 import ViewCommissionPolicy from "@/pages/commission/ViewCommissionPolicy.jsx";
 import ViewCommissionHistory from "@/pages/commission/ViewCommissionHistory.jsx";
 import ViewSaleList from "@/pages/mock-api/ViewSaleList.jsx";
+import ViewInventoryOutList from "@/pages/mock-api/ViewInventoryOutList.jsx";
+import ViewInventoryInList from "@/pages/mock-api/ViewInventoryInList.jsx";
+import ViewPurchaseOrderList from "@/pages/mock-api/ViewPurchaseOrderList.jsx";
+import ViewReceiptList from "@/pages/mock-api/ViewReceiptList.jsx";
 
 const Routes = () => {
     const {token, user} = useAuth();
@@ -102,6 +106,10 @@ const Routes = () => {
 
             //Mock API
             {path: "/admin/misa/sales", element: <ViewSaleList/>},
+            {path: "/admin/misa/inventory-outs", element: <ViewInventoryOutList/>},
+            {path: "/admin/misa/receipts", element: <ViewReceiptList/>},
+            {path: "/admin/misa/inventory-ins", element: <ViewInventoryInList/>},
+            {path: "/admin/kiotviet/purchase-orders", element: <ViewPurchaseOrderList/>},
         ],
     };
 

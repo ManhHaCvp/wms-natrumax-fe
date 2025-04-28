@@ -7,14 +7,22 @@ import { Badge } from "@/components/ui/badge.jsx";
 import toast from "react-hot-toast";
 import productService from "@/services/productService.jsx";
 import { formatCurrency } from "@/utils/formatCurrency.jsx";
+import mockApiService from "@/services/mockApiService.jsx";
 
 const ViewProductDetail = () => {
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  const detail = user?.detail ? JSON.parse(user.detail) : null;
+
   const { productId } = useParams();
   const { warehouse, getWarehouse } = useParams();
 
   const [data, setData] = useState({
     productId: 1,
-    barcode: "8938540687295",
+    barcode: "",
     misaCode: "NA.8",
     name: "Natrumax Curcumin 800gr",
     image: "https://natrumax.com/wp-content/uploads/2020/03/curcumin.jpg",
@@ -28,17 +36,22 @@ const ViewProductDetail = () => {
     status: true,
   });
 
+  const [kiotVietQuantity, setKiotVietQuantity] = useState(0);
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        await productService.getByWarehouseIdAndProductId(1, productId, setData);
+        const result = await productService.getByWarehouseIdAndProductId(2, productId); // Không setData ngay
+        setData(result); // Set sau
+        await mockApiService.getProductDetail("500370926", result.barcode, setKiotVietQuantity); // Dùng result.barcode ngay lập tức
       } catch (error) {
-        toast.error("Failed to fetch product:", error);
+        toast.error("Failed to fetch product");
+        console.error(error); // nên thêm log lỗi chi tiết
       }
     };
 
-    fetchUserData().catch(console.error);
-  }, []);
+    fetchUserData();
+  }, [productId]); // nhớ thêm productId vào dependency nếu productId thay đổi
 
   return (
     <div className="space-y-5 m-5">
@@ -85,6 +98,9 @@ const ViewProductDetail = () => {
               <p className="text-muted-foreground">Số lượng</p>{data.quantity}
             </div>
             <div>
+              <p className="text-muted-foreground">Tồn kho của bạn</p>{kiotVietQuantity}
+            </div>
+            <div>
               <p className="text-muted-foreground">Khuyến mãi</p>
               {data.quantityToGetPromotion === 0 ? (
                 `Không có`
@@ -93,7 +109,7 @@ const ViewProductDetail = () => {
                 )
               }
             </div>
-            <div className="col-span-2">
+            <div>
               <p className="text-muted-foreground">Mô tả</p>{data.description}
             </div>
             <div>

@@ -53,11 +53,7 @@ const AppSidebar = () => {
                     {
                         title: "Vai trò",
                         url: "/admin/roles",
-                    },
-                    {
-                        title: "Giao dịch",
-                        url: "/admin/transactions",
-                    },
+                    }
                 ],
             },
             {
@@ -87,6 +83,10 @@ const AppSidebar = () => {
                     {
                         title: "Đơn hàng",
                         url: "/admin/orders",
+                    },
+                    {
+                        title: "Giao dịch",
+                        url: "/admin/transactions",
                     },
                     {
                         title: "Giảm giá",
@@ -124,7 +124,7 @@ const AppSidebar = () => {
             },
             {
                 icon: Misa,
-                title: "MISA",
+                title: "MISA Kế toán",
                 url: "#",
                 items: [
                     {

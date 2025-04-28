@@ -31,28 +31,40 @@ const columns = (
     setImageDialogOpen // <--- fixed: must pass this in!
 ) => [
     columnHelper.accessor("transactionsId", {
+        name: "Mã giao dịch",
         header: ({column}) => (
-            <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                 className="flex items-center cursor-pointer">
-                Mã giao dịch <ArrowUpDown size={16} className="ml-2"/>
+            <div
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="flex items-center cursor-pointer"
+            >
+                Mã giao dịch
+                <ArrowUpDown size={16} className="ml-2"/>
             </div>
         ),
         cell: (info) => <div>{info.getValue()}</div>,
     }),
     columnHelper.accessor("paymentDate", {
+        name: "Ngày tạo",
         header: ({column}) => (
-            <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                 className="flex items-center cursor-pointer">
-                Ngày tạo <ArrowUpDown size={16} className="ml-2"/>
+            <div
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="flex items-center cursor-pointer"
+            >
+                Ngày tạo
+                <ArrowUpDown size={16} className="ml-2"/>
             </div>
         ),
         cell: (info) => <div>{formatDate.formatJsonToDateTime(info.getValue())}</div>,
     }),
     columnHelper.accessor("totalAmount", {
+        name: "Số tiền",
         header: ({column}) => (
-            <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                 className="flex items-center cursor-pointer">
-                Số tiền <ArrowUpDown size={16} className="ml-2"/>
+            <div
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="flex items-center cursor-pointer"
+            >
+                Số tiền
+                <ArrowUpDown size={16} className="ml-2"/>
             </div>
         ),
         cell: (info) => {
@@ -61,19 +73,27 @@ const columns = (
         },
     }),
     columnHelper.accessor("discount.discountPercent", {
+        name: "Chiết khấu",
         header: ({column}) => (
-            <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                 className="flex items-center cursor-pointer">
-                Chiết khấu (%) <ArrowUpDown size={16} className="ml-2"/>
+            <div
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="flex items-center cursor-pointer"
+            >
+                Chiết khấu (%)
+                <ArrowUpDown size={16} className="ml-2"/>
             </div>
         ),
         cell: (info) => <div>{info.getValue() ?? 0}%</div>,
     }),
     columnHelper.accessor("status", {
+        name: "Trạng thái",
         header: ({column}) => (
-            <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                 className="flex items-center cursor-pointer">
-                Trạng thái <ArrowUpDown size={16} className="ml-2"/>
+            <div
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="flex items-center cursor-pointer"
+            >
+                Trạng thái
+                <ArrowUpDown size={16} className="ml-2"/>
             </div>
         ),
         cell: (info) => {
@@ -91,8 +111,10 @@ const columns = (
     columnHelper.display({
         id: "actions",
         header: "Hành động",
+        enableHiding: false,
         cell: (info) => {
             const row = info.row.original;
+            console.log(row);
             const amount = row.totalAmount;
             return (
                 <DropdownMenu>

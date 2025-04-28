@@ -96,7 +96,7 @@ const CreateCommissionPolicy = () => {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Tên nhóm hàng</TableHead>
-                                    <TableHead className="text-center">Phần trăm (%)</TableHead>
+                                    <TableHead>Phần trăm (%)</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

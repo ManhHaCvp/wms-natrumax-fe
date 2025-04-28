@@ -9,7 +9,7 @@ const formatProduct = (product) => ({
     misaCode: product.misaCode,
     name: product.name,
     image: product.image,
-    category: product.category ? product.category.name : "",
+    category: product.category ? product.category.categoryName : "",
     basePrice: product.basePrice,
     discount: product.discount,
     price: product.basePrice * (1 - product.discount / 100),
@@ -75,7 +75,7 @@ const productService = {
         }
     },
 
-    async getByWarehouseIdAndProductId(warehouseId, productId, setData) {
+    async getByWarehouseIdAndProductId(warehouseId, productId) {
         try {
             const response = await productApi.getByWarehouseIdAndProductId(warehouseId, productId);
             const product = response.data;
@@ -84,7 +84,7 @@ const productService = {
                 ? product.map(formatProduct)
                 : formatProduct(product);
 
-            setData(data);
+            return data;
         } catch (error) {
             handleApiError(error);
         }

@@ -64,7 +64,7 @@ const Wallet = ({userId, bank}) => {
 
     useEffect(() => {
         const fetchDiscount = async () => {
-            if (numberAmount < 200000) {
+            if (numberAmount < 2000000) {
                 setDiscount(null);
                 setCheckedDiscount(false);
                 return;
@@ -108,8 +108,8 @@ const Wallet = ({userId, bank}) => {
     };
 
     const handleSendClick = async () => {
-        if (numberAmount < 200000) {
-            toast.error("Vui lòng nhập số tiền hợp lệ (tối thiểu 200.000đ)");
+        if (numberAmount < 2000000) {
+            toast.error("Vui lòng nhập số tiền hợp lệ (tối thiểu 2.000.000đ)");
             return;
         }
 
@@ -122,7 +122,7 @@ const Wallet = ({userId, bank}) => {
     };
 
     const handleCreateTransaction = async () => {
-        if (numberAmount < 200000) {
+        if (numberAmount < 2000000) {
             toast.error("Số tiền không hợp lệ.");
             return;
         }
@@ -217,7 +217,7 @@ const Wallet = ({userId, bank}) => {
                     <div className="flex justify-between items-center">
                         <p className="text-muted-foreground text-base font-semibold w-20 me-3">Số tiền</p>
                         <Input
-                            placeholder="Tối thiểu 200.000đ"
+                            placeholder="Tối thiểu 2.000.000đ"
                             className="w-full me-3"
                             value={amountInput}
                             onChange={handleAmountChange}

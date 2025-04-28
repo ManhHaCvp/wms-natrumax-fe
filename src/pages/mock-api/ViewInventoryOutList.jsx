@@ -6,11 +6,10 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
+    DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
-import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import mockApiService from "@/services/mockApiService.jsx";
 import formatDate from "@/utils/formatDate.jsx";
 import {Input} from "@/components/ui/input.jsx";
@@ -25,7 +24,6 @@ import {
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -34,25 +32,17 @@ import {
 
 const columnHelper = createColumnHelper();
 
-const ViewSaleList = () => {
+const ViewInventoryOutList = () => {
     const [data, setData] = useState([]);
     const [clientSecret, setClientSecret] = useState("secretNppHD");
+    const [saleId, setSaleId] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
-            await mockApiService.getSales(setData);
+            await mockApiService.getInventoryOutsBySaleId(clientSecret, saleId, setData);
         };
         fetchData();
-    }, []);
-
-    // --- handle create inventory out ---
-    const handleCreateInventoryOut = async (voucherNo) => {
-        try {
-            await mockApiService.createInventoryOutBySale(voucherNo, clientSecret);
-        } catch (error) {
-            console.error("Failed to create inventory out:", error);
-        }
-    };
+    }, [clientSecret, saleId]);
 
     const columns = () => [
         columnHelper.accessor("Voucher_no", {
@@ -63,6 +53,19 @@ const ViewSaleList = () => {
                     className="flex items-center"
                 >
                     Số chứng từ
+                    <ArrowUpDown size={16} className="ml-2"/>
+                </div>
+            ),
+            cell: (info) => <div>{info.getValue()}</div>,
+        }),
+        columnHelper.accessor("sale_id", {
+            name: "Phiếu bán hàng",
+            header: ({column}) => (
+                <div
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    className="flex items-center"
+                >
+                    Phiếu bán hàng
                     <ArrowUpDown size={16} className="ml-2"/>
                 </div>
             ),
@@ -79,7 +82,7 @@ const ViewSaleList = () => {
                     <ArrowUpDown size={16} className="ml-2"/>
                 </div>
             ),
-            cell: (info) => formatDate.formatJsonToDateTimeMinus7Hour(info.getValue()),
+            cell: (info) => formatDate.formatJsonToDateTime(info.getValue()),
         }),
         columnHelper.accessor("Posted_date", {
             name: "Ngày hạch toán",
@@ -92,7 +95,7 @@ const ViewSaleList = () => {
                     <ArrowUpDown size={16} className="ml-2"/>
                 </div>
             ),
-            cell: (info) => formatDate.formatJsonToDateTimeMinus7Hour(info.getValue()),
+            cell: (info) => formatDate.formatJsonToDateTime(info.getValue()),
         }),
         columnHelper.accessor("Customer", {
             name: "Khách hàng",
@@ -150,30 +153,42 @@ const ViewSaleList = () => {
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>
-                                            <DialogTitle>Phiếu bán hàng</DialogTitle>
+                                            <DialogTitle>Phiếu xuất kho</DialogTitle>
                                         </DialogHeader>
                                         <div
                                             className="bg-gray-100 p-6 rounded-lg shadow-md space-y-6 text-sm overflow-x-auto">
-                                            {/* Thông tin */}
+                                            {/* Thông tin khách hàng */}
                                             <div>
-                                                <h2 className="font-bold text-lg mb-2">Thông tin hóa đơn</h2>
+                                                <h2 className="font-bold text-lg mb-2">Thông tin khách hàng</h2>
                                                 <div className="space-y-1">
                                                     <p><span
-                                                        className="font-semibold">Số hóa đơn:</span> {data.Voucher_no}
+                                                        className="font-semibold">Tên khách:</span> {data.Customer_id.Customer_name}
                                                     </p>
                                                     <p><span
-                                                        className="font-semibold">Ngày hóa đơn:</span> {new Date(data.Voucher_date).toLocaleString("vi-VN")}
+                                                        className="font-semibold">Số điện thoại:</span> {data.Customer_id.Phone_number}
                                                     </p>
                                                     <p><span
-                                                        className="font-semibold">Ngày hạch toán:</span> {new Date(data.Posted_date).toLocaleString("vi-VN")}
+                                                        className="font-semibold">Địa chỉ:</span> {data.Customer_id.Address}
                                                     </p>
                                                     <p><span
-                                                        className="font-semibold">Khách hàng ID:</span> {data.Customer}
+                                                        className="font-semibold">Mã khách hàng:</span> {data.Customer_id.Customer_id}
                                                     </p>
                                                     <p><span
-                                                        className="font-semibold">Kho ID:</span> {data.warehouse_id}</p>
+                                                        className="font-semibold">Mã kho:</span> {data.Customer_id.warehouse_id}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Thông tin phiếu xuất */}
+                                            <div>
+                                                <h2 className="font-bold text-lg mb-2">Thông tin phiếu xuất</h2>
+                                                <div className="space-y-1">
                                                     <p><span
-                                                        className="font-semibold">Trạng thái:</span> {data.status ? "Đã duyệt" : "Chưa duyệt"}
+                                                        className="font-semibold">Số phiếu:</span> {data.Voucher_no}</p>
+                                                    <p><span
+                                                        className="font-semibold">Mã kho:</span> {data.warehouse_id}</p>
+                                                    <p><span
+                                                        className="font-semibold">Mã đơn hàng:</span> {data.sale_id || "Không có"}
                                                     </p>
                                                 </div>
                                             </div>
@@ -185,18 +200,16 @@ const ViewSaleList = () => {
                                                     <Table>
                                                         <TableHeader>
                                                             <TableRow>
-                                                                <TableHead className="w-[50px]">STT</TableHead>
-                                                                <TableHead>Mã sản phẩm</TableHead>
-                                                                <TableHead>Ngày tạo</TableHead>
+                                                                <TableHead className="w-[100px]">Mã sản phẩm</TableHead>
+                                                                <TableHead>Trạng thái</TableHead>
                                                             </TableRow>
                                                         </TableHeader>
                                                         <TableBody>
-                                                            {data.sale_items.map((item, index) => (
+                                                            {data.items.map((item) => (
                                                                 <TableRow key={item._id}>
                                                                     <TableCell
-                                                                        className="font-medium">{index + 1}</TableCell>
-                                                                    <TableCell>{item.Good}</TableCell>
-                                                                    <TableCell>{formatDate.formatJsonToDateTime(item.createdAt)}</TableCell>
+                                                                        className="font-medium">{item.Good_id}</TableCell>
+                                                                    <TableCell>{item.Status || "Chưa xử lý"}</TableCell>
                                                                 </TableRow>
                                                             ))}
                                                         </TableBody>
@@ -207,11 +220,6 @@ const ViewSaleList = () => {
                                     </DialogContent>
                                 </Dialog>
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => handleCreateInventoryOut(data.Voucher_no)}
-                            >
-                                Tạo phiếu xuất kho
-                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
@@ -221,58 +229,33 @@ const ViewSaleList = () => {
 
     return (
         <DataTable
-            title="Danh sách phiếu bán hàng"
+            title="Danh sách phiếu xuất kho"
             columns={columns()}
             data={data}
             addButton={
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="client-secret">Client Secret</Label>
-                    <Input
-                        type="password"
-                        id="client-secret"
-                        value={clientSecret}
-                        onChange={(e) => setClientSecret(e.target.value)}
-                    />
+                <div className="flex items-center gap-3">
+                    <div className="grid w-full max-w-sm items-center gap-1.5">
+                        <Label htmlFor="sale-id">Sale Id</Label>
+                        <Input
+                            type="text"
+                            id="sale-id"
+                            value={saleId}
+                            onChange={(e) => setSaleId(e.target.value)}
+                        />
+                    </div>
+                    <div className="grid w-full max-w-sm items-center gap-1.5">
+                        <Label htmlFor="client-secret">Client Secret</Label>
+                        <Input
+                            type="password"
+                            id="client-secret"
+                            value={clientSecret}
+                            onChange={(e) => setClientSecret(e.target.value)}
+                        />
+                    </div>
                 </div>
             }
         />
     );
 };
 
-const ViewSaleDetailInline = ({voucherNo}) => {
-    const [saleDetail, setSaleDetail] = useState(null);
-
-    useEffect(() => {
-        const fetchDetail = async () => {
-            await mockApiService.getSaleByVoucherNo(voucherNo, setSaleDetail);
-        };
-        fetchDetail();
-    }, [voucherNo]);
-
-    if (!saleDetail) return <div>Đang tải dữ liệu...</div>;
-
-    return (
-        <div className="mt-6 space-y-4">
-            <div>
-                <label className="block mb-1 text-sm font-medium">Số chứng từ</label>
-                <div className="border p-2 rounded-md">{saleDetail.Voucher_no}</div>
-            </div>
-            <div>
-                <label className="block mb-1 text-sm font-medium">Ngày chứng từ</label>
-                <div
-                    className="border p-2 rounded-md">{formatDate.formatJsonToDateTimeMinus7Hour(saleDetail.Voucher_date)}</div>
-            </div>
-            <div>
-                <label className="block mb-1 text-sm font-medium">Ngày hạch toán</label>
-                <div
-                    className="border p-2 rounded-md">{formatDate.formatJsonToDateTimeMinus7Hour(saleDetail.Posted_date)}</div>
-            </div>
-            <div>
-                <label className="block mb-1 text-sm font-medium">Khách hàng</label>
-                <div className="border p-2 rounded-md">{saleDetail.Customer}</div>
-            </div>
-        </div>
-    );
-};
-
-export default ViewSaleList;
+export default ViewInventoryOutList;

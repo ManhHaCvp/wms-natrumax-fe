@@ -86,8 +86,13 @@ const columns = (setData) => [
     cell: (info) => <div>{info.getValue()}</div>,
   }),
   columnHelper.accessor("status", {
-    id: "status",
-    header: "Trạng thái",
+    name: "Trạng thái",
+    header: ({ column }) => (
+        <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
+          Trạng thái
+          <ArrowUpDown size={16} className="ml-2" />
+        </div>
+    ),
     cell: (info) => {
       const value = info.getValue();
       if (value === "-1") return <Badge variant="tertiary">Chưa bắt đầu</Badge>;
