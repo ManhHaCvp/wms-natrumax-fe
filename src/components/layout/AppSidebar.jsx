@@ -107,11 +107,11 @@ const AppSidebar = () => {
           },
           {
             title: "Vé quay thưởng",
-            url: "#",
+            url: "/admin/lotterycode",
           },
           {
             title: "Phần thưởng",
-            url: "#",
+            url: "/admin/reward",
           },
           {
             title: "Quay thưởng",

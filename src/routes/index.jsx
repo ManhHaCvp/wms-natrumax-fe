@@ -29,6 +29,8 @@ import CommissionPolicy from "@/pages/commission/CommissionPolicy";
 import CommissionHistory from "@/pages/commission/CommissionHistory";
 import CommissionDetail from "@/pages/commission/CommissionDetail";
 import AddCommission from "@/pages/commission/AddCommission";
+import ViewLotteryCodeList from "@/pages/event/ViewLotteryCodeList";
+import ViewRewardList from "@/pages/event/ViewRewardList";
 import { NotFoundPage, InternalServerErrorPage, UnauthorizedPage } from "@/pages/error/ErrorPage";
 import ComingSoonPage from "@/pages/error/ComingSoonPage";
 
@@ -93,6 +95,10 @@ const Routes = () => {
       { path: "/admin/commissions/policy/:id", element: <CommissionPolicy /> },
       { path: "/admin/commissions/history/:id", element: <CommissionHistory /> },
       { path: "/admin/commissions/history/detail/:id", element: <CommissionDetail /> },
+
+      //Event
+      { path: "/admin/lotterycode", element: <ViewLotteryCodeList /> },
+      { path: "/admin/reward", element: <ViewRewardList /> },
     ],
   };
 
