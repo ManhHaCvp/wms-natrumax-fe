@@ -41,7 +41,7 @@ const columns = [
     enableSorting: false,
     enableHiding: false,
   }),
-  columnHelper.accessor("id", {
+  columnHelper.accessor("orderId", {
     name: "Mã đơn hàng",
     header: ({ column }) => (
       <div
@@ -52,7 +52,7 @@ const columns = [
         <ArrowUpDown size={16} className="ml-2" />
       </div>
     ),
-    cell: (info) => <div>{info.getValue()}</div>,
+    cell: (info) => <div>DH{info.getValue()}</div>,
   }),
   columnHelper.accessor("orderDate", {
     name: "Ngày đặt",
@@ -103,14 +103,32 @@ const columns = [
   columnHelper.accessor("status", {
     name: "Trạng thái",
     header: "Trạng thái",
-    cell: (info) =>  (
-      info.getValue() ? (
-        <Badge>Còn hàng</Badge>
-      ) : (
-        <Badge variant="destructive">Hết hàng</Badge>
-      )
-    ),
+    cell: (info) => {
+      const status = info.getValue();
+      switch (status) {
+        case "PENDING":
+          return <Badge variant="secondary">Đang chờ xác nhận</Badge>;
+        case "CONFIRMED":
+          return <Badge variant="default">Đã xác nhận</Badge>;
+        case "PACKED":
+          return <Badge variant="default">Đã đóng gói</Badge>;
+        case "SHIPPED":
+          return <Badge variant="outline">Đang được giao</Badge>;
+        case "DELIVERED":
+          return <Badge variant="success">Đã được giao</Badge>;
+        case "CANCELED":
+          return <Badge variant="destructive">Đã hủy</Badge>;
+        case "RETURNED":
+          return <Badge variant="destructive">Hoàn trả</Badge>;
+        case "FAILED":
+          return <Badge variant="destructive">Thất bại</Badge>;
+        default:
+          return <Badge>{status}</Badge>;
+      }
+    },
   }),
+  
+  
   columnHelper.display({
     id: "actions",
     header: "Thao tác",
@@ -133,10 +151,10 @@ const columns = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to={`/admin/order/${data.id}`}>Xem</Link>
+              <Link to={`/admin/order/${data.orderId}`}>Xem</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to={`/admin/order/update/${data.id}`}>Sửa</Link>
+              <Link to={`/admin/order/update/${data.orderId}`}>Sửa</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -162,7 +180,7 @@ const ViewOrderList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        //await orderService.getOrderList(setData);
+        await orderService.getOrderList(setData);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }
@@ -176,7 +194,6 @@ const ViewOrderList = () => {
       title="Danh sách đơn hàng"
       columns={columns}
       data={data}
-      addLink="/admin/order/create"
     />
   );
 }

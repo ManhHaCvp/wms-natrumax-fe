@@ -2,8 +2,8 @@ import roleApi from "@/api/roleApi";
 import handleApiError from "@/utils/HandleApiError.jsx";
 
 const formatRole = (role) => ({
-  id: role.id,
-  name: role.name,
+  roleId: role.id,
+  roleName: role.name,
   description: role.description,
 });
 
@@ -44,9 +44,9 @@ const roleService = {
     }
   },
 
-  async update(payload) {
+  async update(roleId,payload) {
     try {
-      await roleApi.update(payload);
+      await roleApi.update(roleId,payload);
     } catch (error) {
       handleApiError(error);
     }

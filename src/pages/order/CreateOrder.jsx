@@ -1,159 +1,268 @@
-import React, { useState } from "react";
-import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button.jsx";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
-import { Link } from "react-router-dom";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table.jsx";
-import QuantityInput from "@/components/common/QuantityInput.jsx";
+import React, {useState, useEffect, useMemo} from "react";
+import {Check} from "lucide-react";
+import {Button} from "@/components/ui/button.jsx";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.jsx";
+import {Link, useLocation, useNavigate} from "react-router-dom";
+import {Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow} from "@/components/ui/table.jsx";
+import NumberInput from "@/components/common/NumberInput.jsx";
+import discountService from "@/services/discountService";
+import orderService from "@/services/orderService";
+import toast from "react-hot-toast";
 
 const CreateOrder = () => {
-  const [order, setOrder] = useState({
-    id: 1,
-    items: [
-      { id: 1, code: "112", name: "Tên hàng hóa", price: 800000, quantity: 20 },
-      { id: 2, code: "113", name: "Tên hàng hóa", price: 800000, quantity: 20 },
-      { id: 3, code: "114", name: "Tên hàng hóa", price: 800000, quantity: 20 },
-    ],
-    discount: 0.2,
-    customer: {
-      name: "Chi nhánh 107",
-      phone: "0123456789",
-      address: "Hải Dương",
-      saleOrderCode: "BH001",
-      warehouseCode: "XH001",
-    },
-  });
+    const [user, setUser] = useState(() => {
+        const storedUser = localStorage.getItem("user");
+        return storedUser ? JSON.parse(storedUser) : null;
+    });
+    const [paymentMethod, setPaymentMethod] = useState("BANK_TRANSFER");
 
-  const totalPrice = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discountAmount = totalPrice * order.discount;
+    const detail = user?.detail ? JSON.parse(user.detail) : null;
 
-  return (
-    <div className="flex flex-col space-y-5 m-5">
-      <div className="flex justify-between items-center">
-        <h1 className="text-[#182F73] text-3xl font-bold">Tạo đơn hàng</h1>
-          <Button asChild><Link to={`/admin/order/update/${order.id}`}><Check/>Đặt hàng</Link></Button>
-      </div>
-      <div className="flex space-x-5">
-        <div className="w-full flex flex-col space-y-5">
-          {/* Thong tin don hang */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Hàng đặt</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[100px]">Mã hàng</TableHead>
-                      <TableHead>Tên hàng</TableHead>
-                      <TableHead>Giá tiền</TableHead>
-                      <TableHead>Số lượng</TableHead>
-                      <TableHead className="text-right">Tổng</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {order.items.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{item.code}</TableCell>
-                        <TableCell>{item.name}</TableCell>
-                        <TableCell>{item.price.toLocaleString()} VND</TableCell>
-                        <TableCell>
-                          <QuantityInput
-                            item={{ ...item, max: 20 }}
-                            onChange={(id, newQuantity) => {
-                              setOrder((prev) => ({
-                                ...prev,
-                                items: prev.items.map((i) =>
-                                  i.id === id ? { ...i, quantity: newQuantity } : i,
-                                ),
-                              }));
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell
-                          className="text-right">{(item.price * item.quantity).toLocaleString()} VND</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell colSpan={4}>Tổng số tiền</TableCell>
-                      <TableCell className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+    const location = useLocation();
+    const selectedProducts = location.state?.selectedProducts || [];
+    const [order, setOrder] = useState({
+        userId: 1,
+        createOrderDetailRequests: [],
+        createOrderInvoiceRequests: {
+            discountId: 0,
+            totalAmount: 0,
+            paymentMethod: "Chuyển khoản", // hoặc "Tiền mặt", tuỳ vào bạn
+            status: "PENDING",
+            createDate: new Date().toISOString(),
+        },
+    });
 
-          {/* Thanh toan */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <span className="me-3">Thanh toán</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded border">
-                <Table>
-                  <TableBody>
-                    <TableRow>
-                      <TableHead colSpan={2}>Mã hàng</TableHead>
-                      <TableCell className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableHead colSpan={2}>Giảm giá</TableHead>
-                      <TableCell
-                        className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
-                    </TableRow>
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell colSpan={2}>Tổng số tiền</TableCell>
-                      <TableCell className="text-right">{(totalPrice - discountAmount).toLocaleString()} VND</TableCell>
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+    const [discount, setDiscount] = useState(null);
+
+    const totalPrice = order.createOrderInvoiceRequests.totalAmount;
+
+    // Tính discountAmount khi discount hoặc totalPrice thay đổi
+    const discountAmount = useMemo(() => {
+        if (!discount?.discountPercent || totalPrice <= 0) return 0;
+        return totalPrice * (discount.discountPercent / 100);
+    }, [discount, totalPrice]);
+
+    // Thêm vào đầu component:
+    useEffect(() => {
+        const fetchDiscount = async () => {
+            try {
+                if (totalPrice > 0) {
+                    await discountService.getByTotalAmount({totalAmount: totalPrice}, setDiscount);
+                } else {
+                    setDiscount(null);
+                }
+            } catch (error) {
+                console.error("Failed to fetch discount:", error);
+                setDiscount(null); // reset discount nếu lỗi
+            }
+        };
+
+        fetchDiscount(); // chỉ gọi khi totalPrice thay đổi
+    }, [totalPrice]);
+
+    useEffect(() => {
+        if (selectedProducts.length > 0) {
+            const detailRequests = selectedProducts.map((item) => ({
+                id: item.productId,
+                quantity: 1,
+                price: item.price,
+                barcode: item.barcode,
+                bonus: false,
+                maxQuantity: item.quantity,
+                name: item.name,
+            }));
+
+            setOrder((prev) => ({
+                ...prev,
+                createOrderDetailRequests: detailRequests,
+            }));
+        }
+    }, [selectedProducts]);
+
+    useEffect(() => {
+        const total = order.createOrderDetailRequests.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+        setOrder((prev) => ({
+            ...prev,
+            createOrderInvoiceRequests: {
+                ...prev.createOrderInvoiceRequests,
+                totalAmount: total,
+            },
+        }));
+    }, [order.createOrderDetailRequests]);
+
+    const navigate = useNavigate();
+
+    const handleCreateOrder = async () => {
+        try {
+            const payload = {
+                userId: user.id,
+                createOrderInvoiceRequests: {
+                    discountId: discount?.discountId || 0,
+                    totalAmount: order.createOrderInvoiceRequests.totalAmount,
+                    paymentMethod: paymentMethod, // hoặc "CASH"
+                },
+                createOrderDetailRequests: order.createOrderDetailRequests.map((item) => ({
+                    quantity: item.quantity,
+                    isBonus: item.bonus,
+                    price: item.price,
+                    productId: item.id,
+                })),
+            };
+
+            const response = await orderService.create(payload);
+            toast.success("Đơn hàng đã được tạo thành công!");
+            navigate(`/admin/order/${response.orderId}`);
+        } catch (error) {
+            toast.error("Tạo đơn hàng thất bại.");
+        }
+    }
+
+    return (
+        <div className="flex flex-col space-y-5 m-5">
+            <div className="flex justify-between items-center">
+                <h1 className="text-[#182F73] text-3xl font-bold">Tạo đơn hàng</h1>
+                <Button onClick={handleCreateOrder}>
+                    <Check/> Đặt hàng
+                </Button>
+            </div>
+            <div className="flex space-x-5">
+                <div className="w-full flex flex-col space-y-5">
+                    {/* Thong tin don hang */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Hàng đặt</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="rounded border">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Mã hàng</TableHead>
+                                            <TableHead>Tên hàng</TableHead>
+                                            <TableHead>Giá tiền</TableHead>
+                                            <TableHead>Số lượng</TableHead>
+                                            <TableHead className="text-right">Tổng</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {order.createOrderDetailRequests.map((item) => (
+                                            <TableRow key={item.id}>
+                                                <TableCell>{item.barcode}</TableCell>
+                                                <TableCell>{item.name}</TableCell>
+                                                <TableCell>{item.price.toLocaleString()} VND</TableCell>
+                                                <TableCell>
+                                                    <NumberInput
+                                                        value={item.quantity}
+                                                        min={1}
+                                                        max={item.maxQuantity}
+                                                        onChange={(newQuantity) => {
+                                                            setOrder((prev) => ({
+                                                                ...prev,
+                                                                createOrderDetailRequests: prev.createOrderDetailRequests.map((i) =>
+                                                                    i.id === item.id ? {...i, quantity: newQuantity} : i
+                                                                ),
+                                                            }));
+                                                        }}
+                                                    />
+                                                </TableCell>
+                                                <TableCell
+                                                    className="text-right">{(item.price * item.quantity).toLocaleString()} VND</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                    <TableFooter>
+                                        <TableRow>
+                                            <TableCell colSpan={4}>Tổng số tiền</TableCell>
+                                            <TableCell
+                                                className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
+                                        </TableRow>
+                                    </TableFooter>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Thanh toan */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center">
+                                <span className="me-3">Thanh toán</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="rounded border">
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableHead colSpan={2}>Mã hàng</TableHead>
+                                            <TableCell
+                                                className="text-right">{totalPrice.toLocaleString()} VND</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableHead colSpan={2}>
+                                                Giảm giá: {discount?.description} ({discount?.discountPercent}%){" "}
+                                            </TableHead>
+                                            <TableCell
+                                                className="text-right text-destructive">-{discountAmount.toLocaleString()} VND</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                    <TableFooter>
+                                        <TableRow>
+                                            <TableCell colSpan={2}>Tổng số tiền</TableCell>
+                                            <TableCell
+                                                className="text-right">{(totalPrice - discountAmount).toLocaleString()} VND</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell colSpan={2} className="font-medium">Phương thức thanh
+                                                toán</TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end space-x-5">
+                                                    <label className="flex items-center space-x-2">
+                                                        <input type="radio" value="BANK_TRANSFER"
+                                                               checked={paymentMethod === "BANK_TRANSFER"}
+                                                               onChange={(e) => setPaymentMethod(e.target.value)}/>
+                                                        <span>Chuyển khoản</span>
+                                                    </label>
+                                                    <label className="flex items-center space-x-2">
+                                                        <input type="radio" value="WALLET"
+                                                               checked={paymentMethod === "WALLET"}
+                                                               onChange={(e) => setPaymentMethod(e.target.value)}/>
+                                                        <span>Ví</span>
+                                                    </label>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableFooter>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Nguoi dat hang */}
+                <Card className="w-2/6 h-fit">
+                    <CardHeader>
+                        <CardTitle>Thông tin người đặt</CardTitle>
+                    </CardHeader>
+                    <CardContent className="font-semibold space-y-5">
+                        <div>
+                            <p className="text-muted-foreground">Tên: </p>
+                            {user.accountName}
+                        </div>
+                        <div>
+                            <p className="text-muted-foreground">Số liên lạc: </p>
+                            {user.phoneNumber}
+                        </div>
+                        <div>
+                            <p className="text-muted-foreground">Địa chỉ: </p>
+                            {user.address}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
-
-        {/* Nguoi dat hang */}
-        <Card className="w-2/6 h-fit">
-          <CardHeader>
-            <CardTitle>Hàng đặt</CardTitle>
-          </CardHeader>
-          <CardContent className="font-semibold space-y-5">
-            <div>
-              <p className="text-muted-foreground">Tên</p>{order.customer.name}
-            </div>
-            <div>
-              <p className="text-muted-foreground">Liên lạc</p>{order.customer.phone}
-            </div>
-            <div>
-              <p className="text-muted-foreground">Địa chỉ</p>{order.customer.address}
-            </div>
-            <div>
-              <p className="text-muted-foreground">Phiếu bán hàng</p>{order.customer.saleOrderCode}
-            </div>
-            <div>
-              <p className="text-muted-foreground">Phiếu xuất kho</p>{order.customer.warehouseCode}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default CreateOrder;

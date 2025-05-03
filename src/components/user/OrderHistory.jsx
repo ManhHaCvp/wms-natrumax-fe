@@ -1,279 +1,199 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-import { Input } from "@/components/ui/input.jsx";
-import { Button } from "@/components/ui/button.jsx";
-import { Badge } from "@/components/ui/badge.jsx";
+import React, {useEffect, useState} from "react";
+import {Link, useParams} from "react-router-dom";
+import {ArrowUpDown, MoreHorizontal} from "lucide-react";
+import {Checkbox} from "@/components/ui/checkbox.jsx";
+import {Button} from "@/components/ui/button.jsx";
+import {createColumnHelper} from "@tanstack/react-table";
 import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.jsx";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table.jsx";
-import userService from "@/services/userService.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
+import orderService from "@/services/orderService.jsx";
+import {Badge} from "@/components/ui/badge.jsx";
+import HomePage from "@/pages/main/HomePage.jsx";
+import formatDate from "@/utils/formatDate";
 
 const columnHelper = createColumnHelper();
 
 const columns = [
-  columnHelper.accessor("name", {
-    name: "Tên",
-    header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
-        Tên
-        <ArrowUpDown size={16} className="ml-2" />
-      </div>
-    ),
-    cell: (info) => <div>{info.getValue()}</div>,
-  }),
-  columnHelper.accessor("phoneNumber", {
-    name: "Số điện thoại",
-    header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
-        Số điện thoại
-        <ArrowUpDown size={16} className="ml-2" />
-      </div>
-    ),
-    cell: (info) => <div>{info.getValue()}</div>,
-  }),
-  columnHelper.accessor("amount", {
-    name: "Số tiền",
-    header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center"
-      >
-        Số tiền
-        <ArrowUpDown size={16} className="ml-2" />
-      </div>
-    ),
-    cell: (info) => {
-      const amount = parseFloat(info.getValue());
-      const formatted = new Intl.NumberFormat("vn-VN", {
-        style: "currency",
-        currency: "VND",
-      }).format(amount);
-      return <div className="font-medium">{formatted}</div>;
-    },
-  }),
-  columnHelper.accessor("status", {
-    name: "Trạng thái",
-    header: "Trạng thái",
-    cell: (info) => (
-      info.getValue() ? (
-        <Badge>Hoạt động</Badge>
-      ) : (
-        <Badge variant="destructive">Bị khóa</Badge>
-      )
-    ),
-  }),
-  columnHelper.display({
-    id: "actions",
-    header: "Thao tác",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const paymentHistory = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(JSON.stringify(paymentHistory))}
+    columnHelper.display({
+        id: "select",
+        header: ({table}) => (
+            <Checkbox
+                checked={
+                    table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && "indeterminate")
+                }
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                aria-label="Select all"
+            />
+        ),
+        cell: ({row}) => (
+            <Checkbox
+                checked={row.getIsSelected()}
+                onCheckedChange={(value) => row.toggleSelected(!!value)}
+                aria-label="Select row"
+            />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+    }),
+    columnHelper.accessor("orderId", {
+        name: "Mã đơn hàng",
+        header: ({column}) => (
+            <div
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="flex items-center"
             >
-              Sao chép
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to={`/admin/payment-history/${paymentHistory.id}`}>Xem</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to={`/admin/payment-history/update/${paymentHistory.id}`}>Sửa</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  }),
+                Mã đơn hàng
+                <ArrowUpDown size={16} className="ml-2"/>
+            </div>
+        ),
+        cell: (info) => <div>DH{info.getValue()}</div>,
+    }),
+    columnHelper.accessor("orderDate", {
+        name: "Ngày đặt",
+        header: ({column}) => (
+            <div
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="flex items-center"
+            >
+                Ngày đặt
+                <ArrowUpDown size={16} className="ml-2"/>
+            </div>
+        ),
+        cell: (info) => <div>  {formatDate.formatJsonToDateTime(info.getValue())}</div>,
+    }),
+    columnHelper.accessor("accountName", {
+        name: "Tài khoản",
+        header: ({column}) => (
+            <div
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="flex items-center"
+            >
+                Tài khoản
+                <ArrowUpDown size={16} className="ml-2"/>
+            </div>
+        ),
+        cell: (info) => <div>{info.getValue()}</div>,
+    }),
+    columnHelper.accessor("totalAmount", {
+        name: "Tổng số tiền",
+        header: ({column}) => (
+            <div
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="flex items-center"
+            >
+                Tổng số tiền
+                <ArrowUpDown size={16} className="ml-2"/>
+            </div>
+        ),
+        cell: (info) => {
+            const amount = parseFloat(info.getValue());
+            const formatted = new Intl.NumberFormat("vn-VN", {
+                style: "currency",
+                currency: "VND",
+            }).format(amount);
+            return <div className="font-medium">{formatted}</div>;
+        },
+    }),
+    columnHelper.accessor("status", {
+        name: "Trạng thái",
+        header: "Trạng thái",
+        cell: (info) => {
+            const status = info.getValue();
+            switch (status) {
+                case "PENDING":
+                    return <Badge variant="secondary">Đang chờ xác nhận</Badge>;
+                case "CONFIRMED":
+                    return <Badge variant="default">Đã xác nhận</Badge>;
+                case "PACKED":
+                    return <Badge variant="default">Đã đóng gói</Badge>;
+                case "SHIPPED":
+                    return <Badge variant="outline">Đang được giao</Badge>;
+                case "DELIVERED":
+                    return <Badge variant="success">Đã được giao</Badge>;
+                case "CANCELED":
+                    return <Badge variant="destructive">Đã hủy</Badge>;
+                case "RETURNED":
+                    return <Badge variant="destructive">Hoàn trả</Badge>;
+                case "FAILED":
+                    return <Badge variant="destructive">Thất bại</Badge>;
+                default:
+                    return <Badge>{status}</Badge>;
+            }
+        },
+    }),
+
+
+    columnHelper.display({
+        id: "actions",
+        header: "Thao tác",
+        enableHiding: false,
+        cell: ({row}) => {
+            const data = row.original;
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal/>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                            onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}
+                        >
+                            Sao chép
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator/>
+                        <DropdownMenuItem asChild>
+                            <Link to={`/admin/order/${data.orderId}`}>Xem</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link to={`/admin/order/update/${data.orderId}`}>Sửa</Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            );
+        },
+    }),
 ];
 
-export default function ViewUserList() {
-  const [data, setData] = useState([
-    { id: 1, name: "Nguyen Van A", phoneNumber: "0123456789", status: "Đã thanh toán", amount: "500000", color: "green", },
-    { id: 2, name: "Nguyen Van B", phoneNumber: "0123456789", status: "Chờ xác nhận", amount: "100000", color: "orange", },
-    { id: 3, name: "Nguyen Van C", phoneNumber: "0123456789", status: "Đã hủy", amount: "200000", color: "red" },
-    { id: 4, name: "Nguyen Van D", phoneNumber: "0123456789", status: "Đã hủy", amount: "750000", color: "red" },
-  ]);
+const OrderHistory = ({userId}) => {
+    const [data, setData] = useState([]);
+    const [user, setUser] = useState(() => {
+        const storedUser = localStorage.getItem("user");
+        return storedUser ? JSON.parse(storedUser) : null;
+    });
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        //await orderService.getOrderListByUserId(user.id, setData);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
+    useEffect(() => {
+        if (!userId) return; // Không làm gì nếu userId chưa có
 
-    fetchUsers().catch(console.error); // Handles the promise properly
-  }, []);
+        const fetchUsers = async () => {
+            try {
+                await orderService.getOrderListById(userId, setData);
+            } catch (error) {
+                console.error("Failed to fetch users:", error);
+            }
+        };
 
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
+        fetchUsers();
+    }, [userId]);
 
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  });
-
-  return (
-    <div className="m-5">
-      <div className="flex items-center pb-3">
-        <Input
-          placeholder="Tìm kiếm nhanh..."
-          value={globalFilter}
-          onChange={(e) => {
-            setGlobalFilter(e.target.value);
-            table.setGlobalFilter(e.target.value);
-          }}
-          className="w-full me-3"
+    return (
+        <DataTable
+            title="Danh sách đơn hàng"
+            columns={columns}
+            data={data}
+            addLink="/admin/order/create"
+            className="m-0"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Cột <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.columnDef.name}
-                </DropdownMenuCheckboxItem>
-              ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 pt-3">
-        <div className="flex-1 text-sm text-muted-foreground"> Đã chọn&nbsp;
-          {table.getFilteredSelectedRowModel().rows.length} trên{" "}
-          {table.getFilteredRowModel().rows.length} hàng.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Trước
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Sau
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
+
+export default OrderHistory;

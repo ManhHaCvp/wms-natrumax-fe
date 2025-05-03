@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Plus } from "lucide-react";
+import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Badge } from "@/components/ui/badge.jsx";
-import { createColumnHelper } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +12,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.jsx";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import DataTable from "@/components/common/DataTable.jsx";
 import userService from "@/services/userService.jsx";
-import TableComponent from "@/components/common/DataTable.jsx";
+import CreateNewUser from "@/components/user/CreateNewUser.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -97,7 +106,7 @@ const columns = [
     header: "Trạng thái",
     cell: (info) => (
       info.getValue() ? (
-        <Badge>Hoạt động</Badge>
+        <Badge className="w-[5.1rem]">Hoạt động</Badge>
       ) : (
         <Badge variant="destructive">Bị khóa</Badge>
       )
@@ -138,45 +147,38 @@ const columns = [
 ];
 
 const ViewUserList = () => {
-  const [data, setData] = useState([
-    {
-      id: 1,
-      accountName: "admin",
-      phoneNumber: "0812497838",
-      address: "Admin Street, City",
-      status: true,
-      role: "ROLE_ADMIN",
-    },
-    {
-      id: 2,
-      accountName: "accountant",
-      phoneNumber: "0812497838",
-      address: "User Street, City",
-      status: true,
-      role: "ROLE_ACCOUNTANT",
-    },
-  ]);
+  const [userList, setUserList] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        await userService.getAll(setData);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-
-    fetchUsers().catch(console.error); // Handles the promise properly
+    userService.getAll(setUserList).catch((err) =>
+      console.error("Failed to fetch user list:", err)
+    );
   }, []);
 
   return (
-    <TableComponent
+    <DataTable
       title="Danh sách người dùng"
       columns={columns}
-      data={data}
-      addLink="/admin/user/create"
+      data={userList}
+      addButton={
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button>
+              <Plus /> Thêm mới
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Thêm người dùng</SheetTitle>
+              <SheetDescription>Nhập thông tin người dùng mới</SheetDescription>
+            </SheetHeader>
+            <CreateNewUser setUserList={setUserList} setIsOpen={setIsOpen} />
+          </SheetContent>
+        </Sheet>
+      }
     />
   );
-}
+};
 
 export default ViewUserList;

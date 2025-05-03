@@ -2,10 +2,11 @@ import warehouseApi from "@/api/warehouseApi.jsx";
 import handleApiError from "@/utils/HandleApiError.jsx";
 
 const formatWarehouse = (warehouse) => ({
-  id: warehouse.id,
-  name: warehouse.name,
+  warehouseId: warehouse.warehouseId,
+  warehouseName: warehouse.warehouseName,
   province: warehouse.province,
   description: warehouse.description,
+  accessCode: warehouse.accessCode
 });
 
 const warehouseService = {
@@ -18,6 +19,7 @@ const warehouseService = {
         : response.data?.warehouses || [];
 
       setData(warehouses.map(formatWarehouse));
+      return response.data;
     } catch (error) {
       handleApiError(error);
     }
@@ -40,15 +42,16 @@ const warehouseService = {
 
   async create(payload) {
     try {
-      await warehouseApi.create(payload);
+      return await warehouseApi.create(payload)
     } catch (error) {
       handleApiError(error);
+      throw error; // QUAN TRỌNG: ném lỗi ra ngoài để component catch được
     }
   },
-
-  async update(payload) {
+  
+  async update(warehouseId,payload) {
     try {
-      await warehouseApi.update(payload);
+      await warehouseApi.update(warehouseId,payload);
     } catch (error) {
       handleApiError(error);
     }

@@ -14,16 +14,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar.jsx";
 import { useAuth } from "@/providers/authProvider.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { setAuthData } = useAuth();
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   // Logout function
   const handleLogout = () => {
     setAuthData();
     toast.success("Đăng xuất thành công!");
     window.location.href = "/login";
+  };
+  const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    console.log(user);
+    if (user.id) {
+      navigate(`/profile`);
+    }
+    
   };
 
   return (
@@ -47,10 +60,10 @@ const Navbar = () => {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-52">
-            <DropdownMenuLabel>{user.accountName}</DropdownMenuLabel>
+            <DropdownMenuLabel>{user ? user.accountName : "Tài khoản"}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleProfileClick}>
                 Tài khoản
               </DropdownMenuItem>
               <DropdownMenuItem>

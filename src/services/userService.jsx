@@ -6,8 +6,11 @@ const formatUser = (user) => ({
   accountName: user.accountName,
   phoneNumber: user.phoneNumber,
   address: user.address,
+  email: user.email,
+  detail: user.detail,
   status: user.status,
-  role: user.role?.name || "Chưa phân quyền",
+  role: user.role || "Chưa phân quyền",
+  provice: user.provice
 });
 
 const userService = {
@@ -25,16 +28,10 @@ const userService = {
     }
   },
 
-  async getById(id, setData) {
+  async getById(id) {
     try {
       const response = await userApi.getById(id);
-      const user = response.data;
-
-      const data = Array.isArray(user)
-        ? user.map(formatUser)
-        : formatUser(user);
-
-      setData(data);
+      return response.data;
     } catch (error) {
       handleApiError(error);
     }
@@ -46,6 +43,20 @@ const userService = {
       const users = Array.isArray(response.data.content)
         ? response.data.content
         : response.data.content?.users || [];
+
+      setData(users.map(formatUser));
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async getReferralListByReferrerId(setData) {
+    try {
+      const response = await userApi.getReferralListByReferrerId();
+
+      const users = Array.isArray(response.data)
+          ? response.data
+          : response.data?.users || [];
 
       setData(users.map(formatUser));
     } catch (error) {
@@ -83,7 +94,7 @@ const userService = {
     } catch (error) {
       handleApiError(error);
     }
-  },
+  }
 };
 
 export default userService;

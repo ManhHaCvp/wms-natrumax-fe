@@ -7,7 +7,7 @@ const warehouseApi = {
   getAll: () => apiClient.get(WAREHOUSE_BASE),
   getById: (id) => apiClient.get(`${WAREHOUSE_BASE}/${id}`),
   create: (payload) => apiClient.post(WAREHOUSE_BASE, payload),
-  update: (payload) => apiClient.put(`${WAREHOUSE_BASE}/${payload.id}`, payload),
+  update: (warehouseId,payload) => apiClient.put(`${WAREHOUSE_BASE}/${warehouseId}`, payload),
 };
 
 export default warehouseApi;

@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Ban, Upload, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
 import InputField from "@/components/common/InputField.jsx";
+import productService from "@/services/ProductService.jsx";
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
 
 const UpdateProduct = () => {
-  const [product, setProduct] = useState({
+  const { id } = useParams();
+
+  const [data, setData] = useState({
     id: 1,
     image: "https://natrumax.com/wp-content/uploads/2020/03/curcumin.jpg",
     barcode: "8938540687295",
@@ -22,12 +27,24 @@ const UpdateProduct = () => {
     status: true,
   });
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        await productService.getById(id, setData);
+      } catch (error) {
+        toast.error("Failed to fetch category:", error);
+      }
+    };
+
+    fetchUserData().catch(console.error);
+  }, []);
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProduct({ ...product, image: reader.result });
+        setData({ ...data, image: reader.result });
       };
       reader.readAsDataURL(file);
     }
@@ -46,8 +63,8 @@ const UpdateProduct = () => {
       <div className="flex space-x-5">
         <Card className="flex flex-col items-center justify-center w-fit h-fit p-5">
           <div className="bg-sidebar-border w-80 h-80 rounded mb-3">
-            {product.image &&
-              <img src={product.image} alt="Product" className="w-full h-full object-cover rounded-md" />
+            {data.image &&
+              <img src={data.image} alt="Data" className="w-full h-full object-cover rounded-md" />
             }
           </div>
           <Input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="upload-image" />
@@ -58,22 +75,22 @@ const UpdateProduct = () => {
           </Button>
         </Card>
 
-        {/* Form product Information */}
+        {/* Form data Information */}
         <Card className="w-full h-fit">
           <CardHeader>
             <CardTitle>Thông tin cơ bản</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-3">
-            <InputField label="Tên hàng hóa" className="col-span-2" value={product.name} onChange={(e) => setProduct({ ...product, name: e.target.value })} />
-            <InputField label="Mã hàng" value={product.barcode} onChange={(e) => setProduct({ ...product, barcode: e.target.value })} />
-            <InputField label="Mã MISA" value={product.misaCode} onChange={(e) => setProduct({ ...product, misaCode: e.target.value })} />
-            <InputField label="Nhóm hàng" value={product.category} onChange={(e) => setProduct({ ...product, category: e.target.value })} />
-            <InputField label="Đơn vị" value={product.unit} onChange={(e) => setProduct({ ...product, unit: e.target.value })} />
-            <InputField label="Giá gốc" value={product.basePrice} onChange={(e) => setProduct({ ...product, basePrice: e.target.value })} />
-            <InputField label="Chiết khấu" value={product.discount} onChange={(e) => setProduct({ ...product, discount: e.target.value })} />
-            <InputField label="Số lượng" value={product.stock} onChange={(e) => setProduct({ ...product, stock: e.target.value })} />
-            <InputField label="Khuyến mại (Số lượng mua để nhận khuyến mại)" value={product.quantityToGetPromotion} onChange={(e) => setProduct({ ...product, quantityToGetPromotion: e.target.value })} />
-            <InputField label="Mô tả" className="col-span-2" value={product.description} onChange={(e) => setProduct({ ...product, description: e.target.value })} />
+            <InputField label="Tên hàng hóa" className="col-span-2" value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} />
+            <InputField label="Mã hàng" value={data.barcode} onChange={(e) => setData({ ...data, barcode: e.target.value })} />
+            <InputField label="Mã MISA" value={data.misaCode} onChange={(e) => setData({ ...data, misaCode: e.target.value })} />
+            <InputField label="Nhóm hàng" value={data.category} onChange={(e) => setData({ ...data, category: e.target.value })} />
+            <InputField label="Đơn vị" value={data.unit} onChange={(e) => setData({ ...data, unit: e.target.value })} />
+            <InputField label="Giá gốc" value={data.basePrice} onChange={(e) => setData({ ...data, basePrice: e.target.value })} />
+            <InputField label="Chiết khấu" value={data.discount} onChange={(e) => setData({ ...data, discount: e.target.value })} />
+            <InputField label="Số lượng" value={data.stock} onChange={(e) => setData({ ...data, stock: e.target.value })} />
+            <InputField label="Khuyến mại (Số lượng mua để nhận khuyến mại)" value={data.quantityToGetPromotion} onChange={(e) => setData({ ...data, quantityToGetPromotion: e.target.value })} />
+            <InputField label="Mô tả" className="col-span-2" value={data.description} onChange={(e) => setData({ ...data, description: e.target.value })} />
           </CardContent>
         </Card>
       </div>

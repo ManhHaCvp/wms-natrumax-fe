@@ -8,7 +8,7 @@ import InputField from "@/components/common/InputField.jsx";
 
 const CreateCategory = () => {
   const [data, setData] = useState({
-    name: "",
+    categoryName: "",
     description: "",
   });
 
@@ -35,8 +35,8 @@ const CreateCategory = () => {
           <CardTitle>Thông tin cơ bản</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-3">
-          <InputField label="Tên nhóm hàng" value={data.name}
-                      onChange={(e) => setData({ ...data, name: e.target.value })} />
+          <InputField label="Tên nhóm hàng" value={data.categoryName}
+                      onChange={(e) => setData({ ...data, categoryName: e.target.value })} />
           <InputField label="Mô tả" value={data.description}
                       onChange={(e) => setData({ ...data, description: e.target.value })} />
         </CardContent>
