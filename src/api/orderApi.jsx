@@ -5,19 +5,16 @@ const ORDER_BASE = `${BASE_URL}/v1/orders`;
 const ORDER_INVOICES_BASE = `${BASE_URL}/v1/order-invoices`;
 
 const orderApi = {
+    getAll: () => apiClient.get(`${ORDER_BASE}`),
+    getById: (id) => apiClient.get(`${ORDER_BASE}/${id}`),
+    getByUserId: (id) => apiClient.get(`${ORDER_BASE}/user/${id}`),
     create: (payload) => apiClient.post(`${ORDER_BASE}/create`, payload),
-    getOrderList: () => apiClient.get(`${ORDER_BASE}`),
-    getOrderListById: (id) => apiClient.get(`${ORDER_BASE}/user/${id}`),
-    getDetail: (id) => apiClient.get(`${ORDER_BASE}/${id}`),
-    updateCodes: (payload) =>
-        apiClient.put(`${ORDER_BASE}/update-codes/${payload.id}`, payload),
-    updateStatus: (id, status, title) =>
-        apiClient.put(`${ORDER_BASE}/update-status/${id}?status=${status}&title=${title}`),
     uploadTransferImage: (id, formData) =>
         apiClient.post(`${ORDER_INVOICES_BASE}/transfer-image/${id}`, formData),
-
     uploadRefundImage: (id, formData) =>
         apiClient.post(`${ORDER_INVOICES_BASE}/refund-image/${id}`, formData),
+    cancelOrder: (id) =>
+        apiClient.put(`${ORDER_BASE}/cancel-order/${id}`),
 };
 
 export default orderApi;

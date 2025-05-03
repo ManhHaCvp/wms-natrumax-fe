@@ -15,14 +15,10 @@ import ViewProductList from "@/pages/product/ViewProductList";
 import ViewProductDetail from "@/pages/product/ViewProductDetail";
 import UpdateProduct from "@/pages/product/UpdateProduct";
 import ViewCategoryList from "@/pages/category/ViewCategoryList";
-import CreateCategory from "@/pages/category/CreateCategory";
-import UpdateCategory from "@/pages/category/UpdateCategory";
 import ViewOrderList from "@/pages/order/ViewOrderList";
 import ViewOrderDetail from "@/pages/order/ViewOrderDetail";
 import CreateOrder from "@/pages/order/CreateOrder";
 import ViewDiscountList from "@/pages/discount/ViewDiscountList";
-import CreateDiscount from "@/pages/discount/CreateDiscount";
-import UpdateDiscount from "@/pages/discount/UpdateDiscount";
 import ViewWarehouseList from "@/pages/warehouse/ViewWarehouseList";
 import {NotFoundPage, InternalServerErrorPage, UnauthorizedPage} from "@/pages/error/ErrorPage";
 import ComingSoonPage from "@/pages/error/ComingSoonPage";
@@ -61,6 +57,12 @@ const Routes = () => {
             {path: "/service", element: <div>Service Page</div>},
             {path: "/about-us", element: <div>About Us</div>},
 
+            //Category
+            {path: "/admin/categories", element: <ViewCategoryList/>},
+
+            //Discounts
+            {path: "/admin/discounts", element: <ViewDiscountList/>},
+
             //User
             {path: "/admin/users", element: <ViewUserList/>},
             {path: "/admin/user/:id", element: <ViewUserDetail/>},
@@ -78,20 +80,10 @@ const Routes = () => {
             {path: "/admin/product/:productId", element: <ViewProductDetail/>},
             {path: "/admin/product/update/:id", element: <UpdateProduct/>},
 
-            //Category
-            {path: "/admin/categories", element: <ViewCategoryList/>},
-            {path: "/admin/category/create", element: <CreateCategory/>},
-            {path: "/admin/category/update/:id", element: <UpdateCategory/>},
-
             //Orders
             {path: "/admin/orders", element: <ViewOrderList/>},
             {path: "/admin/order/:id", element: <ViewOrderDetail/>},
             {path: "/admin/order/create", element: <CreateOrder/>},
-
-            //Discounts
-            {path: "/admin/discounts", element: <ViewDiscountList/>},
-            {path: "/admin/discount/create", element: <CreateDiscount/>},
-            {path: "/admin/discount/update/:id", element: <UpdateDiscount/>},
 
             //Rewards
             //  { path: "/admin/rewards", element: <ViewRewardList /> },

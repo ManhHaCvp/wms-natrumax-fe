@@ -19,6 +19,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog.jsx";
+import orderApi from "@/api/orderApi.jsx";
 
 const ViewOrderDetail = () => {
     const {id} = useParams(); // assuming you pass orderId via route param
@@ -31,40 +32,10 @@ const ViewOrderDetail = () => {
     });
     const [qrUrl, setQrUrl] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
+
     const fetchOrder = async () => {
         try {
-            const res = await axios.get(`http://localhost:8080/api/v1/orders/${id}`);
-            const data = res.data;
-            // Parse JSON detail field safely
-            let detailParsed = {};
-            try {
-                detailParsed = JSON.parse(data.user.detail);
-            } catch (e) {
-                console.error("Error parsing user.detail", e);
-            }
-
-            setOrder({
-                id: data.orderId,
-                items: data.orderDetails, // update this when you have order item API
-                discount: data?.invoices?.discount?.discountPercent ?? 0, // or data.discount if available
-                paymentStatus: data.invoices.status, // convert from data.status if needed
-                orderStatus: data.status,
-                activities: [], // populate if available
-                customer: {
-                    id: data.user.id,
-                    name: data.user.accountName,
-                    phone: data.user.phoneNumber,
-                    address: data.user.address,
-                    saleOrderCode: data.saleCode,
-                    inventoryOutCode: data.inventoryOutCode,
-                    warehouseCode: detailParsed.client_id || "N/A",
-                },
-                paymentMethod: data.invoices.paymentMethod,
-                orderModifyHistories: data.orderModifyHistories,
-                urlTranferImage: data.invoices.transferImage,
-                urlRefundImage: data.invoices.refundImage,
-                bank: data.user.bank
-            });
+            await orderService.getById(id, setOrder);
         } catch (err) {
             console.error("Error fetching order", err);
         }
@@ -74,7 +45,7 @@ const ViewOrderDetail = () => {
         fetchOrder();
     }, [id]);
 
-    const handleUpload = async (file) => {
+    const handleUploadTransferImage = async (file) => {
         try {
             const formData = new FormData();
             formData.append("file", file);
@@ -138,6 +109,7 @@ const ViewOrderDetail = () => {
             setDialogOpen(true);
         }
     };
+
     if (!order) return <p className="m-5">Đang tải đơn hàng...</p>;
     const nextStatusMap = {
         PENDING: "Đã xác nhận",
@@ -155,6 +127,7 @@ const ViewOrderDetail = () => {
         DELIVERED: "Đã giao",
         CANCELLED: "Đã hủy",
     };
+
     const currentStatus = order.orderStatus;
     const nextStatus = nextStatusMap[currentStatus];
     const totalPrice = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -162,9 +135,8 @@ const ViewOrderDetail = () => {
     const discountAmount = totalPrice * (order.discount / 100);
     const cancelOrder = async () => {
         try {
-            const res = await axios.put(`http://localhost:8080/api/v1/orders/cancel-order/${order.id}`);
+            await orderApi.cancelOrder(id);
             toast.success("Đã hủy đơn hàng thành công!");
-            // Có thể reload lại data hoặc điều hướng
         } catch (error) {
             console.error("Lỗi khi hủy đơn hàng:", error);
             toast.error("Hủy đơn hàng thất bại!");
@@ -332,10 +304,10 @@ const ViewOrderDetail = () => {
                             <p className="text-muted-foreground">Địa chỉ</p>
                             {order.customer.address}
                         </div>
-                      <div>
-                        <p className="text-muted-foreground">Phương thức thanh toán</p>
-                        {order.paymentMethod}
-                      </div>
+                        <div>
+                            <p className="text-muted-foreground">Phương thức thanh toán</p>
+                            {order.paymentMethod}
+                        </div>
                         <div>
                             <p className="text-muted-foreground">Phiếu bán hàng</p>
                             {order.customer.saleOrderCode ? order.customer.saleOrderCode : 'Không có'}
@@ -388,7 +360,8 @@ const ViewOrderDetail = () => {
                     </CardContent>
                 </Card>
             </div>
-            <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} onUpload={handleUpload}/>
+            <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}
+                               onUpload={handleUploadTransferImage}/>
 
             <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}
                                onUpload={handleUploadRefundImage}/>

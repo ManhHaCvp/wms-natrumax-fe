@@ -10,7 +10,7 @@ import commissionService from "@/services/commissionService.jsx";
 
 const columnHelper = createColumnHelper();
 
-const columns = [
+const columns = () => [
   columnHelper.display({
     id: "select",
     header: ({ table }) => (
@@ -26,42 +26,22 @@ const columns = [
   }),
   columnHelper.accessor("accountName", {
     name: "Tên tài khoản",
-    header: ({ column }) => (
-      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
-        Tên tài khoản
-        <ArrowUpDown size={16} className="ml-2" />
-      </div>
-    ),
+    header: sortableHeader("Tên tài khoản"),
     cell: (info) => <div>{info.getValue()}</div>,
   }),
   columnHelper.accessor("phoneNumber", {
     name: "Số điện thoại",
-    header: ({ column }) => (
-      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
-        Số điện thoại
-        <ArrowUpDown size={16} className="ml-2" />
-      </div>
-    ),
+    header: sortableHeader("Số điện thoại"),
     cell: (info) => <div>{info.getValue()}</div>,
   }),
   columnHelper.accessor("address", {
     name: "Tỉnh thành",
-    header: ({ column }) => (
-      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
-        Tỉnh thành
-        <ArrowUpDown size={16} className="ml-2" />
-      </div>
-    ),
+    header: sortableHeader("Tỉnh thành"),
     cell: (info) => <div>{info.getValue()}</div>,
   }),
   columnHelper.accessor("province", {
     name: "Khu vực",
-    header: ({ column }) => (
-      <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="flex items-center">
-        Khu vực
-        <ArrowUpDown size={16} className="ml-2" />
-      </div>
-    ),
+    header: sortableHeader("Khu vực"),
     cell: (info) => <div>{info.getValue()}</div>,
   }),
   columnHelper.display({
@@ -93,6 +73,13 @@ const columns = [
   }),
 ];
 
+const sortableHeader = (label) => ({column}) => (
+    <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+         className="flex items-center cursor-pointer">
+      {label} <ArrowUpDown size={16} className="ml-2"/>
+    </div>
+);
+
 const ViewCommissionList = () => {
   const [data, setData] = useState([]);
 
@@ -108,7 +95,7 @@ const ViewCommissionList = () => {
     fetchCommissionData().catch(console.error);
   }, []);
 
-  return <DataTable title="Danh sách hoa hồng" columns={columns} data={data} />;
+  return <DataTable title="Danh sách hoa hồng" columns={columns()} data={data} />;
 };
 
 export default ViewCommissionList;

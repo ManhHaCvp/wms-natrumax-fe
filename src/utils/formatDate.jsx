@@ -29,7 +29,21 @@ const formatDate = {
         const year = updatedDate.getFullYear();
 
         return <div>{`${hours}:${minutes} - ${day}/${month}/${year}`}</div>;
+    },
+
+    formatJsonToDateInput(date) {
+        if (!date) return "";
+        const [day, month, year] = date.split("/");
+        return `${year}-${month}-${day}`;
+    },
+
+    formatDateToDateTime(dateStr) {
+        const date = new Date(dateStr);
+        const now = new Date();
+        date.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+        return date.toISOString();
     }
+
 }
 
 export default formatDate;

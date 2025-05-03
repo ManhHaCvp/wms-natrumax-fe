@@ -31,6 +31,8 @@ import {formatCurrency} from "@/utils/formatCurrency.jsx";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.jsx";
 import userService from "@/services/userService";
 import {Skeleton} from "@/components/ui/skeleton.jsx";
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet.jsx";
+import CreateProduct from "@/pages/product/CreateProduct.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -134,6 +136,7 @@ const ViewProductList = () => {
     const isAdmin = user?.roles?.includes("ROLE_ADMIN");
     const [warehouses, setWarehouses] = useState([]);
     const [userDetail, setUserDetail] = useState([]);
+    const [openCreateSheet, setOpenCreateSheet] = useState(false);
 
     const [selectedWarehouseId, setSelectedWarehouseId] = useState(null);
     const [warehouse, setWarehouse] = useState({
@@ -334,10 +337,18 @@ const ViewProductList = () => {
                                 <CloudDownload/>
                                 Đồng bộ
                             </Button>
-                            <Button variant="default">
-                                <Plus/>
-                                Thêm mới
-                            </Button>
+                            <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
+                                <SheetTrigger asChild>
+                                    <Button className="ms-3"><Plus/> Thêm mới</Button>
+                                </SheetTrigger>
+                                <SheetContent>
+                                    <SheetHeader>
+                                        <SheetTitle>Thêm nhóm hàng</SheetTitle>
+                                        <SheetDescription>Nhập thông tin nhóm hàng mới</SheetDescription>
+                                    </SheetHeader>
+                                    <CreateProduct setData={setData} onClose={() => setOpenCreateSheet(false)}/>
+                                </SheetContent>
+                            </Sheet>
                             <Button variant="default" onClick={handleCreateOrder}>
                                 <ShoppingCart/> Tạo đơn hàng
                             </Button>
@@ -425,73 +436,6 @@ const ViewProductList = () => {
                 </Card>
             )}
         </>
-    );
-};
-const CreateProductInline = () => {
-    const {register, handleSubmit} = useForm({
-        defaultValues: {
-            misaCode: "",
-            barcode: "",
-            categoryId: "",
-        },
-    });
-
-    const [categories, setCategories] = useState([]);
-
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const data = await categoryService.getAll(setCategories);
-                // Nếu service trả về data, không dùng set trong service thì dùng: setCategories(data)
-            } catch (error) {
-                console.error("Lỗi lấy danh sách danh mục:", error);
-            }
-        };
-
-        fetchCategories().catch(console.error);
-    }, []);
-
-    const onSubmit = async (formData) => {
-        try {
-            await productService.create({
-                misaCode: formData.misaCode,
-                barcode: formData.barcode,
-                categoryId: Number(formData.categoryId),
-            });
-            toast.success("Tạo sản phẩm thành công!");
-            window.location.reload();
-        } catch (error) {
-            console.error("Lỗi tạo sản phẩm:", error);
-            toast.error("Lỗi khi tạo sản phẩm!");
-        }
-    };
-
-    return (
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
-            <div>
-                <label className="block mb-1 text-sm font-medium">Mã MISA</label>
-                <Input {...register("misaCode")} placeholder="Nhập mã MISA"/>
-            </div>
-
-            <div>
-                <label className="block mb-1 text-sm font-medium">Barcode</label>
-                <Input {...register("barcode")} placeholder="Nhập mã barcode"/>
-            </div>
-
-            <div>
-                <label className="block mb-1 text-sm font-medium">Danh mục</label>
-                <select {...register("categoryId")} className="w-full p-2 border rounded">
-                    <option value="">-- Chọn danh mục --</option>
-                    {categories.map((cat) => (
-                        <option key={cat.categoryId} value={String(cat.categoryId)}>
-                            {cat.categoryName}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <Button type="submit">Tạo sản phẩm</Button>
-        </form>
     );
 };
 

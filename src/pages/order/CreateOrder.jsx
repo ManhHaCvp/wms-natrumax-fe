@@ -16,8 +16,6 @@ const CreateOrder = () => {
     });
     const [paymentMethod, setPaymentMethod] = useState("BANK_TRANSFER");
 
-    const detail = user?.detail ? JSON.parse(user.detail) : null;
-
     const location = useLocation();
     const selectedProducts = location.state?.selectedProducts || [];
     const [order, setOrder] = useState({
@@ -26,7 +24,7 @@ const CreateOrder = () => {
         createOrderInvoiceRequests: {
             discountId: 0,
             totalAmount: 0,
-            paymentMethod: "Chuyển khoản", // hoặc "Tiền mặt", tuỳ vào bạn
+            paymentMethod: "Chuyển khoản",
             status: "PENDING",
             createDate: new Date().toISOString(),
         },
