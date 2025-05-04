@@ -149,7 +149,7 @@ const Wallet = ({userId, bank}) => {
     };
 
     const BankInput = ({label, id, value}) => (
-        <div className="grid grid-cols-4 items-center gap-4">
+        <div className="space-y-2">
             <Label htmlFor={id} className="text-right">{label}</Label>
             <Input id={id} value={value} onChange={handleBankInputChange} className="col-span-3"/>
         </div>

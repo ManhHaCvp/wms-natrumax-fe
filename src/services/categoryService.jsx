@@ -9,14 +9,14 @@ const formatCategory = (category) => ({
 });
 
 const categoryService = {
-    async getAll(setData) {
+    async getAll() {
         try {
             const response = await categoryApi.getAll();
             const categories = Array.isArray(response.data)
                 ? response.data
                 : response.data?.categories || [];
 
-            setData(categories.map(formatCategory));
+            return categories.map(formatCategory);
         } catch (error) {
             handleApiError(error);
         }

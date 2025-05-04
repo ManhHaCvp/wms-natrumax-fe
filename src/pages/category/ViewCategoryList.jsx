@@ -124,7 +124,8 @@ const ViewCategoryList = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                await categoryService.getAll(setData);
+                const categories = await categoryService.getAll(setData);
+                setData(categories)
             } catch (error) {
                 console.error("Failed to fetch data:", error);
             }
