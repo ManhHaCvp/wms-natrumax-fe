@@ -29,6 +29,7 @@ const productService = {
                 : response.data?.products || [];
 
             setData(products.map(formatProduct));
+            return products;
         } catch (error) {
             handleApiError(error);
         }
@@ -62,14 +63,14 @@ const productService = {
         }
     },
 
-    async getByWarehouseId(id, setData) {
+    async getByWarehouseId(id) {
         try {
             const response = await productApi.getByWarehouseId(id);
             const products = Array.isArray(response.data)
                 ? response.data
                 : response.data?.products || [];
 
-            setData(products.map(formatProduct));
+            return products.map(formatProduct);
         } catch (error) {
             handleApiError(error);
         }

@@ -49,8 +49,8 @@ const Navbar = () => {
 
       {/* Right Section */}
       <div className="flex items-center space-x-[20px]">
-        <Bell size={24} className="text-sidebar-foreground cursor-pointer" />
-        <Settings size={24} className="text-sidebar-foreground cursor-pointer" />
+        {/*<Bell size={24} className="text-sidebar-foreground cursor-pointer" />*/}
+        {/*<Settings size={24} className="text-sidebar-foreground cursor-pointer" />*/}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

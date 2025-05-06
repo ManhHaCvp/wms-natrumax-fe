@@ -42,7 +42,7 @@ const ViewProductDetail = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const result = await productService.getByWarehouseIdAndProductId(2, productId); // Không setData ngay
+                const result = await productService.getByWarehouseIdAndProductId(2, productId);
                 setData(result); // Set sau
                 await mockApiService.getProductDetail("500370926", result.barcode, setKiotVietQuantity); // Dùng result.barcode ngay lập tức
             } catch (error) {

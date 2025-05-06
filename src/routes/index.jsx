@@ -33,6 +33,9 @@ import ViewInventoryOutList from "@/pages/mock-api/ViewInventoryOutList.jsx";
 import ViewInventoryInList from "@/pages/mock-api/ViewInventoryInList.jsx";
 import ViewPurchaseOrderList from "@/pages/mock-api/ViewPurchaseOrderList.jsx";
 import ViewReceiptList from "@/pages/mock-api/ViewReceiptList.jsx";
+import ViewRewardList from "@/pages/reward/ViewRewardList.jsx";
+import ViewLotteryCodeList from "@/pages/lottery-code/ViewLotteryCodeList.jsx";
+import WheelSpin from "@/pages/lottery-code/WheelSpin.jsx";
 
 const Routes = () => {
     const {token, user} = useAuth();
@@ -86,7 +89,11 @@ const Routes = () => {
             {path: "/admin/order/create", element: <CreateOrder/>},
 
             //Rewards
-            //  { path: "/admin/rewards", element: <ViewRewardList /> },
+            { path: "/admin/rewards", element: <ViewRewardList /> },
+
+            //Lottery Codes
+            { path: "/admin/lottery-codes", element: <ViewLotteryCodeList /> },
+
             //Warehouse
             {path: "/admin/warehouses", element: <ViewWarehouseList/>},
 

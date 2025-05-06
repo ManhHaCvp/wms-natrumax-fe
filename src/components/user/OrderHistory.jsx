@@ -176,7 +176,8 @@ const OrderHistory = ({userId}) => {
 
         const fetchUsers = async () => {
             try {
-                await orderService.getByUserId(userId, setData);
+                const orders = await orderService.getByUserId(userId);
+                setData(orders)
             } catch (error) {
                 console.error("Failed to fetch users:", error);
             }

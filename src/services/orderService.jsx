@@ -50,22 +50,20 @@ const orderService = {
         });
     },
 
-    async getByUserId(id, setData) {
+    async getByUserId(id) {
         try {
             const response = await orderApi.getByUserId(id);
 
             // Ensure data is an array
             const orders = Array.isArray(response.data) ? response.data : response.data?.orders || [];
 
-            const data = orders.map((order) => ({
+            return orders.map((order) => ({
                 orderId: order.orderId,
                 orderDate: order.orderDate,
                 accountName: order.user.accountName,
                 totalAmount: order.invoices.totalAmount,
                 status: order.status,
             }));
-
-            setData(data);
         } catch (error) {
             handleApiError(error);
         }

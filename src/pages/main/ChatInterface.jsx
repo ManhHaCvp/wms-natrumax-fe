@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Card} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
@@ -9,55 +9,69 @@ import {
     BarChart3,
 } from "lucide-react";
 import {API_KEY, DEEPSEEK_V3_TURBO} from "@/utils/constants.jsx";
+import toast from "react-hot-toast";
+import productService from "@/services/productService.jsx";
+import orderService from "@/services/orderService.jsx";
+import reportService from "@/services/reportService.jsx";
 
-const sampleQueries = [
-    {
-        text: "Kiểm tra tồn kho sản phẩm sữa hộp",
-        icon: <Package className="w-5 h-5 text-blue-500"/>,
-        apiEndpoint: "/api/check-inventory",
-    },
-    {
-        text: "Thống kê doanh số xuất kho tháng này",
-        icon: <BarChart3 className="w-5 h-5 text-green-500"/>,
-        apiEndpoint: "/api/sales-statistics",
-    },
-    {
-        text: "Danh sách đơn hàng chưa xử lý",
-        icon: <ShoppingCart className="w-5 h-5 text-red-500"/>,
-        apiEndpoint: "/api/unprocessed-orders",
-    },
-    {
-        text: "Dự báo nhu cầu nhập hàng tháng sau",
-        icon: <MessageSquare className="w-5 h-5 text-purple-500"/>,
-        apiEndpoint: "/api/forecast-demand",
-    },
-];
+const ChatInterface = ({userId, warehouseId}) => {
+    const sampleQueries = [
+        {
+            text: "Kiểm tra tồn kho",
+            icon: <Package className="w-5 h-5 text-blue-500"/>,
+            apiEndpoint: "check-inventory",
+        },
+        {
+            text: "Thống kê doanh số xuất kho tháng này",
+            icon: <BarChart3 className="w-5 h-5 text-green-500"/>,
+            apiEndpoint: "sales-statistics",
+        },
+        {
+            text: "Danh sách đơn hàng",
+            icon: <ShoppingCart className="w-5 h-5 text-red-500"/>,
+            apiEndpoint: "unprocessed-orders",
+        },
+        {
+            text: "Dự báo nhu cầu nhập hàng tháng sau",
+            icon: <MessageSquare className="w-5 h-5 text-purple-500"/>,
+            apiEndpoint: "forecast-demand",
+        },
+    ];
 
-export default function ChatInterface() {
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+
+    const queryHandlers = {
+        "check-inventory": () => productService.getByWarehouseId(warehouseId),
+        "sales-statistics": () => reportService.getByUserId(userId, currentMonth, currentYear),
+        "unprocessed-orders": () => orderService.getByUserId(userId),
+        "forecast-demand": () => reportService.getSold(currentMonth, currentYear)
+    };
+
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [selectedQuery, setSelectedQuery] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const buildPrompt = (question, apiData) => `
+        Bạn là một trợ lý kho thông minh. Người dùng vừa hỏi: "${question}".
+        Hãy sử dụng dữ liệu sau để trả lời ngắn gọn, chính xác và thân thiện.
+        ❗ Tuyệt đối không viết mã code hoặc trả lời dưới dạng ngôn ngữ lập trình.
+        Dữ liệu: ${JSON.stringify(apiData, null, 2)}.
+    `;
 
     const handleQuerySelection = async (query) => {
         setSelectedQuery(query);
-    }
-
-    const sendMessage = async () => {
-        if (!input.trim()) return;
-        const userMessage = {role: "user", content: input};
-        setMessages((prev) => [...prev, userMessage]);
-        setInput("");
+        setMessages([]);
+        setLoading(true);
 
         try {
-            const res = await fetch(`http://localhost:8080/api/v1/warehouses/1/products`);
-            const apiData = await res.json();
+            const handler = queryHandlers[query.apiEndpoint];
+            if (!handler) throw new Error("Không tìm thấy dịch vụ xử lý truy vấn này");
 
-            const prompt = `
-                Bạn là một trợ lý kho thông minh. Người dùng vừa hỏi: "${input}".
-                Hãy sử dụng dữ liệu sau để trả lời ngắn gọn, chính xác và thân thiện.
-                ❗ Tuyệt đối không viết mã code hoặc trả lời dưới dạng ngôn ngữ lập trình.
-                Dữ liệu: ${JSON.stringify(apiData, null, 2)}.
-            `;
+            const apiData = await handler();
+            const prompt = buildPrompt(query.text, apiData);
 
             const response = await fetch("https://api.novita.ai/v3/openai/chat/completions", {
                 method: "POST",
@@ -69,10 +83,50 @@ export default function ChatInterface() {
                     model: DEEPSEEK_V3_TURBO,
                     messages: [
                         {role: "system", content: "Act like you are a helpful assistant."},
-                        {
-                            role: "user",
-                            content: prompt,
-                        },
+                        {role: "user", content: prompt},
+                    ],
+                    stream: false,
+                }),
+            });
+
+            const data = await response.json();
+            const botReply = formatBotReply(data.choices?.[0]?.message?.content || "Không có phản hồi từ AI.");
+            setMessages([{role: "assistant", content: botReply}]);
+        } catch (error) {
+            console.error("Lỗi gửi truy vấn:", error);
+            toast.error("Lỗi xử lý truy vấn.");
+            setMessages([{role: "assistant", content: "❌ Lỗi xử lý truy vấn."}]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const sendMessage = async () => {
+        if (!input.trim() || !selectedQuery) return;
+
+        const userMessage = {role: "user", content: input};
+        setMessages((prev) => [...prev, userMessage]);
+        setInput("");
+        setLoading(true);
+
+        try {
+            const handler = queryHandlers[selectedQuery.apiEndpoint];
+            if (!handler) throw new Error("Không tìm thấy dịch vụ xử lý truy vấn này");
+
+            const apiData = await handler();
+            const prompt = buildPrompt(input, apiData);
+
+            const response = await fetch("https://api.novita.ai/v3/openai/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${API_KEY}`,
+                },
+                body: JSON.stringify({
+                    model: DEEPSEEK_V3_TURBO,
+                    messages: [
+                        {role: "system", content: "Act like you are a helpful assistant."},
+                        {role: "user", content: prompt},
                     ],
                     stream: false,
                 }),
@@ -84,6 +138,8 @@ export default function ChatInterface() {
         } catch (error) {
             console.error("Lỗi gửi tin nhắn:", error);
             setMessages((prev) => [...prev, {role: "assistant", content: "❌ Không thể gửi tin nhắn đến AI."}]);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -125,8 +181,7 @@ export default function ChatInterface() {
                         <p className="text-gray-600">🖥️ Hệ thống: Bạn đã chọn "{selectedQuery.text}".</p>
                     </div>
 
-                    <div className="border p-3 bg-white rounded-lg space-y-3"
-                         style={{height: 400, overflowY: "scroll"}}>
+                    <div className="border p-3 bg-white rounded-lg space-y-3" style={{height: 400, overflowY: "scroll"}}>
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                                 <div
@@ -139,6 +194,7 @@ export default function ChatInterface() {
                                 </div>
                             </div>
                         ))}
+                        {loading && <div className="text-sm text-gray-500">⏳ Đang xử lý...</div>}
                     </div>
 
                     <div className="flex items-center border rounded-lg px-2 py-1 mt-3 bg-white">
@@ -149,7 +205,7 @@ export default function ChatInterface() {
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                         />
-                        <Button className="ml-2" variant="primary" onClick={sendMessage}>
+                        <Button className="ml-2" variant="primary" onClick={sendMessage} disabled={loading}>
                             Gửi
                         </Button>
                     </div>
@@ -157,4 +213,6 @@ export default function ChatInterface() {
             )}
         </Card>
     );
-}
+};
+
+export default ChatInterface;

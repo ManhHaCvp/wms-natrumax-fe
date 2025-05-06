@@ -181,7 +181,8 @@ const ViewProductList = () => {
                     const memberWarehouse = result.userWarehouses.find((uw) => uw.roleInWarehouse === "Member");
                     const warehouseId = memberWarehouse?.warehouse?.warehouseId;
                     setWarehouse(memberWarehouse?.warehouse);
-                    await productService.getByWarehouseId(warehouseId, setData);
+                    const products = await productService.getByWarehouseId(warehouseId);
+                    setData(products);
                 })().catch(console.error);
             }
         } catch (error) {
@@ -195,20 +196,22 @@ const ViewProductList = () => {
          fetchWarehouses();
     }, []);
 
+    const fetchProducts = async () => {
+        setLoading(true);
+        try {
+            const products = await productService.getByWarehouseId(selectedWarehouseId);
+            setData(products);
+        } catch (error) {
+            toast.error("Failed to fetch products");
+        } finally {
+            await fetchWarehouses();
+            setLoading(false);
+        }
+    };
+
     // Mỗi khi selectedWarehouseId thay đổi thì fetch lại product
     useEffect(() => {
         if (!selectedWarehouseId) return;
-        const fetchProducts = async () => {
-            setLoading(true);
-            try {
-                await productService.getByWarehouseId(selectedWarehouseId, setData);
-            } catch (error) {
-                toast.error("Failed to fetch products");
-            } finally {
-                await fetchWarehouses();
-                setLoading(false);
-            }
-        };
 
         fetchProducts().catch(console.error);
     }, [selectedWarehouseId]);
@@ -346,7 +349,10 @@ const ViewProductList = () => {
                                         <SheetTitle>Thêm nhóm hàng</SheetTitle>
                                         <SheetDescription>Nhập thông tin nhóm hàng mới</SheetDescription>
                                     </SheetHeader>
-                                    <CreateProduct setData={setData} onClose={() => setOpenCreateSheet(false)}/>
+                                    <CreateProduct onSuccess={() => {
+                                        fetchProducts();
+                                        setOpenCreateSheet(false);
+                                    }}/>
                                 </SheetContent>
                             </Sheet>
                             <Button variant="default" onClick={handleCreateOrder}>

@@ -14,8 +14,14 @@ import {
 } from "@/components/ui/select.jsx";
 import {Save} from "lucide-react";
 
-const CreateProduct = () => {
-    const {register, handleSubmit, control} = useForm({
+const CreateProduct = ({onSuccess}) => {
+    const {
+        register,
+        handleSubmit,
+        control,
+        setError,
+        formState: {errors},
+    } = useForm({
         defaultValues: {
             misaCode: "",
             barcode: "",
@@ -28,7 +34,7 @@ const CreateProduct = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const data = await categoryService.getAll(); // Use the return value
+                const data = await categoryService.getAll();
                 setCategories(data);
             } catch (error) {
                 console.error("Lỗi lấy danh sách danh mục:", error);
@@ -47,10 +53,18 @@ const CreateProduct = () => {
                 categoryId: Number(formData.categoryId),
             });
             toast.success("Tạo sản phẩm thành công!");
-            window.location.reload();
+            onSuccess?.();
         } catch (error) {
             console.error("Lỗi tạo sản phẩm:", error);
-            toast.error("Lỗi khi tạo sản phẩm!");
+            //toast.error("Lỗi khi tạo sản phẩm!");
+
+            // 👇 Set validation errors from server
+            if (error.response?.data) {
+                const messages = error.response.data;
+                for (const field in messages) {
+                    setError(field, {type: "server", message: messages[field]});
+                }
+            }
         }
     };
 
@@ -58,11 +72,13 @@ const CreateProduct = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="mt-3 space-y-3">
             <div>
                 <label className="block mb-1 text-sm font-medium">Mã MISA</label>
-                <Input {...register("misaCode")} placeholder="Nhập mã MISA" required/>
+                <Input {...register("misaCode")} placeholder="Nhập mã MISA"/>
+                {errors.misaCode && <p className="text-sm text-red-500">{errors.misaCode.message}</p>}
             </div>
             <div>
                 <label className="block mb-1 text-sm font-medium">Barcode</label>
-                <Input {...register("barcode")} placeholder="Nhập mã barcode" required/>
+                <Input {...register("barcode")} placeholder="Nhập mã barcode"/>
+                {errors.barcode && <p className="text-sm text-red-500">{errors.barcode.message}</p>}
             </div>
             <div>
                 <label className="block mb-1 text-sm font-medium">Danh mục</label>
@@ -84,6 +100,7 @@ const CreateProduct = () => {
                         </Select>
                     )}
                 />
+                {errors.categoryId && <p className="text-sm text-red-500">{errors.categoryId.message}</p>}
             </div>
             <Button type="submit" variant="default">
                 <Save className="mr-2 h-4 w-4"/> Lưu

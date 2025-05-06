@@ -31,7 +31,6 @@ import {Misa} from "@/assets/icons/Misa.jsx";
 import {KiotViet} from "@/assets/icons/KiotViet.jsx";
 
 const AppSidebar = () => {
-    const navigate = useNavigate();
 
     const data = {
         navMain: [
@@ -105,21 +104,13 @@ const AppSidebar = () => {
                 url: "#",
                 items: [
                     {
-                        title: "Khách hàng",
-                        url: "#",
-                    },
-                    {
                         title: "Vé quay thưởng",
-                        url: "#",
+                        url: "/admin/lottery-codes",
                     },
                     {
                         title: "Phần thưởng",
-                        url: "#",
-                    },
-                    {
-                        title: "Quay thưởng",
-                        url: "#",
-                    },
+                        url: "/admin/rewards",
+                    }
                 ],
             },
             {
@@ -159,7 +150,7 @@ const AppSidebar = () => {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link to="/home">
+                            <Link to="/dashboard">
                                 <img src="/logos/light/sm.svg" alt="Logo" className="aspect-square h-[32px]"/>
                                 <img src="/logos/light/sm-only-name.svg" alt="Logo" className="h-[24px]"/>
                             </Link>
@@ -219,37 +210,37 @@ const AppSidebar = () => {
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Thông tin</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton asChild>
-                                    <Link to="#">
-                                        <Book/>
-                                        <span>Tài liệu hướng dẫn</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton asChild>
-                                    <Link to="">
-                                        <BookText/>
-                                        <span>Điều khoản dịch vụ</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton asChild>
-                                    <Link to="">
-                                        <BookText/>
-                                        <span>Chính sách bảo mật</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                {/*<SidebarGroup>*/}
+                {/*    <SidebarGroupLabel>Thông tin</SidebarGroupLabel>*/}
+                {/*    <SidebarGroupContent>*/}
+                {/*        <SidebarMenu>*/}
+                {/*            <SidebarMenuItem>*/}
+                {/*                <SidebarMenuButton asChild>*/}
+                {/*                    <Link to="#">*/}
+                {/*                        <Book/>*/}
+                {/*                        <span>Tài liệu hướng dẫn</span>*/}
+                {/*                    </Link>*/}
+                {/*                </SidebarMenuButton>*/}
+                {/*            </SidebarMenuItem>*/}
+                {/*            <SidebarMenuItem>*/}
+                {/*                <SidebarMenuButton asChild>*/}
+                {/*                    <Link to="">*/}
+                {/*                        <BookText/>*/}
+                {/*                        <span>Điều khoản dịch vụ</span>*/}
+                {/*                    </Link>*/}
+                {/*                </SidebarMenuButton>*/}
+                {/*            </SidebarMenuItem>*/}
+                {/*            <SidebarMenuItem>*/}
+                {/*                <SidebarMenuButton asChild>*/}
+                {/*                    <Link to="">*/}
+                {/*                        <BookText/>*/}
+                {/*                        <span>Chính sách bảo mật</span>*/}
+                {/*                    </Link>*/}
+                {/*                </SidebarMenuButton>*/}
+                {/*            </SidebarMenuItem>*/}
+                {/*        </SidebarMenu>*/}
+                {/*    </SidebarGroupContent>*/}
+                {/*</SidebarGroup>*/}
             </SidebarContent>
         </Sidebar>
     );

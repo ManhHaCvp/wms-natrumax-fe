@@ -9,8 +9,8 @@ const formatUser = (user) => ({
     email: user.email,
     detail: user.detail,
     status: user.status,
-    role: user.role || "Chưa phân quyền",
-    provice: user.provice
+    role: user.role.name,
+    province: user.province.name
 });
 
 const userService = {
@@ -21,7 +21,6 @@ const userService = {
             const users = Array.isArray(response.data)
                 ? response.data
                 : response.data?.users || [];
-
             setData(users.map(formatUser));
         } catch (error) {
             handleApiError(error);
@@ -32,6 +31,19 @@ const userService = {
         try {
             const response = await userApi.getById(id);
             return response.data;
+        } catch (error) {
+            handleApiError(error);
+        }
+    },
+
+    async getByRole(role) {
+        try {
+            const response = await userApi.getByRole(role);
+            const users = Array.isArray(response.data)
+                ? response.data
+                : response.data?.users || [];
+
+            return users.map(formatUser);
         } catch (error) {
             handleApiError(error);
         }

@@ -103,10 +103,7 @@ export const UpdateCategory = ({ categoryId, setData }) => {
                 name: formData.name,
                 description: formData.description,
             });
-            // toast.success("Cập nhật thành công!");
-            // window.location.reload();
-            const data = await categoryService.getAll(setData);
-
+            await categoryService.getAll(setData);
         } catch (error) {
             console.error("Lỗi cập nhật vai trò:", error);
         }
