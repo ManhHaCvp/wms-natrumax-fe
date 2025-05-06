@@ -17,6 +17,7 @@ import {Label} from "@/components/ui/label";
 import commissionService from "@/services/commissionService.jsx";
 import toast from "react-hot-toast";
 import NumberInput from "@/components/common/NumberInput.jsx";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
 
 const ViewCommissionPolicy = () => {
     const {id} = useParams();
@@ -108,14 +109,16 @@ const ViewCommissionPolicy = () => {
                     </h2>
                 </div>
                 <div className="space-x-3">
+                    {checkUserRole("ROLE_ACCOUNTANT") ? (
+                        <Button variant="default" asChild>
+                            <Link to={`/commissions/create/${id}`}>
+                                <Plus/>
+                                Thêm mới
+                            </Link>
+                        </Button>
+                    ) : null}
                     <Button variant="default" asChild>
-                        <Link to={`/admin/commissions/create/${id}`}>
-                            <Plus/>
-                            Thêm mới
-                        </Link>
-                    </Button>
-                    <Button variant="default" asChild>
-                        <Link to={`/admin/commissions/history/${id}`}>
+                        <Link to={`/commissions/history/${id}`}>
                             <FileClock/>
                             Lịch sử
                         </Link>
@@ -129,65 +132,67 @@ const ViewCommissionPolicy = () => {
                         <div className="flex justify-between items-center">
                         <span
                             className="block font-medium">{commission.referral.accountName} - {commission.referral.province}</span>
-                            <Sheet>
-                                <SheetTrigger>
-                                    <Button variant="outline">
-                                        <Pencil/> Sửa
-                                    </Button>
-                                </SheetTrigger>
+                            {checkUserRole("ROLE_ACCOUNTANT") ? (
+                                <Sheet>
+                                    <SheetTrigger>
+                                        <Button variant="outline">
+                                            <Pencil/> Sửa
+                                        </Button>
+                                    </SheetTrigger>
 
-                                <SheetContent className="space-y-5">
-                                    <SheetHeader>
-                                        <SheetTitle>Chỉnh sửa</SheetTitle>
-                                        <SheetDescription>{commission.referral.accountName}</SheetDescription>
-                                    </SheetHeader>
-                                    <div className="space-y-3">
-                                        {commission.commissionPolicies.map((policy, policyIndex) => (
-                                            <div key={policyIndex} className="flex justify-between items-center">
-                                                <Label className="w-2/3">{policy.categoryName}</Label>
+                                    <SheetContent className="space-y-5">
+                                        <SheetHeader>
+                                            <SheetTitle>Chỉnh sửa</SheetTitle>
+                                            <SheetDescription>{commission.referral.accountName}</SheetDescription>
+                                        </SheetHeader>
+                                        <div className="space-y-3">
+                                            {commission.commissionPolicies.map((policy, policyIndex) => (
+                                                <div key={policyIndex} className="flex justify-between items-center">
+                                                    <Label className="w-2/3">{policy.categoryName}</Label>
 
-                                                <div className="w-1/3">
-                                                    <NumberInput
-                                                        value={policy.percentage}
-                                                        min={0}
-                                                        max={15}
-                                                        onChange={(newValue) => {
-                                                            setPolicies(prevPolicies => {
-                                                                const updatedCommissions = [...prevPolicies.commissions];
-                                                                updatedCommissions[index] = {
-                                                                    ...updatedCommissions[index],
-                                                                    commissionPolicies: updatedCommissions[index].commissionPolicies.map((p, idx) => {
-                                                                        if (idx === policyIndex) {
-                                                                            return {...p, percentage: newValue};
-                                                                        }
-                                                                        return p;
-                                                                    })
-                                                                };
-                                                                return {
-                                                                    ...prevPolicies,
-                                                                    commissions: updatedCommissions
-                                                                };
-                                                            });
-                                                        }}
-                                                    />
+                                                    <div className="w-1/3">
+                                                        <NumberInput
+                                                            value={policy.percentage}
+                                                            min={0}
+                                                            max={15}
+                                                            onChange={(newValue) => {
+                                                                setPolicies(prevPolicies => {
+                                                                    const updatedCommissions = [...prevPolicies.commissions];
+                                                                    updatedCommissions[index] = {
+                                                                        ...updatedCommissions[index],
+                                                                        commissionPolicies: updatedCommissions[index].commissionPolicies.map((p, idx) => {
+                                                                            if (idx === policyIndex) {
+                                                                                return {...p, percentage: newValue};
+                                                                            }
+                                                                            return p;
+                                                                        })
+                                                                    };
+                                                                    return {
+                                                                        ...prevPolicies,
+                                                                        commissions: updatedCommissions
+                                                                    };
+                                                                });
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <SheetFooter>
-                                        <SheetClose>
-                                            <Button type="button" onClick={() => handleSaveChanges(index)}>
-                                                <Save/> Save changes
-                                            </Button>
-                                        </SheetClose>
-                                        <SheetClose asChild>
-                                            <Button type="button" variant="outline">
-                                                Đóng
-                                            </Button>
-                                        </SheetClose>
-                                    </SheetFooter>
-                                </SheetContent>
-                            </Sheet>
+                                            ))}
+                                        </div>
+                                        <SheetFooter>
+                                            <SheetClose>
+                                                <Button type="button" onClick={() => handleSaveChanges(index)}>
+                                                    <Save/> Save changes
+                                                </Button>
+                                            </SheetClose>
+                                            <SheetClose asChild>
+                                                <Button type="button" variant="outline">
+                                                    Đóng
+                                                </Button>
+                                            </SheetClose>
+                                        </SheetFooter>
+                                    </SheetContent>
+                                </Sheet>
+                            ) : null}
                         </div>
 
                         <div className="rounded border">

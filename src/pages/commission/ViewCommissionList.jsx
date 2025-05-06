@@ -60,11 +60,11 @@ const columns = () => [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link to={`/admin/commissions/policy/${user.id}`}>Chính sách hoa hồng</Link>
+              <Link to={`/commissions/policy/${user.id}`}>Chính sách hoa hồng</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to={`/admin/commissions/history/${user.id}`}>Lịch sử giao dịch</Link>
+              <Link to={`/commissions/history/${user.id}`}>Lịch sử giao dịch</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

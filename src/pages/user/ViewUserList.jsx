@@ -137,10 +137,10 @@ const columns = [
                         </DropdownMenuItem>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem asChild>
-                            <Link to={`/admin/user/${user.id}`}>Xem</Link>
+                            <Link to={`/user/${user.id}`}>Xem</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to={`/admin/user/update/${user.id}`}>Sửa</Link>
+                            <Link to={`/user/update/${user.id}`}>Sửa</Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -156,18 +156,18 @@ const ViewUserList = () => {
     const [userList, setUserList] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await userService.getByRole(rolesFilter);
-                setUserList(response);
-                console.log(response)
-            } catch (error) {
-                console.log(error);
-                toast.error(error.message);
-            }
+    const fetchUsers = async () => {
+        try {
+            const response = await userService.getByRole(rolesFilter);
+            setUserList(response);
+            console.log(response)
+        } catch (error) {
+            console.log(error);
+            toast.error(error.message);
         }
+    }
 
+    useEffect(() => {
         fetchUsers();
     }, [rolesFilter]);
 
@@ -204,7 +204,11 @@ const ViewUserList = () => {
                                 <SheetTitle>Thêm người dùng</SheetTitle>
                                 <SheetDescription>Nhập thông tin người dùng mới</SheetDescription>
                             </SheetHeader>
-                            <CreateNewUser setUserList={setUserList} setIsOpen={setIsOpen}/>
+                            <CreateNewUser
+                                onSuccess={() => {
+                                    fetchUsers();
+                                    setIsOpen(false);
+                                }}/>
                         </SheetContent>
                     </Sheet>
                 </div>

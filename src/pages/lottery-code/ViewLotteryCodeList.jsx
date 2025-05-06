@@ -16,6 +16,7 @@ import {ViewLotteryCodeDetail, CreateLotteryCode, UpdateLotteryCode} from "@/pag
 import lotteryCodeService from "@/services/lotteryCodeService.jsx";
 import {Badge} from "@/components/ui/badge.jsx";
 import WheelSpin from "@/pages/lottery-code/WheelSpin.jsx";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -54,21 +55,23 @@ const renderActions = (data, refreshData) => (
                     </SheetContent>
                 </Sheet>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-                <Sheet>
-                    <SheetTrigger asChild>
+            {checkUserRole("ROLE_ACCOUNTANT") ? (
+                <DropdownMenuItem asChild>
+                    <Sheet>
+                        <SheetTrigger asChild>
                         <span
                             className="relative flex cursor-default select-none items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground">Sửa</span>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Sửa mã</SheetTitle>
-                            <SheetDescription>Chỉnh sửa mã quay thưởng.</SheetDescription>
-                        </SheetHeader>
-                        <UpdateLotteryCode lotteryCodeId={data.lotteryCodeId} onSuccess={refreshData}/>
-                    </SheetContent>
-                </Sheet>
-            </DropdownMenuItem>
+                        </SheetTrigger>
+                        <SheetContent>
+                            <SheetHeader>
+                                <SheetTitle>Sửa mã</SheetTitle>
+                                <SheetDescription>Chỉnh sửa mã quay thưởng.</SheetDescription>
+                            </SheetHeader>
+                            <UpdateLotteryCode lotteryCodeId={data.lotteryCodeId} onSuccess={refreshData}/>
+                        </SheetContent>
+                    </Sheet>
+                </DropdownMenuItem>
+            ) : null}
         </DropdownMenuContent>
     </DropdownMenu>
 );
@@ -149,32 +152,36 @@ const ViewLotteryCodeList = () => {
             data={data}
             addButton={
                 <div className="space-x-3">
-                    <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
-                        <SheetTrigger asChild>
-                            <Button><Plus/> Thêm mới</Button>
-                        </SheetTrigger>
-                        <SheetContent>
-                            <SheetHeader>
-                                <SheetTitle>Thêm mã quay thưởng</SheetTitle>
-                                <SheetDescription>Nhập thông tin mã mới</SheetDescription>
-                            </SheetHeader>
-                            <CreateLotteryCode onSuccess={() => {
-                                refreshData();
-                                setOpenCreateSheet(false);
-                            }}/>
-                        </SheetContent>
-                    </Sheet>
-                    <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
-                        <SheetTrigger asChild>
-                            <Button><FerrisWheel/> Quay thưởng</Button>
-                        </SheetTrigger>
-                        <SheetContent>
-                            <SheetHeader>
-                                <SheetTitle>Spin the Wheel</SheetTitle>
-                            </SheetHeader>
-                            <WheelSpin />
-                        </SheetContent>
-                    </Sheet>
+                    {checkUserRole("ROLE_ACCOUNTANT") ? (
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button><Plus/> Thêm mới</Button>
+                            </SheetTrigger>
+                            <SheetContent>
+                                <SheetHeader>
+                                    <SheetTitle>Thêm mã quay thưởng</SheetTitle>
+                                    <SheetDescription>Nhập thông tin mã mới</SheetDescription>
+                                </SheetHeader>
+                                <CreateLotteryCode onSuccess={() => {
+                                    refreshData();
+                                    setOpenCreateSheet(false);
+                                }}/>
+                            </SheetContent>
+                        </Sheet>
+                    ) : null}
+                    {checkUserRole("ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR") ? (
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button><FerrisWheel/> Quay thưởng</Button>
+                            </SheetTrigger>
+                            <SheetContent>
+                                <SheetHeader>
+                                    <SheetTitle>Spin the Wheel</SheetTitle>
+                                </SheetHeader>
+                                <WheelSpin/>
+                            </SheetContent>
+                        </Sheet>
+                    ) : null}
                 </div>
             }
         />

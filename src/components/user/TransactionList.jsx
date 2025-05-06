@@ -38,6 +38,7 @@ import toast from "react-hot-toast";
 import ImagePreviewModal from "../common/ImagePreviewModal";
 import formatDate from "@/utils/formatDate.jsx";
 import {formatCurrency} from "@/utils/formatCurrency.jsx";
+import LoadingOverlay from "@/components/common/LoadingOverlay.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -228,8 +229,12 @@ export default function TransactionList({walletId, reloadTrigger}) {
         getFilteredRowModel: getFilteredRowModel(),
     });
 
+    const [loading, setLoading] = useState(false);
+
     const handleUpload = async (file) => {
+        setLoading(true);
         try {
+            setUploadDialogOpen(false);
             const formData = new FormData();
             formData.append("file", file);
             await transactionService.uploadTransferImage(
@@ -238,125 +243,129 @@ export default function TransactionList({walletId, reloadTrigger}) {
             );
             await fetchData();
             toast.success("Tải ảnh lên thành công!");
-            setUploadDialogOpen(false);
             setSelectedTransactionId(null);
         } catch (err) {
             console.error(err);
             alert("Upload thất bại.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div>
-            <div className="flex items-center pb-3">
-                <Input
-                    placeholder="Tìm kiếm nhanh..."
-                    value={globalFilter}
-                    onChange={(e) => {
-                        setGlobalFilter(e.target.value);
-                        table.setGlobalFilter(e.target.value);
-                    }}
-                    className="w-full me-3"
-                />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
-                            Cột <ChevronDown/>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter((col) => col.getCanHide())
-                            .map((column) => (
-                                <DropdownMenuCheckboxItem
-                                    key={column.id}
-                                    checked={column.getIsVisible()}
-                                    onCheckedChange={(value) =>
-                                        column.toggleVisibility(!!value)
-                                    }
-                                >
-                                    {column.columnDef.name}
-                                </DropdownMenuCheckboxItem>
-                            ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                    </TableHead>
+        <>
+            {loading && <LoadingOverlay/>}
+            <div>
+                <div className="flex items-center pb-3">
+                    <Input
+                        placeholder="Tìm kiếm nhanh..."
+                        value={globalFilter}
+                        onChange={(e) => {
+                            setGlobalFilter(e.target.value);
+                            table.setGlobalFilter(e.target.value);
+                        }}
+                        className="w-full me-3"
+                    />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline">
+                                Cột <ChevronDown/>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((col) => col.getCanHide())
+                                .map((column) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.id}
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value) =>
+                                            column.toggleVisibility(!!value)
+                                        }
+                                    >
+                                        {column.columnDef.name}
+                                    </DropdownMenuCheckboxItem>
                                 ))}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+
+                <div className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <TableHead key={header.id}>
                                             {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
+                                                header.column.columnDef.header,
+                                                header.getContext()
                                             )}
-                                        </TableCell>
+                                        </TableHead>
                                     ))}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="text-center">
-                                    Không có dữ liệu.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-
-            <div className="flex items-center justify-end pt-3 space-x-2">
-                <div className="text-sm text-muted-foreground">
-                    Đã chọn {table.getFilteredSelectedRowModel().rows.length} trên{" "}
-                    {table.getFilteredRowModel().rows.length} hàng.
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow key={row.id}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext()
+                                                )}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="text-center">
+                                        Không có dữ liệu.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
                 </div>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                >
-                    Trước
-                </Button>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                >
-                    Sau
-                </Button>
-            </div>
 
-            <UploadProofDialog
-                open={uploadDialogOpen}
-                onOpenChange={setUploadDialogOpen}
-                onUpload={handleUpload}
-            />
-            <ImagePreviewModal
-                open={imageDialogOpen}
-                onOpenChange={setImageDialogOpen}
-                imageUrl={previewUrl}
-            />
-        </div>
+                <div className="flex items-center justify-end pt-3 space-x-2">
+                    <div className="text-sm text-muted-foreground">
+                        Đã chọn {table.getFilteredSelectedRowModel().rows.length} trên{" "}
+                        {table.getFilteredRowModel().rows.length} hàng.
+                    </div>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        Trước
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        Sau
+                    </Button>
+                </div>
+
+                <UploadProofDialog
+                    open={uploadDialogOpen}
+                    onOpenChange={setUploadDialogOpen}
+                    onUpload={handleUpload}
+                />
+                <ImagePreviewModal
+                    open={imageDialogOpen}
+                    onOpenChange={setImageDialogOpen}
+                    imageUrl={previewUrl}
+                />
+            </div>
+        </>
     );
 }

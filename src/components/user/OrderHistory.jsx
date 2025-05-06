@@ -152,10 +152,10 @@ const columns = [
                         </DropdownMenuItem>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem asChild>
-                            <Link to={`/admin/order/${data.orderId}`}>Xem</Link>
+                            <Link to={`/order/${data.orderId}`}>Xem</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to={`/admin/order/update/${data.orderId}`}>Sửa</Link>
+                            <Link to={`/order/update/${data.orderId}`}>Sửa</Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -191,7 +191,7 @@ const OrderHistory = ({userId}) => {
             title="Danh sách đơn hàng"
             columns={columns}
             data={data}
-            addLink="/admin/order/create"
+            addLink="/order/create"
             className="m-0"
         />
     );

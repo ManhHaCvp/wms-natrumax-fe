@@ -33,22 +33,22 @@ const SideBar = () => {
               <AccordionContent>
                 <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
                   <li>
-                    <Link to="/admin/users" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/users" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Danh sách
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Chi tiết
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/types" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/types" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Sửa
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/tags" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/tags" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Thêm mới
                     </Link>
                   </li>
@@ -62,22 +62,22 @@ const SideBar = () => {
               <AccordionContent>
                 <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
                   <li>
-                    <Link to="/admin/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Danh sách
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Chi tiết
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/types" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/types" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Sửa
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/tags" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/tags" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Thêm mới
                     </Link>
                   </li>
@@ -91,22 +91,22 @@ const SideBar = () => {
               <AccordionContent>
                 <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
                   <li>
-                    <Link to="/admin/orders" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/orders" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Danh sách
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Chi tiết
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/types" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/types" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Sửa
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/tags" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/tags" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Thêm mới
                     </Link>
                   </li>
@@ -120,22 +120,22 @@ const SideBar = () => {
               <AccordionContent>
                 <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
                   <li>
-                    <Link to="/admin/users" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/users" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Danh sách
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/products" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Chi tiết
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/types" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/types" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Sửa
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/tags" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/tags" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Thêm mới
                     </Link>
                   </li>
@@ -150,12 +150,12 @@ const SideBar = () => {
               <AccordionContent>
                 <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
                   <li>
-                    <Link to="/admin/category" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/category" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Danh sách
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/category/add" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/category/add" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Thêm mới
                     </Link>
                   </li>
@@ -170,12 +170,12 @@ const SideBar = () => {
               <AccordionContent>
                 <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
                   <li>
-                    <Link to="/admin/role" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/role" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Danh sách
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/role/add" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/role/add" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Thêm mới
                     </Link>
                   </li>
@@ -189,12 +189,12 @@ const SideBar = () => {
               <AccordionContent>
                 <ul className="px-2.5 py-0.5 mx-[14px] border-l border-gray-300">
                   <li>
-                    <Link to="/admin/warehouses" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/warehouses" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Danh sách
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin/role/add" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
+                    <Link to="/role/add" className="flex items-center text-sidebar-foreground hover:bg-border text-sm leading-5 font-normal px-2 py-1.5 rounded">
                       Thêm mới
                     </Link>
                   </li>

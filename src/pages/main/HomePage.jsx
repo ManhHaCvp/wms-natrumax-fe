@@ -28,7 +28,7 @@ const HomePage = () => {
         <Button variant="outline" onClick={() => navigator.clipboard.writeText(token)}><Copy /></Button>
       </div>
       <p>User: {JSON.stringify(user, null, 2)}</p>
-      <p>Warehouse: {detail.retailer}</p>
+      <p>Warehouse: {detail.roles}</p>
     </div>
   );
 };

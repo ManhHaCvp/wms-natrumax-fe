@@ -16,6 +16,8 @@ import UploadProofDialog from "@/components/user/UploadProofDialog";
 import {Badge} from "@/components/ui/badge.jsx";
 import NumberInput from "@/components/common/NumberInput.jsx";
 import {Skeleton} from "@/components/ui/skeleton.jsx";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
+import LoadingOverlay from "@/components/common/LoadingOverlay.jsx";
 
 const ViewCommissionHistory = () => {
     const {id} = useParams();
@@ -63,7 +65,9 @@ const ViewCommissionHistory = () => {
     };
 
     const handleCreateTransaction = async () => {
+        setLoading(true);
         try {
+            setDialogOpen(false);
             if (!selectedCommissionHistory?.referrer?.userId) {
                 toast.error("Không có thông tin người giới thiệu.");
                 return;
@@ -87,43 +91,47 @@ const ViewCommissionHistory = () => {
 
             await commissionHistoryService.updateTransaction(id, selectedMonth, selectedYear, transaction.data.transactionsId);
             toast.success("Tạo giao dịch thành công!");
+            if (id) {
+                fetchData();
+            }
         } catch (error) {
             toast.error(error.message || "Có lỗi xảy ra khi tạo giao dịch");
             console.error("Lỗi khi tạo giao dịch:", error);
         } finally {
-            setDialogOpen(false);
-            if (id) {
-                fetchData();
-            }
+            setLoading(false);
         }
     };
 
     const handleUploadTransferImage = async (file) => {
+        setLoading(true);
         try {
+            setUploadDialogOpen(false);
             const formData = new FormData();
             formData.append("file", file);
 
             await transactionService.uploadTransferImage(selectedCommissionHistory?.transactions?.transactionsId, formData); // await fetchData();
             toast.success("Tải ảnh lên thành công!");
+            if (id) {
+                fetchData();
+            }
         } catch (err) {
             console.error(err);
             toast.error("Upload thất bại.");
         } finally {
-            setUploadDialogOpen(false);
-            if (id) {
-                fetchData();
-            }
+            setLoading(false);
         }
     };
 
     return (
-        <div className="p-5 space-y-5">
-            <div className="flex justify-between items-center">
-                <h1 className="text-[#182F73] text-3xl font-bold">Lịch sử hoa hồng</h1>
-                <h2 className="text-[#182F73] text-2xl font-bold">{selectedCommissionHistory?.referrer?.accountName}</h2>
-            </div>
+        <>
+            {loading && <LoadingOverlay/>}
+            <div className="p-5 space-y-5">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-[#182F73] text-3xl font-bold">Lịch sử hoa hồng</h1>
+                    <h2 className="text-[#182F73] text-2xl font-bold">{selectedCommissionHistory?.referrer?.accountName}</h2>
+                </div>
 
-            <form className="flex space-x-3 items-center" onSubmit={handleFilter}>
+                <form className="flex space-x-3 items-center" onSubmit={handleFilter}>
                     <label className="text-xl font-semibold">Tháng</label>
                     <NumberInput
                         value={selectedMonth}
@@ -139,191 +147,201 @@ const ViewCommissionHistory = () => {
                         onChange={(newValue) => setSelectedYear(newValue)}
                     />
 
-                <Button>Lọc</Button>
-            </form>
-            {loading ? (
-                <div className="space-y-5">
-
-                    {/* Skeleton Header Info */}
-                    <div className="flex justify-between items-center">
-                        <div className="space-y-2">
-                            <Skeleton className="h-6 w-80"/>
-                            <Skeleton className="h-5 w-40"/>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <Skeleton className="h-8 w-40"/>
-                            <Skeleton className="h-8 w-32"/>
-                            <Skeleton className="h-8 w-32"/>
-                        </div>
-                    </div>
-
-                    {/* Skeleton for List of Commissions */}
+                    <Button>Lọc</Button>
+                </form>
+                {loading ? (
                     <div className="space-y-5">
-                        {[1, 2, 3].map((item) => (
-                            <Card key={item}>
-                                <CardContent className="p-5 space-y-5">
-                                    <div className="flex justify-between items-center">
-                                        <Skeleton className="h-6 w-40"/>
-                                        <Skeleton className="h-8 w-24"/>
-                                    </div>
 
-                                    <div className="border rounded p-5 space-y-3">
-                                        {[1, 2, 3].map((row) => (
-                                            <div key={row} className="flex justify-between">
-                                                <Skeleton className="h-4 w-1/4"/>
-                                                <Skeleton className="h-4 w-1/6"/>
-                                                <Skeleton className="h-4 w-1/6"/>
-                                                <Skeleton className="h-4 w-1/6"/>
-                                            </div>
-                                        ))}
-                                        {/* Total row */}
-                                        <div className="flex justify-end pt-3">
-                                            <Skeleton className="h-4 w-24"/>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            ) : (
-                <>
-                    {selectedCommissionHistory?.commissions?.length > 0 && (
-                        <div className="space-y-3">
-                            {/* Header: Tổng thanh toán + trạng thái */}
-                            <div className="flex justify-between items-center">
-                                <div className="space-y-2">
-                                    <h3 className="text-[#182F73] text-xl font-bold">
-                                        Chi tiết hoa hồng - {selectedMonth}/{selectedYear}
-                                    </h3>
-                                    <p className="text-md font-medium space-x-2">
-                                        <span>Trạng thái:</span>
-                                        {selectedCommissionHistory?.transactions?.status === "SUCCESS" ? (
-                                            <Badge variant="default">
-                                                {selectedCommissionHistory?.transactions?.status}
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="tertiary">
-                                                PENDING
-                                            </Badge>
-                                        )}
-                                    </p>
-                                </div>
-                                <div className="flex items-center space-x-3">
-                                    <div className="text-xl font-bold text-[#182F73]">
-                                        Tổng thanh toán: {formatCurrency(totalPayment)}
-                                    </div>
-                                    {!selectedCommissionHistory?.transactions ? (
-                                        <Button asChild>
-                                            <span onClick={handleSendClick}>Thanh toán</span>
-                                        </Button>) : null
-                                    }
-                                    {selectedCommissionHistory?.transactions?.status === "PENDING" ? (
-                                        <Button
-                                            onClick={() => {
-                                                setUploadDialogOpen(true);
-                                            }}
-                                        >
-                                            Thêm ảnh chuyển khoản
-                                        </Button>) : null
-                                    }
-                                    {selectedCommissionHistory?.transactions?.transferImage ? (
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <Button variant="outline"><View/></Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="">
-                                                <img
-                                                    src={selectedCommissionHistory?.transactions?.transferImage}
-                                                    alt="Proof"
-                                                />
-                                            </DialogContent>
-                                        </Dialog>
-                                    ) : null}
-                                </div>
+                        {/* Skeleton Header Info */}
+                        <div className="flex justify-between items-center">
+                            <div className="space-y-2">
+                                <Skeleton className="h-6 w-80"/>
+                                <Skeleton className="h-5 w-40"/>
                             </div>
-
-                            {/* Danh sách các commission */}
-                            <div className="space-y-5">
-                                {selectedCommissionHistory.commissions.map((commission) => {
-                                    const {referral, commissionHistory} = commission;
-                                    const totalAmount = commissionHistory.totalAmount || 0;
-
-                                    return (
-                                        <Card key={commission.commissionId}>
-                                            <CardContent className="p-5 space-y-5">
-                                                <div className="flex justify-between items-center">
-                                                    <CardTitle
-                                                        className="text-xl font-bold text-[#182F73]">{referral.accountName}</CardTitle>
-                                                    <Button variant="outline" asChild>
-                                                        <Link
-                                                            to={`/admin/commissions/policy/${selectedCommissionHistory?.referrer?.userId}`}><Pencil/>Sửa</Link>
-                                                    </Button>
-                                                </div>
-                                                <div className="border rounded">
-                                                    <Table>
-                                                        <TableHeader>
-                                                            <TableRow>
-                                                                <TableHead className="w-1/3">Tên nhóm hàng</TableHead>
-                                                                <TableHead className="text-center">Phần trăm</TableHead>
-                                                                <TableHead className="text-right">Doanh số</TableHead>
-                                                                <TableHead className="text-right">Hoa hồng</TableHead>
-                                                            </TableRow>
-                                                        </TableHeader>
-                                                        <TableBody>
-                                                            {commissionHistory.details.map((detail) => (
-                                                                <TableRow key={detail.commissionHistoryDetailId}>
-                                                                    <TableCell>{detail.categoryName}</TableCell>
-                                                                    <TableCell
-                                                                        className="text-center">{detail.percentage}%</TableCell>
-                                                                    <TableCell className="text-right">
-                                                                        {formatCurrency(detail.amount)}
-                                                                    </TableCell>
-                                                                    <TableCell className="text-right">
-                                                                        {formatCurrency(detail.amount * detail.percentage / 100)}
-                                                                    </TableCell>
-                                                                </TableRow>
-                                                            ))}
-                                                            <TableRow className="font-semibold border-t">
-                                                                <TableCell>Tổng</TableCell>
-                                                                <TableCell></TableCell>
-                                                                <TableCell></TableCell>
-                                                                <TableCell
-                                                                    className="text-right text-primary">{formatCurrency(totalAmount)}</TableCell>
-                                                            </TableRow>
-                                                        </TableBody>
-                                                    </Table>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    );
-                                })}
+                            <div className="flex items-center space-x-3">
+                                <Skeleton className="h-8 w-40"/>
+                                <Skeleton className="h-8 w-32"/>
+                                <Skeleton className="h-8 w-32"/>
                             </div>
                         </div>
-                    )}
-                </>
-            )}
-            <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}
-                               onUpload={handleUploadTransferImage}/>
 
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Quét mã QR để thanh toán</DialogTitle>
-                    </DialogHeader>
+                        {/* Skeleton for List of Commissions */}
+                        <div className="space-y-5">
+                            {[1, 2, 3].map((item) => (
+                                <Card key={item}>
+                                    <CardContent className="p-5 space-y-5">
+                                        <div className="flex justify-between items-center">
+                                            <Skeleton className="h-6 w-40"/>
+                                            <Skeleton className="h-8 w-24"/>
+                                        </div>
 
-                    <div className="flex justify-center mb-4">{qrUrl &&
-                        <img src={qrUrl} alt="QR Code" className="max-w-full max-h-[400px]"/>}</div>
-
-                    <div className="flex justify-end gap-3">
-                        <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                            Hủy
-                        </Button>
-                        <Button onClick={handleCreateTransaction}>Tạo giao dịch</Button>
+                                        <div className="border rounded p-5 space-y-3">
+                                            {[1, 2, 3].map((row) => (
+                                                <div key={row} className="flex justify-between">
+                                                    <Skeleton className="h-4 w-1/4"/>
+                                                    <Skeleton className="h-4 w-1/6"/>
+                                                    <Skeleton className="h-4 w-1/6"/>
+                                                    <Skeleton className="h-4 w-1/6"/>
+                                                </div>
+                                            ))}
+                                            {/* Total row */}
+                                            <div className="flex justify-end pt-3">
+                                                <Skeleton className="h-4 w-24"/>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
                     </div>
-                </DialogContent>
-            </Dialog>
-        </div>
+                ) : (
+                    <>
+                        {selectedCommissionHistory?.commissions?.length > 0 && (
+                            <div className="space-y-3">
+                                {/* Header: Tổng thanh toán + trạng thái */}
+                                <div className="flex justify-between items-center">
+                                    <div className="space-y-2">
+                                        <h3 className="text-[#182F73] text-xl font-bold">
+                                            Chi tiết hoa hồng - {selectedMonth}/{selectedYear}
+                                        </h3>
+                                        <p className="text-md font-medium space-x-2">
+                                            <span>Trạng thái:</span>
+                                            {selectedCommissionHistory?.transactions?.status === "SUCCESS" ? (
+                                                <Badge variant="default">
+                                                    {selectedCommissionHistory?.transactions?.status}
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="tertiary">
+                                                    PENDING
+                                                </Badge>
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center space-x-3">
+                                        <div className="text-xl font-bold text-[#182F73]">
+                                            Tổng thanh toán: {formatCurrency(totalPayment)}
+                                        </div>
+
+                                        {checkUserRole("ROLE_ACCOUNTANT") && (
+                                            <>
+                                                {!selectedCommissionHistory?.transactions && (
+                                                    <Button asChild>
+                                                        <span onClick={handleSendClick}>Thanh toán</span>
+                                                    </Button>
+                                                )}
+
+                                                {selectedCommissionHistory?.transactions?.status === "PENDING" && (
+                                                    <Button onClick={() => setUploadDialogOpen(true)}>
+                                                        Thêm ảnh chuyển khoản
+                                                    </Button>
+                                                )}
+
+                                                {selectedCommissionHistory?.transactions?.transferImage && (
+                                                    <Dialog>
+                                                        <DialogTrigger asChild>
+                                                            <Button variant="outline">
+                                                                <View/>
+                                                            </Button>
+                                                        </DialogTrigger>
+                                                        <DialogContent>
+                                                            <img
+                                                                src={selectedCommissionHistory.transactions.transferImage}
+                                                                alt="Proof"
+                                                            />
+                                                        </DialogContent>
+                                                    </Dialog>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Danh sách các commission */}
+                                <div className="space-y-5">
+                                    {selectedCommissionHistory.commissions.map((commission) => {
+                                        const {referral, commissionHistory} = commission;
+                                        const totalAmount = commissionHistory.totalAmount || 0;
+
+                                        return (
+                                            <Card key={commission.commissionId}>
+                                                <CardContent className="p-5 space-y-5">
+                                                    <div className="flex justify-between items-center">
+                                                        <CardTitle
+                                                            className="text-xl font-bold text-[#182F73]">{referral.accountName}</CardTitle>
+                                                        <Button variant="outline" asChild>
+                                                            <Link
+                                                                to={`/commissions/policy/${selectedCommissionHistory?.referrer?.userId}`}><Pencil/>Sửa</Link>
+                                                        </Button>
+                                                    </div>
+                                                    <div className="border rounded">
+                                                        <Table>
+                                                            <TableHeader>
+                                                                <TableRow>
+                                                                    <TableHead className="w-1/3">Tên nhóm
+                                                                        hàng</TableHead>
+                                                                    <TableHead className="text-center">Phần
+                                                                        trăm</TableHead>
+                                                                    <TableHead className="text-right">Doanh
+                                                                        số</TableHead>
+                                                                    <TableHead className="text-right">Hoa
+                                                                        hồng</TableHead>
+                                                                </TableRow>
+                                                            </TableHeader>
+                                                            <TableBody>
+                                                                {commissionHistory.details.map((detail) => (
+                                                                    <TableRow key={detail.commissionHistoryDetailId}>
+                                                                        <TableCell>{detail.categoryName}</TableCell>
+                                                                        <TableCell
+                                                                            className="text-center">{detail.percentage}%</TableCell>
+                                                                        <TableCell className="text-right">
+                                                                            {formatCurrency(detail.amount)}
+                                                                        </TableCell>
+                                                                        <TableCell className="text-right">
+                                                                            {formatCurrency(detail.amount * detail.percentage / 100)}
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                                <TableRow className="font-semibold border-t">
+                                                                    <TableCell>Tổng</TableCell>
+                                                                    <TableCell></TableCell>
+                                                                    <TableCell></TableCell>
+                                                                    <TableCell
+                                                                        className="text-right text-primary">{formatCurrency(totalAmount)}</TableCell>
+                                                                </TableRow>
+                                                            </TableBody>
+                                                        </Table>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
+                <UploadProofDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}
+                                   onUpload={handleUploadTransferImage}/>
+
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Quét mã QR để thanh toán</DialogTitle>
+                        </DialogHeader>
+
+                        <div className="flex justify-center mb-4">{qrUrl &&
+                            <img src={qrUrl} alt="QR Code" className="max-w-full max-h-[400px]"/>}</div>
+
+                        <div className="flex justify-end gap-3">
+                            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                                Hủy
+                            </Button>
+                            <Button onClick={handleCreateTransaction}>Tạo giao dịch</Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </>
     );
 };
 

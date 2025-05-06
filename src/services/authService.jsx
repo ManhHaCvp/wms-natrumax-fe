@@ -22,6 +22,7 @@ const authService = {
       const userData = response.data;
       setAuthData(newToken, userData);
       navigate("/dashboard");
+      window.location.reload();
     } catch (error) {
       handleApiError(error);
       toast.error(error.response?.data?.message || "OTP không hợp lệ hoặc đã hết hạn.");

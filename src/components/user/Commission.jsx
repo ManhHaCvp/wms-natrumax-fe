@@ -4,7 +4,7 @@ import {Card, CardContent} from "@/components/ui/card";
 import commissionService from "@/services/commissionService.jsx";
 import {Button} from "@/components/ui/button.jsx";
 import {Link} from "react-router-dom";
-import {Pencil, Plus, Save} from "lucide-react";
+import {FileClock, Pencil, Plus, Save} from "lucide-react";
 import {
     Sheet, SheetClose,
     SheetContent,
@@ -17,6 +17,7 @@ import {
 import {Label} from "@/components/ui/label.jsx";
 import {Skeleton} from "@/components/ui/skeleton.jsx";
 import toast from "react-hot-toast";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
 
 const Commission = ({userId}) => {
     const [policies, setPolicies] = useState({
@@ -71,9 +72,17 @@ const Commission = ({userId}) => {
         <div className="space-y-5">
             <div className="flex justify-between items-center">
                 <h1 className="text-[#182F73] text-3xl font-bold">Chính sách hoa hồng</h1>
+                {checkUserRole("ROLE_ACCOUNTANT") ? (
                 <Button variant="default" asChild>
-                    <Link to={`/admin/commissions/create/${userId}`}>
+                    <Link to={`/commissions/create/${userId}`}>
                         <Plus /> Thêm mới
+                    </Link>
+                </Button>
+                ) : null}
+                <Button variant="default" asChild>
+                    <Link to={`/commissions/history/${userId}`}>
+                        <FileClock/>
+                        Lịch sử
                     </Link>
                 </Button>
             </div>

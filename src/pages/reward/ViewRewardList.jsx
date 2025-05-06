@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { ArrowUpDown, MoreHorizontal, Plus } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox.jsx";
-import { Button } from "@/components/ui/button.jsx";
-import { createColumnHelper } from "@tanstack/react-table";
+import React, {useEffect, useState} from "react";
+import {ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
+import {Checkbox} from "@/components/ui/checkbox.jsx";
+import {Button} from "@/components/ui/button.jsx";
+import {createColumnHelper} from "@tanstack/react-table";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,16 +12,17 @@ import {
 } from "@/components/ui/dropdown-menu.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import rewardService from "@/services/rewardService.jsx";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge.jsx";
-import { CreateReward, UpdateReward, ViewRewardDetail } from "@/pages/reward/RewardSheet.jsx";
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {Badge} from "@/components/ui/badge.jsx";
+import {CreateReward, UpdateReward, ViewRewardDetail} from "@/pages/reward/RewardSheet.jsx";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
 
 const columnHelper = createColumnHelper();
 
-const sortableHeader = (label) => ({ column }) => (
+const sortableHeader = (label) => ({column}) => (
     <div onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
          className="flex items-center cursor-pointer">
-        {label} <ArrowUpDown size={16} className="ml-2" />
+        {label} <ArrowUpDown size={16} className="ml-2"/>
     </div>
 );
 
@@ -30,42 +31,46 @@ const renderActions = (data, refreshData) => (
         <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
+                <MoreHorizontal/>
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}>
                 Sao chép
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator/>
             <DropdownMenuItem asChild>
                 <Sheet>
                     <SheetTrigger asChild>
-                        <span className="relative flex cursor-default select-none items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground">Xem</span>
+                        <span
+                            className="relative flex cursor-default select-none items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground">Xem</span>
                     </SheetTrigger>
                     <SheetContent>
                         <SheetHeader>
                             <SheetTitle>Phần thưởng</SheetTitle>
                             <SheetDescription>Thông tin chi tiết phần thưởng.</SheetDescription>
                         </SheetHeader>
-                        <ViewRewardDetail rewardId={data.rewardId} />
+                        <ViewRewardDetail rewardId={data.rewardId}/>
                     </SheetContent>
                 </Sheet>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <span className="relative flex cursor-default select-none items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground">Sửa</span>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Sửa phần thưởng</SheetTitle>
-                            <SheetDescription>Chỉnh sửa thông tin phần thưởng.</SheetDescription>
-                        </SheetHeader>
-                        <UpdateReward rewardId={data.rewardId} onSuccess={refreshData} />
-                    </SheetContent>
-                </Sheet>
-            </DropdownMenuItem>
+            {checkUserRole("ROLE_ACCOUNTANT") ? (
+                <DropdownMenuItem asChild>
+                    <Sheet>
+                        <SheetTrigger asChild>
+                        <span
+                            className="relative flex cursor-default select-none items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground">Sửa</span>
+                        </SheetTrigger>
+                        <SheetContent>
+                            <SheetHeader>
+                                <SheetTitle>Sửa phần thưởng</SheetTitle>
+                                <SheetDescription>Chỉnh sửa thông tin phần thưởng.</SheetDescription>
+                            </SheetHeader>
+                            <UpdateReward rewardId={data.rewardId} onSuccess={refreshData}/>
+                        </SheetContent>
+                    </Sheet>
+                </DropdownMenuItem>
+            ) : null}
         </DropdownMenuContent>
     </DropdownMenu>
 );
@@ -73,7 +78,7 @@ const renderActions = (data, refreshData) => (
 const columns = (refreshData) => [
     columnHelper.display({
         id: "select",
-        header: ({ table }) => (
+        header: ({table}) => (
             <Checkbox
                 checked={
                     table.getIsAllPageRowsSelected() ||
@@ -83,7 +88,7 @@ const columns = (refreshData) => [
                 aria-label="Select all"
             />
         ),
-        cell: ({ row }) => (
+        cell: ({row}) => (
             <Checkbox
                 checked={row.getIsSelected()}
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -118,7 +123,7 @@ const columns = (refreshData) => [
         id: "actions",
         header: "Thao tác",
         enableHiding: false,
-        cell: ({ row }) => renderActions(row.original, refreshData)
+        cell: ({row}) => renderActions(row.original, refreshData)
     }),
 ];
 
@@ -145,21 +150,23 @@ const ViewRewardList = () => {
             columns={columns(refreshData)}
             data={data}
             addButton={
-                <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
-                    <SheetTrigger asChild>
-                        <Button className="ms-3"><Plus /> Thêm mới</Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Thêm phần thưởng</SheetTitle>
-                            <SheetDescription>Nhập thông tin phần thưởng mới</SheetDescription>
-                        </SheetHeader>
-                        <CreateReward onSuccess={() => {
-                            refreshData();
-                            setOpenCreateSheet(false);
-                        }} />
-                    </SheetContent>
-                </Sheet>
+                checkUserRole("ROLE_ACCOUNTANT") ? (
+                    <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
+                        <SheetTrigger asChild>
+                            <Button className="ms-3"><Plus/> Thêm mới</Button>
+                        </SheetTrigger>
+                        <SheetContent>
+                            <SheetHeader>
+                                <SheetTitle>Thêm phần thưởng</SheetTitle>
+                                <SheetDescription>Nhập thông tin phần thưởng mới</SheetDescription>
+                            </SheetHeader>
+                            <CreateReward onSuccess={() => {
+                                refreshData();
+                                setOpenCreateSheet(false);
+                            }}/>
+                        </SheetContent>
+                    </Sheet>
+                ) : null
             }
         />
     );

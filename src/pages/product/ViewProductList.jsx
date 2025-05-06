@@ -33,6 +33,8 @@ import userService from "@/services/userService";
 import {Skeleton} from "@/components/ui/skeleton.jsx";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet.jsx";
 import CreateProduct from "@/pages/product/CreateProduct.jsx";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
+import LoadingOverlay from "@/components/common/LoadingOverlay.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -115,11 +117,13 @@ const columns = [
                             chép</DropdownMenuItem>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem asChild>
-                            <Link to={`/admin/product/${product.productId}`}>Xem</Link>
+                            <Link to={`/product/${product.productId}`}>Xem</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link to={`/admin/product/update/${product.productId}`}>Sửa</Link>
-                        </DropdownMenuItem>
+                        {checkUserRole("ROLE_ACCOUNTANT") ? (
+                            <DropdownMenuItem asChild>
+                                <Link to={`/product/update/${product.productId}`}>Sửa</Link>
+                            </DropdownMenuItem>
+                        ) : null}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
@@ -134,6 +138,8 @@ const ViewProductList = () => {
     });
 
     const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+    const isAccountant = user?.roles?.includes("ROLE_ACCOUNTANT");
+
     const [warehouses, setWarehouses] = useState([]);
     const [userDetail, setUserDetail] = useState([]);
     const [openCreateSheet, setOpenCreateSheet] = useState(false);
@@ -163,63 +169,68 @@ const ViewProductList = () => {
     const handleCreateOrder = () => {
         const selectedRows = table.getSelectedRowModel().rows;
         const selectedProducts = selectedRows.map((row) => row.original);
-        navigate("/admin/order/create", {state: {selectedProducts}});
+        if (selectedProducts.length > 0) {
+            navigate("/order/create", {state: {selectedProducts}});
+        } else {
+            toast.error("Người dùng chưa chọn sản phẩm.")
+        }
     };
 
     const fetchWarehouses = async () => {
         setLoading(true);
         try {
-            if (isAdmin) {
-                const result = await warehouseService.getAll(setWarehouses);
-                const defaultWarehouseId = result[0]?.warehouseId;
-                setSelectedWarehouseId(defaultWarehouseId); // Gọi 1 lần duy nhất ở đây
+            if (isAdmin || isAccountant) {
+                const result = await warehouseService.getAll(setWarehouse);
+                setWarehouses(result);
+                if (!selectedWarehouseId && result.length > 0) {
+                    setSelectedWarehouseId(result[0].warehouseId); // Chỉ set khi chưa có
+                }
             } else {
-                await (async () => {
-                    const result = await userService.getById(user.id);
-                    setUserDetail(result);
+                const result = await userService.getById(user.id);
+                setUserDetail(result);
 
-                    const memberWarehouse = result.userWarehouses.find((uw) => uw.roleInWarehouse === "Member");
-                    const warehouseId = memberWarehouse?.warehouse?.warehouseId;
-                    setWarehouse(memberWarehouse?.warehouse);
-                    const products = await productService.getByWarehouseId(warehouseId);
-                    setData(products);
-                })().catch(console.error);
+                const memberWarehouse = result.userWarehouses.find((uw) => uw.roleInWarehouse === "Member");
+                const warehouseId = memberWarehouse?.warehouse?.warehouseId;
+                setWarehouse(memberWarehouse?.warehouse);
+                setSelectedWarehouseId(warehouseId); // Thêm dòng này để đồng bộ
             }
         } catch (error) {
-            toast.error("Failed to fetch warehouses");
+            console.log("Lỗi khi tải dữ liệu kho", error);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-         fetchWarehouses();
-    }, []);
+        if (user) {
+            fetchWarehouses();
+        }
+    }, [user]);
 
     const fetchProducts = async () => {
         setLoading(true);
         try {
-            const products = await productService.getByWarehouseId(selectedWarehouseId);
-            setData(products);
+            if (selectedWarehouseId) {
+                const products = await productService.getByWarehouseId(selectedWarehouseId);
+                setData(products);
+            }
         } catch (error) {
-            toast.error("Failed to fetch products");
+            toast.error("Lỗi khi tải sản phẩm");
         } finally {
-            await fetchWarehouses();
             setLoading(false);
         }
     };
 
-    // Mỗi khi selectedWarehouseId thay đổi thì fetch lại product
     useEffect(() => {
-        if (!selectedWarehouseId) return;
-
-        fetchProducts().catch(console.error);
+        if (selectedWarehouseId) {
+            fetchProducts();
+        }
     }, [selectedWarehouseId]);
 
     const handleFetchQuantity = async () => {
         setLoading(true);
         try {
-            await productService.fetchQuantity(warehouse.warehouseId);
+            await productService.fetchQuantity(warehouse.warehouseId ? warehouse.warehouseId : selectedWarehouseId);
         } catch (error) {
             toast.error("Failed to fetch products");
         } finally {
@@ -255,91 +266,41 @@ const ViewProductList = () => {
 
     return (
         <>
-            {loading ? (
-                <Card className="space-y-3 m-5 p-5">
-                    {/* Top bar: Title + Warehouse select */}
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-3">
-                            <Skeleton className="h-8 w-64"/> {/* Title skeleton */}
-                            <Skeleton className="h-10 w-60"/> {/* Warehouse select */}
-                        </div>
-                        <div className="flex space-x-3">
-                            <Skeleton className="h-10 w-28"/> {/* Đồng bộ button */}
-                            <Skeleton className="h-10 w-28"/> {/* Thêm mới button */}
-                            <Skeleton className="h-10 w-36"/> {/* Tạo đơn hàng button */}
-                        </div>
-                    </div>
-
-                    {/* Search input and Column dropdown */}
+            {loading && <LoadingOverlay/>}
+            <Card className="space-y-3 m-5 p-5">
+                <div className="flex justify-between items-center">
                     <div className="flex items-center space-x-3">
-                        <Skeleton className="h-10 w-full"/> {/* Search input */}
-                        <Skeleton className="h-10 w-28"/> {/* Column dropdown */}
+                        <h1 className="text-[#182F73] text-3xl font-bold">Danh sách hàng hóa</h1>
+                        {checkUserRole("ROLE_ADMIN", "ROLE_ACCOUNTANT") ? (
+                            <Select value={selectedWarehouseId}
+                                    onValueChange={(value) => setSelectedWarehouseId(value)}>
+                                <SelectTrigger className="w-[240px] flex items-center gap-2">
+                                    <Warehouse className="h-4 w-4 text-muted-foreground"/>
+                                    <SelectValue placeholder="Chọn kho"/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {warehouses.map((w) => (
+                                        <SelectItem key={w.warehouseId} value={w.warehouseId}>
+                                            {w.warehouseName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        ) : (
+                            <Button variant="outline">
+                                <Warehouse className="mr-2 h-4 w-4"/>
+                                {warehouse.warehouseName}
+                            </Button>
+                        )}
                     </div>
-
-                    {/* Table skeleton */}
-                    <div className="rounded-md border p-5 space-y-3">
-                        {/* Table header */}
-                        <div className="flex space-x-3">
-                            <Skeleton className="h-12 w-full"/>
-                            <Skeleton className="h-12 w-full"/>
-                            <Skeleton className="h-12 w-full"/>
-                            <Skeleton className="h-12 w-full"/>
-                            <Skeleton className="h-12 w-full"/>
-                        </div>
-
-                        {/* Fake table rows */}
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((row) => (
-                            <div key={row} className="flex space-x-3">
-                                <Skeleton className="h-16 w-full"/>
-                                <Skeleton className="h-16 w-full"/>
-                                <Skeleton className="h-16 w-full"/>
-                                <Skeleton className="h-16 w-full"/>
-                                <Skeleton className="h-16 w-full"/>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Bottom pagination */}
-                    <div className="flex items-center justify-end space-x-2 pt-5">
-                        <Skeleton className="h-5 w-48"/> {/* Selected count */}
-                        <div className="flex space-x-2">
-                            <Skeleton className="h-8 w-20"/> {/* Previous button */}
-                            <Skeleton className="h-8 w-20"/> {/* Next button */}
-                        </div>
-                    </div>
-                </Card>
-            ) : (
-                <Card className="space-y-3 m-5 p-5">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-3">
-                            <h1 className="text-[#182F73] text-3xl font-bold">Danh sách hàng hóa</h1>
-                            {isAdmin ? (
-                                <Select value={selectedWarehouseId}
-                                        onValueChange={(value) => setSelectedWarehouseId(value)}>
-                                    <SelectTrigger className="w-[240px] flex items-center gap-2">
-                                        <Warehouse className="h-4 w-4 text-muted-foreground"/>
-                                        <SelectValue placeholder="Chọn kho"/>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {warehouses.map((w) => (
-                                            <SelectItem key={w.warehouseId} value={w.warehouseId}>
-                                                {w.warehouseName}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            ) : (
-                                <Button variant="outline">
-                                    <Warehouse className="mr-2 h-4 w-4"/>
-                                    {warehouse.warehouseName}
-                                </Button>
-                            )}
-                        </div>
-                        <div className="space-x-3">
+                    <div className="space-x-3">
+                        {checkUserRole("ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR") ? (
                             <Button variant="outline" onClick={handleFetchQuantity}>
                                 <CloudDownload/>
                                 Đồng bộ
                             </Button>
+                        ) : null}
+                        {checkUserRole("ROLE_ACCOUNTANT") ? (
                             <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
                                 <SheetTrigger asChild>
                                     <Button className="ms-3"><Plus/> Thêm mới</Button>
@@ -355,92 +316,94 @@ const ViewProductList = () => {
                                     }}/>
                                 </SheetContent>
                             </Sheet>
+                        ) : null}
+                        {checkUserRole("ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER") ? (
                             <Button variant="default" onClick={handleCreateOrder}>
                                 <ShoppingCart/> Tạo đơn hàng
                             </Button>
-                        </div>
+                        ) : null}
                     </div>
-                    <div className="flex items-center space-x-3">
-                        <Input
-                            placeholder="Tìm kiếm nhanh..."
-                            value={globalFilter}
-                            onChange={(e) => {
-                                setGlobalFilter(e.target.value);
-                                table.setGlobalFilter(e.target.value);
-                            }}
-                            className="w-full"
-                        />
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="ml-auto">
-                                    Cột <ChevronDown/>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                {table
-                                    .getAllColumns()
-                                    .filter((column) => column.getCanHide())
-                                    .map((column) => (
-                                        <DropdownMenuCheckboxItem key={column.id} className="capitalize"
-                                                                  checked={column.getIsVisible()}
-                                                                  onCheckedChange={(value) => column.toggleVisibility(!!value)}>
-                                            {column.columnDef.name}
-                                        </DropdownMenuCheckboxItem>
+                </div>
+                <div className="flex items-center space-x-3">
+                    <Input
+                        placeholder="Tìm kiếm nhanh..."
+                        value={globalFilter}
+                        onChange={(e) => {
+                            setGlobalFilter(e.target.value);
+                            table.setGlobalFilter(e.target.value);
+                        }}
+                        className="w-full"
+                    />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto">
+                                Cột <ChevronDown/>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((column) => column.getCanHide())
+                                .map((column) => (
+                                    <DropdownMenuCheckboxItem key={column.id} className="capitalize"
+                                                              checked={column.getIsVisible()}
+                                                              onCheckedChange={(value) => column.toggleVisibility(!!value)}>
+                                        {column.columnDef.name}
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                <div className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <TableHead
+                                            key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
                                     ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                    <div className="rounded-md border">
-                        <Table>
-                            <TableHeader>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id}>
-                                        {headerGroup.headers.map((header) => (
-                                            <TableHead
-                                                key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
+                                </TableRow>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell
+                                                key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                                         ))}
                                     </TableRow>
-                                ))}
-                            </TableHeader>
-                            <TableBody>
-                                {table.getRowModel().rows?.length ? (
-                                    table.getRowModel().rows.map((row) => (
-                                        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                                            {row.getVisibleCells().map((cell) => (
-                                                <TableCell
-                                                    key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                                            ))}
-                                        </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={columns.length} className="h-24 text-center">
-                                            No results.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+                <div className="flex items-center justify-end space-x-2">
+                    <div className="flex-1 text-sm text-muted-foreground">
+                        {" "}
+                        Đã chọn&nbsp;
+                        {table.getFilteredSelectedRowModel().rows.length} trên {table.getFilteredRowModel().rows.length} hàng.
                     </div>
-                    <div className="flex items-center justify-end space-x-2">
-                        <div className="flex-1 text-sm text-muted-foreground">
-                            {" "}
-                            Đã chọn&nbsp;
-                            {table.getFilteredSelectedRowModel().rows.length} trên {table.getFilteredRowModel().rows.length} hàng.
-                        </div>
-                        <div className="space-x-2">
-                            <Button variant="outline" size="sm" onClick={() => table.previousPage()}
-                                    disabled={!table.getCanPreviousPage()}>
-                                Trước
-                            </Button>
-                            <Button variant="outline" size="sm" onClick={() => table.nextPage()}
-                                    disabled={!table.getCanNextPage()}>
-                                Sau
-                            </Button>
-                        </div>
+                    <div className="space-x-2">
+                        <Button variant="outline" size="sm" onClick={() => table.previousPage()}
+                                disabled={!table.getCanPreviousPage()}>
+                            Trước
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => table.nextPage()}
+                                disabled={!table.getCanNextPage()}>
+                            Sau
+                        </Button>
                     </div>
-                </Card>
-            )}
+                </div>
+            </Card>
         </>
     );
 };

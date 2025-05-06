@@ -9,6 +9,7 @@ import productService from "@/services/productService.jsx";
 import {formatCurrency} from "@/utils/formatCurrency.jsx";
 import mockApiService from "@/services/mockApiService.jsx";
 import DisableDialog from "@/components/common/DisableDialog.jsx";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
 
 const ViewProductDetail = () => {
     const [user, setUser] = useState(() => {
@@ -58,10 +59,12 @@ const ViewProductDetail = () => {
         <div className="space-y-5 m-5">
             <div className="flex justify-between items-center">
                 <h1 className="text-[#182F73] text-3xl font-bold">Sửa thông tin hàng hóa</h1>
-                <div className="space-x-3">
-                    <Button asChild><Link to={`/admin/product/update/1`}><Pencil/>Sửa</Link></Button>
-                    <DisableDialog item="sản phẩm"/>
-                </div>
+                {checkUserRole("ROLE_ACCOUNTANT") ? (
+                    <div className="space-x-3">
+                        <Button asChild><Link to={`/product/update/1`}><Pencil/>Sửa</Link></Button>
+                        <DisableDialog item="sản phẩm"/>
+                    </div>
+                ) : null}
             </div>
 
             <div className="flex space-x-5">

@@ -15,6 +15,7 @@ import DataTable from "@/components/common/DataTable.jsx";
 import warehouseService from "@/services/warehouseService.jsx";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {ViewWarehouseDetail, CreateWarehouse, UpdateWarehouse} from "@/pages/warehouse/WarehouseSheet.jsx"
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -118,21 +119,23 @@ const columns = (setData) => [
                             </Sheet>
                         </DropdownMenuItem>
                         {/* Nút "Sửa" */}
-                        <DropdownMenuItem asChild>
-                            <Sheet>
-                                <SheetTrigger asChild>
+                        {checkUserRole("ROLE_ACCOUNTANT") ? (
+                            <DropdownMenuItem asChild>
+                                <Sheet>
+                                    <SheetTrigger asChild>
                                     <span
                                         className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">Sửa</span>
-                                </SheetTrigger>
-                                <SheetContent>
-                                    <SheetHeader>
-                                        <SheetTitle>Sửa kho</SheetTitle>
-                                        <SheetDescription>Chỉnh sửa thông tin kho.</SheetDescription>
-                                    </SheetHeader>
-                                    <UpdateWarehouse warehouseId={data.warehouseId} setData={setData}/>
-                                </SheetContent>
-                            </Sheet>
-                        </DropdownMenuItem>
+                                    </SheetTrigger>
+                                    <SheetContent>
+                                        <SheetHeader>
+                                            <SheetTitle>Sửa kho</SheetTitle>
+                                            <SheetDescription>Chỉnh sửa thông tin kho.</SheetDescription>
+                                        </SheetHeader>
+                                        <UpdateWarehouse warehouseId={data.warehouseId} setData={setData}/>
+                                    </SheetContent>
+                                </Sheet>
+                            </DropdownMenuItem>
+                        ) : null}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
@@ -162,18 +165,21 @@ const ViewWarehouseList = () => {
             columns={columns(setData)}
             data={data}
             addButton={
-                <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
-                    <SheetTrigger asChild>
-                        <Button className="ms-3"><Plus/> Thêm mới</Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Thêm kho</SheetTitle>
-                            <SheetDescription>Nhập thông tin kho mới</SheetDescription>
-                        </SheetHeader>
-                        <CreateWarehouse setData={setData} onClose={() => setOpenCreateSheet(false)}/>
-                    </SheetContent>
-                </Sheet>}
+                checkUserRole("ROLE_ACCOUNTANT") ? (
+                    <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
+                        <SheetTrigger asChild>
+                            <Button className="ms-3"><Plus/> Thêm mới</Button>
+                        </SheetTrigger>
+                        <SheetContent>
+                            <SheetHeader>
+                                <SheetTitle>Thêm kho</SheetTitle>
+                                <SheetDescription>Nhập thông tin kho mới</SheetDescription>
+                            </SheetHeader>
+                            <CreateWarehouse setData={setData} onClose={() => setOpenCreateSheet(false)}/>
+                        </SheetContent>
+                    </Sheet>
+                ) : null
+            }
         />
     );
 };

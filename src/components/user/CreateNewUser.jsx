@@ -8,14 +8,15 @@ import {Input} from "@/components/ui/input.jsx";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.jsx";
 import {Button} from "@/components/ui/button.jsx";
 import {Plus} from "lucide-react";
+import LoadingOverlay from "@/components/common/LoadingOverlay.jsx";
 
-const CreateNewUser = ({setUserList, setIsOpen}) => {
+const CreateNewUser = ({onSuccess}) => {
     const {
         register,
         handleSubmit,
         control,
         setError,
-        formState: { errors },
+        formState: {errors},
         reset,
     } = useForm({
         defaultValues: {
@@ -43,7 +44,10 @@ const CreateNewUser = ({setUserList, setIsOpen}) => {
         loadInitialData();
     }, []);
 
+    const [loading, setLoading] = useState(false);
+
     const onSubmit = async (newUserData) => {
+        setLoading(true);
         try {
             await userService.create({
                 misaCode: newUserData.misaCode,
@@ -52,10 +56,7 @@ const CreateNewUser = ({setUserList, setIsOpen}) => {
             });
             toast.success("Tạo người dùng thành công!");
             reset();
-            await userService.getAll(setUserList).catch((err) =>
-                console.error("Failed to fetch user list:", err),
-            );
-            setIsOpen(false);
+            onSuccess?.();
         } catch (error) {
             toast.error("Tạo người dùng không thành công!");
 
@@ -65,73 +66,78 @@ const CreateNewUser = ({setUserList, setIsOpen}) => {
                     setError(field, {type: "server", message: messages[field]});
                 }
             }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
-            <div>
-                <label className="block mb-1 text-sm font-medium">Mã MISA</label>
-                <Input {...register("misaCode")} placeholder="Nhập mã MISA"/>
-                {errors.misaCode && <p className="text-sm text-red-500">{errors.misaCode.message}</p>}
-            </div>
+        <>
+            {loading && <LoadingOverlay/>}
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+                <div>
+                    <label className="block mb-1 text-sm font-medium">Mã MISA</label>
+                    <Input {...register("misaCode")} placeholder="Nhập mã MISA"/>
+                    {errors.misaCode && <p className="text-sm text-red-500">{errors.misaCode.message}</p>}
+                </div>
 
-            <div>
-                <label className="block mb-1 text-sm font-medium">Vai trò</label>
-                <Controller
-                    control={control}
-                    name="roleId"
-                    render={({field}) => (
-                        <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Chọn vai trò"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                {roleOptions.map((role) => (
-                                    <SelectItem
-                                        key={role.roleId}
-                                        value={String(role.roleId)}
-                                    >
-                                        {role.roleName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    )}
-                />
-                {errors.roleId && <p className="text-sm text-red-500">{errors.roleId.message}</p>}
-            </div>
+                <div>
+                    <label className="block mb-1 text-sm font-medium">Vai trò</label>
+                    <Controller
+                        control={control}
+                        name="roleId"
+                        render={({field}) => (
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Chọn vai trò"/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {roleOptions.slice(2).map((role) => (
+                                        <SelectItem
+                                            key={role.roleId}
+                                            value={String(role.roleId)}
+                                        >
+                                            {role.roleName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
+                    />
+                    {errors.roleId && <p className="text-sm text-red-500">{errors.roleId.message}</p>}
+                </div>
 
-            <div>
-                <label className="block mb-1 text-sm font-medium">Kho</label>
-                <Controller
-                    control={control}
-                    name="warehouseId"
-                    render={({field}) => (
-                        <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Chọn kho"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                {warehouseOptions.map((wh) => (
-                                    <SelectItem
-                                        key={wh.warehouseId}
-                                        value={String(wh.warehouseId)}
-                                    >
-                                        {wh.warehouseName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    )}
-                />
-                {errors.warehouseId && <p className="text-sm text-red-500">{errors.warehouseId.message}</p>}
-            </div>
+                <div>
+                    <label className="block mb-1 text-sm font-medium">Kho</label>
+                    <Controller
+                        control={control}
+                        name="warehouseId"
+                        render={({field}) => (
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Chọn kho"/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {warehouseOptions.map((wh) => (
+                                        <SelectItem
+                                            key={wh.warehouseId}
+                                            value={String(wh.warehouseId)}
+                                        >
+                                            {wh.warehouseName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
+                    />
+                    {errors.warehouseId && <p className="text-sm text-red-500">{errors.warehouseId.message}</p>}
+                </div>
 
-            <Button type="submit">
-                <Plus/> Thêm mới
-            </Button>
-        </form>
+                <Button type="submit">
+                    <Plus/> Thêm mới
+                </Button>
+            </form>
+        </>
     );
 };
 

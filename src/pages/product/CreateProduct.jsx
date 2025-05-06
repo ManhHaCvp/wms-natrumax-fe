@@ -13,6 +13,7 @@ import {
     SelectValue
 } from "@/components/ui/select.jsx";
 import {Save} from "lucide-react";
+import LoadingOverlay from "@/components/common/LoadingOverlay.jsx";
 
 const CreateProduct = ({onSuccess}) => {
     const {
@@ -45,7 +46,10 @@ const CreateProduct = ({onSuccess}) => {
         fetchCategories();
     }, []);
 
+    const [loading, setLoading] = useState(false);
+
     const onSubmit = async (formData) => {
+        setLoading(true);
         try {
             await productService.create({
                 misaCode: formData.misaCode,
@@ -65,47 +69,52 @@ const CreateProduct = ({onSuccess}) => {
                     setError(field, {type: "server", message: messages[field]});
                 }
             }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-3 space-y-3">
-            <div>
-                <label className="block mb-1 text-sm font-medium">Mã MISA</label>
-                <Input {...register("misaCode")} placeholder="Nhập mã MISA"/>
-                {errors.misaCode && <p className="text-sm text-red-500">{errors.misaCode.message}</p>}
-            </div>
-            <div>
-                <label className="block mb-1 text-sm font-medium">Barcode</label>
-                <Input {...register("barcode")} placeholder="Nhập mã barcode"/>
-                {errors.barcode && <p className="text-sm text-red-500">{errors.barcode.message}</p>}
-            </div>
-            <div>
-                <label className="block mb-1 text-sm font-medium">Danh mục</label>
-                <Controller
-                    name="categoryId"
-                    control={control}
-                    render={({field}) => (
-                        <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Chọn danh mục"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                {categories.map((cat) => (
-                                    <SelectItem key={cat.categoryId} value={String(cat.categoryId)}>
-                                        {cat.categoryName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    )}
-                />
-                {errors.categoryId && <p className="text-sm text-red-500">{errors.categoryId.message}</p>}
-            </div>
-            <Button type="submit" variant="default">
-                <Save className="mr-2 h-4 w-4"/> Lưu
-            </Button>
-        </form>
+        <>
+            {loading && <LoadingOverlay/>}
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-3 space-y-3">
+                <div>
+                    <label className="block mb-1 text-sm font-medium">Mã MISA</label>
+                    <Input {...register("misaCode")} placeholder="Nhập mã MISA"/>
+                    {errors.misaCode && <p className="text-sm text-red-500">{errors.misaCode.message}</p>}
+                </div>
+                <div>
+                    <label className="block mb-1 text-sm font-medium">Barcode</label>
+                    <Input {...register("barcode")} placeholder="Nhập mã barcode"/>
+                    {errors.barcode && <p className="text-sm text-red-500">{errors.barcode.message}</p>}
+                </div>
+                <div>
+                    <label className="block mb-1 text-sm font-medium">Danh mục</label>
+                    <Controller
+                        name="categoryId"
+                        control={control}
+                        render={({field}) => (
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Chọn danh mục"/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {categories.map((cat) => (
+                                        <SelectItem key={cat.categoryId} value={String(cat.categoryId)}>
+                                            {cat.categoryName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
+                    />
+                    {errors.categoryId && <p className="text-sm text-red-500">{errors.categoryId.message}</p>}
+                </div>
+                <Button type="submit" variant="default">
+                    <Save className="mr-2 h-4 w-4"/> Lưu
+                </Button>
+            </form>
+        </>
     );
 };
 

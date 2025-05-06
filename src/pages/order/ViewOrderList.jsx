@@ -106,10 +106,10 @@ const useOrderColumns = () => useMemo(() => [
                         </DropdownMenuItem>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem asChild>
-                            <Link to={`/admin/order/${data.orderId}`}>Xem</Link>
+                            <Link to={`/order/${data.orderId}`}>Xem</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to={`/admin/order/update/${data.orderId}`}>Sửa</Link>
+                            <Link to={`/order/update/${data.orderId}`}>Sửa</Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

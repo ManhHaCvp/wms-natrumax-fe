@@ -46,6 +46,7 @@ const CreateOrder = () => {
             try {
                 if (totalPrice > 0) {
                     await discountService.getByTotalAmount({totalAmount: totalPrice}, setDiscount);
+                    console.log(discount);
                 } else {
                     setDiscount(null);
                 }
@@ -110,7 +111,7 @@ const CreateOrder = () => {
 
             const response = await orderService.create(payload);
             toast.success("Đơn hàng đã được tạo thành công!");
-            navigate(`/admin/order/${response.orderId}`);
+            navigate(`/order/${response.orderId}`);
         } catch (error) {
             toast.error("Tạo đơn hàng thất bại.");
         }

@@ -13,7 +13,7 @@ import Warehouse from "@/components/user/Warehouse";
 
 import ApiConnection from "@/components/user/ApiConnection";
 import userService from "@/services/userService";
-import {checkUserRoleByUser} from "@/utils/checkUserRole";
+import {checkUserRole, checkUserRoleByUser} from "@/utils/checkUserRole";
 import ChangeStatusButton from "@/components/common/ChangeStatusButton.jsx";
 import toast from "react-hot-toast";
 
@@ -50,19 +50,20 @@ const ViewUserDetail = () => {
             <div className="flex justify-between items-center mb-5">
                 <h1 className="text-[#182F73] text-3xl font-bold">Thông tin người dùng</h1>
                 <div>
-                    <Button asChild><Link to={`/admin/user/update/${user.id}`}><Pencil/>Sửa</Link></Button>
+                    <Button asChild><Link to={`/user/update/${user.id}`}><Pencil/>Sửa</Link></Button>
                     <ChangeStatusButton user={user} handleChangeStatus={handleChangeStatus}/>
                 </div>
             </div>
             <div className="flex">
-                <Card className="w-2/6 h-fit p-5">
+                <Card
+                    className={`${checkUserRoleByUser(user, "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER") ? "w-2/6" : "w-full"} h-fit p-5`}>
                     <div className="flex justify-between items-center">
                         <div>
                             <div className="text-3xl font-semibold">{user.accountName}</div>
                             <CardDescription>{user.role?.name}</CardDescription>
                         </div>
                         <Button variant="outline" asChild><Link
-                            to={`/admin/user/update/${user.id}`}><Pencil/></Link></Button>
+                            to={`/user/update/${user.id}`}><Pencil/></Link></Button>
                     </div>
                     <div className="font-semibold grid grid-cols-1 gap-5 mt-7">
                         <div>
@@ -78,7 +79,7 @@ const ViewUserDetail = () => {
                             <div>
                                 <p className="text-muted-foreground">Mật khẩu</p>*******
                             </div>
-                            <Link to="/admin/user/change-password" className="text-[#182F73] hover:text-[#12245C]">Thay
+                            <Link to="/change-password" className="text-[#182F73] hover:text-[#12245C]">Thay
                                 đổi</Link>
                         </div>
                         <div>
@@ -91,49 +92,52 @@ const ViewUserDetail = () => {
                         </div>
                     </div>
                 </Card>
-                <Tabs defaultValue="order-history" className="w-full ms-5">
-                    <TabsList className="grid w-full grid-cols-6 ">
-                        {checkUserRoleByUser(user, "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER") && (
-                            <>
+                {checkUserRoleByUser(user, "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER") && (
+                    <>
+                        <Tabs defaultValue="order-history" className="w-full ms-5">
+                            <TabsList className="grid w-full grid-cols-6 ">
                                 <TabsTrigger value="order-history">Lịch sử đặt hàng</TabsTrigger>
                                 <TabsTrigger value="wallet">Ví</TabsTrigger>
-                                <TabsTrigger value="promotion">Khuyến mại</TabsTrigger>
-                            </>
-                        )}
-                        <TabsTrigger value="commission">Hoa hồng</TabsTrigger>
-                        <TabsTrigger value="warehouse">Kho</TabsTrigger>
-                        {checkUserRoleByUser(user, "ROLE_BRANCH_OWNER") && (
-                            <TabsTrigger value="api-connection">Kết nối API</TabsTrigger>
-                        )}
-                    </TabsList>
-                    <TabsContent value="order-history">
-                        <OrderHistory userId={user.id}/>
-                    </TabsContent>
-                    <TabsContent value="wallet">
-                        <Card>
-                            <Wallet userId={user.id} bank={user.bank}/>
-                        </Card>
-                    </TabsContent>
-                    <TabsContent value="commission">
-                        <Card className="p-5">
-                            <Commission userId={user.id}/>
-                        </Card>
-                    </TabsContent>
-                    <TabsContent value="promotion">
-                        <Card>
-                            <Promotion promotion={user.promotion}/>
-                        </Card>
-                    </TabsContent>
-                    <TabsContent value="api-connection">
-                        <Card>
-                            <ApiConnection detail={user.detail}/>
-                        </Card>
-                    </TabsContent>
-                    <TabsContent value="warehouse">
-                        <Warehouse warehouses={user.userWarehouses}/>
-                    </TabsContent>
+                                {/*<TabsTrigger value="promotion">Khuyến mại</TabsTrigger>*/}
 
-                </Tabs>
+                                <TabsTrigger value="commission">Hoa hồng</TabsTrigger>
+                                <TabsTrigger value="warehouse">Kho</TabsTrigger>
+                                {checkUserRole("ROLE_BRANCH_OWNER") && (
+                                    <TabsTrigger value="api-connection">Kết nối API</TabsTrigger>
+                                )}
+                            </TabsList>
+                            <TabsContent value="order-history">
+                                <OrderHistory userId={user.id}/>
+                            </TabsContent>
+                            <TabsContent value="wallet">
+                                <Card>
+                                    <Wallet userId={user.id} bank={user.bank}/>
+                                </Card>
+                            </TabsContent>
+                            <TabsContent value="commission">
+                                <Card className="p-5">
+                                    <Commission userId={user.id}/>
+                                </Card>
+                            </TabsContent>
+                            <TabsContent value="promotion">
+                                <Card>
+                                    <Promotion promotion={user.promotion}/>
+                                </Card>
+                            </TabsContent>
+                            <TabsContent value="api-connection">
+                                {checkUserRole("ROLE_BRANCH_OWNER") ? (
+                                <Card>
+                                    <ApiConnection detail={user.detail}/>
+                                </Card>
+                                ) : null}
+                            </TabsContent>
+                            <TabsContent value="warehouse">
+                                <Warehouse warehouses={user.userWarehouses}/>
+                            </TabsContent>
+
+                        </Tabs>
+                    </>
+                )}
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
     Clock3,
     Users,
@@ -29,8 +29,16 @@ import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@radix-ui/rea
 import {Link, useNavigate} from "react-router-dom";
 import {Misa} from "@/assets/icons/Misa.jsx";
 import {KiotViet} from "@/assets/icons/KiotViet.jsx";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
+import {useAuth} from "@/providers/authProvider.jsx";
 
 const AppSidebar = () => {
+    const { user } = useAuth();
+
+    const hasRole = (allowedRoles) => {
+        if (!allowedRoles) return true;
+        return user?.roles?.some((r) => allowedRoles.includes(r));
+    };
 
     const data = {
         navMain: [
@@ -38,20 +46,23 @@ const AppSidebar = () => {
                 icon: Clock3,
                 title: "Tổng quan",
                 url: "/dashboard",
+                roles: ["ROLE_ADMIN", "ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER"],
                 items: [],
             },
             {
                 icon: Users,
                 title: "Đối tượng",
                 url: "#",
+                roles: ["ROLE_ADMIN", "ROLE_ACCOUNTANT"],
                 items: [
                     {
                         title: "Người dùng",
-                        url: "/admin/users",
+                        url: "/users",
                     },
                     {
                         title: "Vai trò",
-                        url: "/admin/roles",
+                        url: "/roles",
+                        roles: ["ROLE_ADMIN"],
                     }
                 ],
             },
@@ -59,18 +70,22 @@ const AppSidebar = () => {
                 icon: Package,
                 title: "Hàng hóa",
                 url: "#",
+                roles: ["ROLE_ADMIN", "ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER"],
                 items: [
                     {
                         title: "Hàng hóa",
-                        url: "/admin/products",
+                        url: "/products",
+                        roles: ["ROLE_ADMIN", "ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER"],
                     },
                     {
                         title: "Nhóm hàng",
-                        url: "/admin/categories",
+                        url: "/categories",
+                        roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR"],
                     },
                     {
                         title: "Kho",
-                        url: "/admin/warehouses",
+                        url: "/warehouses",
+                        roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR"],
                     },
                 ],
             },
@@ -78,38 +93,46 @@ const AppSidebar = () => {
                 icon: ShoppingCart,
                 title: "Đơn hàng",
                 url: "#",
+                roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR"],
                 items: [
                     {
                         title: "Đơn hàng",
-                        url: "/admin/orders",
+                        url: "/orders",
+                        roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR"],
                     },
                     {
                         title: "Giao dịch",
-                        url: "/admin/transactions",
+                        url: "/transactions",
+                        roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR"],
                     },
                     {
                         title: "Giảm giá",
-                        url: "/admin/discounts",
+                        url: "/discounts",
+                        roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER"],
                     },
                 ],
             },
             {
                 icon: Banknote,
                 title: "Hoa hồng",
-                url: "/admin/commissions"
+                url: "/commissions",
+                roles: ["ROLE_ACCOUNTANT"],
             },
             {
                 icon: CalendarCheck,
                 title: "Sự kiện",
                 url: "#",
+                roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER"],
                 items: [
                     {
                         title: "Vé quay thưởng",
-                        url: "/admin/lottery-codes",
+                        url: "/lottery-codes",
+                        roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR", "ROLE_BRANCH_OWNER"],
                     },
                     {
                         title: "Phần thưởng",
-                        url: "/admin/rewards",
+                        url: "/rewards",
+                        roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR"],
                     }
                 ],
             },
@@ -117,29 +140,31 @@ const AppSidebar = () => {
                 icon: Misa,
                 title: "MISA Kế toán",
                 url: "#",
+                roles: ["ROLE_ACCOUNTANT", "ROLE_DISTRIBUTOR"],
                 items: [
                     {
                         title: "Phiếu bán hàng",
-                        url: "/admin/misa/sales",
+                        url: "/misa/sales",
                     },
                     {
                         title: "Phiếu xuất kho",
-                        url: "/admin/misa/inventory-outs",
+                        url: "/misa/inventory-outs",
                     },
                     {
                         title: "Phiếu gửi tiền",
-                        url: "/admin/misa/receipts",
+                        url: "/misa/receipts",
                     },
                     {
                         title: "Phiếu nhập kho",
-                        url: "/admin/misa/inventory-ins",
+                        url: "/misa/inventory-ins",
                     },
                 ],
             },
             {
                 icon: KiotViet,
                 title: "KiotViet",
-                url: "/admin/kiotviet/purchase-orders",
+                url: "/kiotviet/purchase-orders",
+                roles: ["ROLE_BRANCH_OWNER"],
             }
         ],
     };
@@ -162,52 +187,48 @@ const AppSidebar = () => {
                 <SidebarGroup>
                     <SidebarGroupLabel>Phân hệ</SidebarGroupLabel>
                     <SidebarMenu>
-                        {data.navMain.map((item) => (
-                            item.url !== "#" ? (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <Link to={item.url}>
-                                            <item.icon/>
-                                            <span>{item.title}</span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ) : (
-                                <Collapsible
-                                    key={item.title}
-                                    className="group/collapsible"
-                                >
-                                    <SidebarMenuItem>
-                                        <CollapsibleTrigger asChild>
-                                            <SidebarMenuButton>
-                                                <item.icon/>
+                        {data.navMain
+                            .filter((item) => hasRole(item.roles))
+                            .map((item) => (
+                                item.url !== "#" ? (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton asChild>
+                                            <Link to={item.url}>
+                                                <item.icon />
                                                 <span>{item.title}</span>
-                                                <ChevronRight
-                                                    className="ml-auto group-data-[state=open]/collapsible:hidden"/>
-                                                <ChevronDown
-                                                    className="ml-auto group-data-[state=closed]/collapsible:hidden"/>
-                                            </SidebarMenuButton>
-                                        </CollapsibleTrigger>
-                                        {item.items?.length ? (
-                                            <CollapsibleContent>
-                                                <SidebarMenuSub>
-                                                    {item.items.map((item) => (
-                                                        <SidebarMenuSubItem key={item.title}>
-                                                            <SidebarMenuSubButton
-                                                                asChild
-                                                                isActive={item.isActive}
-                                                            >
-                                                                <Link to={item.url}>{item.title}</Link>
-                                                            </SidebarMenuSubButton>
-                                                        </SidebarMenuSubItem>
-                                                    ))}
-                                                </SidebarMenuSub>
-                                            </CollapsibleContent>
-                                        ) : null}
+                                            </Link>
+                                        </SidebarMenuButton>
                                     </SidebarMenuItem>
-                                </Collapsible>
-                            )
-                        ))}
+                                ) : (
+                                    <Collapsible key={item.title} className="group/collapsible">
+                                        <SidebarMenuItem>
+                                            <CollapsibleTrigger asChild>
+                                                <SidebarMenuButton>
+                                                    <item.icon />
+                                                    <span>{item.title}</span>
+                                                    <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
+                                                    <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+                                                </SidebarMenuButton>
+                                            </CollapsibleTrigger>
+                                            {item.items?.length ? (
+                                                <CollapsibleContent>
+                                                    <SidebarMenuSub>
+                                                        {item.items
+                                                            .filter((sub) => hasRole(sub.roles))
+                                                            .map((sub) => (
+                                                            <SidebarMenuSubItem key={sub.title}>
+                                                                <SidebarMenuSubButton asChild>
+                                                                    <Link to={sub.url}>{sub.title}</Link>
+                                                                </SidebarMenuSubButton>
+                                                            </SidebarMenuSubItem>
+                                                        ))}
+                                                    </SidebarMenuSub>
+                                                </CollapsibleContent>
+                                            ) : null}
+                                        </SidebarMenuItem>
+                                    </Collapsible>
+                                )
+                            ))}
                     </SidebarMenu>
                 </SidebarGroup>
                 {/*<SidebarGroup>*/}

@@ -7,12 +7,15 @@ import {
     ShoppingCart,
     Package,
     BarChart3,
+    CloudDownload
 } from "lucide-react";
 import {API_KEY, DEEPSEEK_V3_TURBO} from "@/utils/constants.jsx";
 import toast from "react-hot-toast";
 import productService from "@/services/productService.jsx";
 import orderService from "@/services/orderService.jsx";
 import reportService from "@/services/reportService.jsx";
+import commissionService from "@/services/commissionService.jsx";
+import LoadingOverlay from "@/components/common/LoadingOverlay.jsx";
 
 const ChatInterface = ({userId, warehouseId}) => {
     const sampleQueries = [
@@ -53,6 +56,7 @@ const ChatInterface = ({userId, warehouseId}) => {
     const [input, setInput] = useState("");
     const [selectedQuery, setSelectedQuery] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [fetchLoading, setFetchLoading] = useState(false);
 
     const buildPrompt = (question, apiData) => `
         Bạn là một trợ lý kho thông minh. Người dùng vừa hỏi: "${question}".
@@ -155,63 +159,85 @@ const ChatInterface = ({userId, warehouseId}) => {
             .replace(/\*(.*?)\*/g, "<em>$1</em>");
     };
 
+    const handleFetchReport = async () => {
+        setFetchLoading(true);
+        try {
+            await commissionService.createReport(currentMonth, currentYear);
+        } catch (error) {
+            toast.error("Failed to fetch report");
+        } finally {
+            setFetchLoading(false);
+        }
+    }
+
     return (
-        <Card className="w-full p-5 space-y-5 rounded-lg max-w-full mx-auto">
-            <h1 className="text-3xl font-bold text-gray-800">
-                <span className="text-[#182F73]">Xin chào</span>, bạn cần hỗ trợ gì?
-            </h1>
+        <>
+            {fetchLoading && <LoadingOverlay/>}
+            <Card className="w-full p-5 space-y-5 rounded-lg max-w-full mx-auto">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-3xl font-bold text-gray-800">
+                        <span className="text-[#182F73]">Xin chào</span>, bạn cần hỗ trợ gì?
+                    </h1>
+                    <Button variant="outline" onClick={handleFetchReport}>
+                        <CloudDownload/>
+                        Đồng bộ
+                    </Button>
+                </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                {sampleQueries.map((query, index) => (
-                    <Card
-                        key={index}
-                        className="p-3 flex items-center space-x-3 cursor-pointer bg-white hover:bg-gray-100"
-                        onClick={() => handleQuerySelection(query)}
-                    >
-                        {query.icon}
-                        <span>{query.text}</span>
-                    </Card>
-                ))}
-            </div>
+                <div className="grid grid-cols-2 gap-4">
+                    {sampleQueries.map((query, index) => (
+                        <Card
+                            key={index}
+                            className="p-3 flex items-center space-x-3 cursor-pointer bg-white hover:bg-gray-100"
+                            onClick={() => handleQuerySelection(query)}
+                        >
+                            {query.icon}
+                            <span>{query.text}</span>
+                        </Card>
+                    ))}
+                </div>
 
-            {selectedQuery && (
-                <>
-                    <div className="text-lg font-semibold text-gray-700 mb-2">🗨️ Chat với hệ thống</div>
-                    <div className="bg-white p-3 border rounded-lg mb-3">
-                        <p className="text-gray-600">🖥️ Hệ thống: Bạn đã chọn "{selectedQuery.text}".</p>
-                    </div>
+                {selectedQuery && (
+                    <>
+                        <div className="text-lg font-semibold text-gray-700 mb-2">🗨️ Chat với hệ thống</div>
+                        <div className="bg-white p-3 border rounded-lg mb-3">
+                            <p className="text-gray-600">🖥️ Hệ thống: Bạn đã chọn "{selectedQuery.text}".</p>
+                        </div>
 
-                    <div className="border p-3 bg-white rounded-lg space-y-3" style={{height: 400, overflowY: "scroll"}}>
-                        {messages.map((msg, idx) => (
-                            <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                                <div
-                                    className={`p-3 rounded-lg max-w-xs whitespace-pre-line text-sm leading-relaxed ${
-                                        msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
-                                    }`}
-                                >
-                                    <strong>{msg.role === "user" ? "Bạn" : "Bot"}:</strong>{" "}
-                                    <div dangerouslySetInnerHTML={{__html: msg.content}}/>
+                        <div className="border p-3 bg-white rounded-lg space-y-3"
+                             style={{height: 400, overflowY: "scroll"}}>
+                            {messages.map((msg, idx) => (
+                                <div key={idx}
+                                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                                    <div
+                                        className={`p-3 rounded-lg max-w-xs whitespace-pre-line text-sm leading-relaxed ${
+                                            msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
+                                        }`}
+                                    >
+                                        <strong>{msg.role === "user" ? "Bạn" : "Bot"}:</strong>{" "}
+                                        <div dangerouslySetInnerHTML={{__html: msg.content}}/>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                        {loading && <div className="text-sm text-gray-500">⏳ Đang xử lý...</div>}
-                    </div>
+                            ))}
+                            {loading && <div className="text-sm text-gray-500">⏳ Đang xử lý...</div>}
+                        </div>
 
-                    <div className="flex items-center border rounded-lg px-2 py-1 mt-3 bg-white">
-                        <Input
-                            className="flex-1 border-none focus:ring-0"
-                            placeholder="Nhập câu hỏi của bạn..."
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                        />
-                        <Button className="ml-2" variant="primary" onClick={sendMessage} disabled={loading}>
-                            Gửi
-                        </Button>
-                    </div>
-                </>
-            )}
-        </Card>
+                        <div className="flex items-center border rounded-lg px-2 py-1 mt-3 bg-white">
+                            <Input
+                                className="flex-1 border-none focus:ring-0"
+                                placeholder="Nhập câu hỏi của bạn..."
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                            />
+                            <Button className="ml-2" variant="primary" onClick={sendMessage} disabled={loading}>
+                                Gửi
+                            </Button>
+                        </div>
+                    </>
+                )}
+            </Card>
+        </>
     );
 };
 

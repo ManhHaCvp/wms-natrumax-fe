@@ -14,6 +14,7 @@ import DataTable from "@/components/common/DataTable.jsx";
 import categoryService from "@/services/categoryService.jsx";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {ViewCategoryDetail, CreateCategory, UpdateCategory} from "@/pages/category/CategorySheet.jsx";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -97,21 +98,23 @@ const renderActions = (data, setData) => (
                 </Sheet>
             </DropdownMenuItem>
             {/* Nút "Sửa" */}
-            <DropdownMenuItem asChild>
-                <Sheet>
-                    <SheetTrigger asChild>
+            {checkUserRole("ROLE_ACCOUNTANT") ? (
+                <DropdownMenuItem asChild>
+                    <Sheet>
+                        <SheetTrigger asChild>
                                     <span
                                         className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">Sửa</span>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Sửa nhóm hàng</SheetTitle>
-                            <SheetDescription>Chỉnh sửa thông tin nhóm hàng.</SheetDescription>
-                        </SheetHeader>
-                        <UpdateCategory categoryId={data.categoryId} setData={setData}/>
-                    </SheetContent>
-                </Sheet>
-            </DropdownMenuItem>
+                        </SheetTrigger>
+                        <SheetContent>
+                            <SheetHeader>
+                                <SheetTitle>Sửa nhóm hàng</SheetTitle>
+                                <SheetDescription>Chỉnh sửa thông tin nhóm hàng.</SheetDescription>
+                            </SheetHeader>
+                            <UpdateCategory categoryId={data.categoryId} setData={setData}/>
+                        </SheetContent>
+                    </Sheet>
+                </DropdownMenuItem>
+            ) : null}
         </DropdownMenuContent>
     </DropdownMenu>
 );
@@ -140,18 +143,20 @@ const ViewCategoryList = () => {
             columns={columns(setData)}
             data={data}
             addButton={
-                <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
-                    <SheetTrigger asChild>
-                        <Button className="ms-3"><Plus/> Thêm mới</Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Thêm nhóm hàng</SheetTitle>
-                            <SheetDescription>Nhập thông tin nhóm hàng mới</SheetDescription>
-                        </SheetHeader>
-                        <CreateCategory setData={setData} onClose={() => setOpenCreateSheet(false)}/>
-                    </SheetContent>
-                </Sheet>
+                checkUserRole("ROLE_ACCOUNTANT") ? (
+                    <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
+                        <SheetTrigger asChild>
+                            <Button className="ms-3"><Plus/> Thêm mới</Button>
+                        </SheetTrigger>
+                        <SheetContent>
+                            <SheetHeader>
+                                <SheetTitle>Thêm nhóm hàng</SheetTitle>
+                                <SheetDescription>Nhập thông tin nhóm hàng mới</SheetDescription>
+                            </SheetHeader>
+                            <CreateCategory setData={setData} onClose={() => setOpenCreateSheet(false)}/>
+                        </SheetContent>
+                    </Sheet>
+                ) : null
             }
         />
     );

@@ -19,6 +19,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.jsx";
+import LoadingOverlay from "@/components/common/LoadingOverlay.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -185,17 +186,22 @@ const ViewTransactionList = () => {
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [qrUrl, setQrUrl] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const fetchTransactions = async (status) => {
+        setLoading(true);
         try {
             const response = await axios.get(`http://localhost:8080/api/v1/transactions/status/${status}`);
             setData(response.data);
         } catch (error) {
             console.error("Lỗi khi lấy giao dịch:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleChangeTransactionStatus = async (transactionId, newStatus) => {
+        setLoading(true);
         try {
             await axios.put(
                 `http://localhost:8080/api/v1/transactions/${transactionId}/change-status`,
@@ -205,25 +211,31 @@ const ViewTransactionList = () => {
             fetchTransactions(statusFilter);
         } catch (error) {
             console.error("Đổi trạng thái thất bại:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleUpload = async (file) => {
+        setLoading(true);
         try {
+            setUploadDialogOpen(false);
             const formData = new FormData();
             formData.append("file", file);
             await transactionService.uploadRefundImage(selectedTransactionId, formData);
             await fetchTransactions("CANCELED");
             toast.success("Tải ảnh lên thành công!");
-            setUploadDialogOpen(false);
             setSelectedTransactionId(null);
         } catch (err) {
             console.error(err);
             toast.error("Upload thất bại.");
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleSendClick = async (amount, bank) => {
+        setLoading(true);
         try {
             console.log(bank)
             const numberAmount = parseInt(String(amount).replace(/\D/g, ""), 10);
@@ -234,6 +246,8 @@ const ViewTransactionList = () => {
         } catch (error) {
             toast.error("Không thể tạo mã QR");
             console.error("QR Error:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -242,58 +256,61 @@ const ViewTransactionList = () => {
     }, [statusFilter]);
 
     return (
-        <div className="space-y-4">
-            <DataTable
-                title="Danh sách giao dịch"
-                columns={columns(
-                    setPreviewUrl,
-                    handleChangeTransactionStatus,
-                    setSelectedTransactionId,
-                    setUploadDialogOpen,
-                    handleSendClick,
-                    setImageDialogOpen // <--- added
-                )}
-                data={data}
-                addButton={
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Trạng thái:</span>
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Chọn trạng thái"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                {statusOptions.map((status) => (
-                                    <SelectItem key={status} value={status}>
-                                        {status}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                }
-            />
+        <>
+            {loading && <LoadingOverlay/>}
+            <div className="space-y-4">
+                <DataTable
+                    title="Danh sách giao dịch"
+                    columns={columns(
+                        setPreviewUrl,
+                        handleChangeTransactionStatus,
+                        setSelectedTransactionId,
+                        setUploadDialogOpen,
+                        handleSendClick,
+                        setImageDialogOpen // <--- added
+                    )}
+                    data={data}
+                    addButton={
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground">Trạng thái:</span>
+                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Chọn trạng thái"/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {statusOptions.map((status) => (
+                                        <SelectItem key={status} value={status}>
+                                            {status}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    }
+                />
 
-            <UploadProofDialog
-                open={uploadDialogOpen}
-                onOpenChange={setUploadDialogOpen}
-                onUpload={handleUpload}
-            />
+                <UploadProofDialog
+                    open={uploadDialogOpen}
+                    onOpenChange={setUploadDialogOpen}
+                    onUpload={handleUpload}
+                />
 
-            <ImagePreviewModal
-                open={imageDialogOpen}
-                onOpenChange={setImageDialogOpen}
-                imageUrl={previewUrl}
-            />
+                <ImagePreviewModal
+                    open={imageDialogOpen}
+                    onOpenChange={setImageDialogOpen}
+                    imageUrl={previewUrl}
+                />
 
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Mã QR thanh toán</DialogTitle>
-                    </DialogHeader>
-                    {qrUrl && <img src={qrUrl} alt="QR Payment" className="w-full h-auto"/>}
-                </DialogContent>
-            </Dialog>
-        </div>
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Mã QR thanh toán</DialogTitle>
+                        </DialogHeader>
+                        {qrUrl && <img src={qrUrl} alt="QR Payment" className="w-full h-auto"/>}
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </>
     );
 };
 

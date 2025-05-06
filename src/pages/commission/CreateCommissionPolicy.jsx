@@ -63,7 +63,7 @@ const CreateCommissionPolicy = () => {
 
         try {
             await commissionService.createPolicy(payload);
-            navigate(`/admin/commissions/policy/${Number(referrerId)}`);
+            navigate(`/commissions/policy/${Number(referrerId)}`);
         } catch (error) {
             console.error("Error when creating policy:", error);
         }

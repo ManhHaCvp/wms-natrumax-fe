@@ -25,6 +25,7 @@ import {
 import toast from "react-hot-toast";
 import {CreateDiscount, UpdateDiscount, ViewDiscountDetail} from "@/pages/discount/DiscountSheet.jsx";
 import {formatCurrency} from "@/utils/formatCurrency.jsx";
+import {checkUserRole} from "@/utils/checkUserRole.jsx";
 
 const columnHelper = createColumnHelper();
 
@@ -150,29 +151,33 @@ const renderActions = (data, setData) => (
                     </SheetContent>
                 </Sheet>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-                <Sheet>
-                    <SheetTrigger asChild>
+            {checkUserRole("ROLE_ACCOUNTANT") ? (
+                <>
+                    <DropdownMenuItem asChild>
+                        <Sheet>
+                            <SheetTrigger asChild>
                         <span
                             className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
                             Sửa
                         </span>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Sửa kho</SheetTitle>
-                            <SheetDescription>Chỉnh sửa thông tin kho.</SheetDescription>
-                        </SheetHeader>
-                        <UpdateDiscount discountId={data.discountId} setData={setData}/>
-                    </SheetContent>
-                </Sheet>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+                            </SheetTrigger>
+                            <SheetContent>
+                                <SheetHeader>
+                                    <SheetTitle>Sửa kho</SheetTitle>
+                                    <SheetDescription>Chỉnh sửa thông tin kho.</SheetDescription>
+                                </SheetHeader>
+                                <UpdateDiscount discountId={data.discountId} setData={setData}/>
+                            </SheetContent>
+                        </Sheet>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
               <span
                   className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
                   onClick={() => handleChangeStatus(data.discountId, setData)}
               >Đổi trạng thái</span>
-            </DropdownMenuItem>
+                    </DropdownMenuItem>
+                </>
+            ) : null}
         </DropdownMenuContent>
     </DropdownMenu>
 );
@@ -191,20 +196,22 @@ const ViewDiscountList = () => {
             columns={columns(setData)}
             data={data}
             addButton={
-                <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
-                    <SheetTrigger asChild>
-                        <Button className="ms-3">
-                            <Plus/> Thêm mới
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Thêm khuyến mãi</SheetTitle>
-                            <SheetDescription>Nhập thông tin khuyến mãi mới</SheetDescription>
-                        </SheetHeader>
-                        <CreateDiscount setData={setData} onClose={() => setOpenCreateSheet(false)}/>
-                    </SheetContent>
-                </Sheet>
+                checkUserRole("ROLE_ACCOUNTANT") ? (
+                    <Sheet open={openCreateSheet} onOpenChange={setOpenCreateSheet}>
+                        <SheetTrigger asChild>
+                            <Button className="ms-3">
+                                <Plus/> Thêm mới
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent>
+                            <SheetHeader>
+                                <SheetTitle>Thêm khuyến mãi</SheetTitle>
+                                <SheetDescription>Nhập thông tin khuyến mãi mới</SheetDescription>
+                            </SheetHeader>
+                            <CreateDiscount setData={setData} onClose={() => setOpenCreateSheet(false)}/>
+                        </SheetContent>
+                    </Sheet>
+                ) : null
             }
         />
     );
